@@ -33,6 +33,7 @@ public:
 
 		if (new_message)
 			throw std::runtime_error("Cannot send a new message because the previous one was not processed");
+
 		new_message = true;
 
 		this->message = message;
