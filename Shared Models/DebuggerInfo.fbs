@@ -1,0 +1,7 @@
+namespace NetModels;
+
+table DebuggerInfo{
+	name:string (required);
+}
+
+root_type DebuggerInfo;
