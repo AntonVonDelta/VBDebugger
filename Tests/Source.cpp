@@ -1,4 +1,5 @@
 #include "MessageBroker.h"
+#include "Breakpoint.h"
 #include <iostream>
 #include <thread>
 #include <chrono>
@@ -11,25 +12,20 @@ enum Message {
 };
 
 MessageBroker<Message> broker;
+Breakpoint breakpoint;
 
 void run() {
+	int i = 0;
 
-	cout << "waiting for message" << endl;
+	while (true) {
+		i++;
 
-	Message message;
-	auto response = broker.getMessage(message, true);
+		cout << "before breakpoint " << endl;
 
-	if (response) {
-		cout << "message: " << message << endl;
-		cout << "setting the promise soon" << endl;
-		std::this_thread::sleep_for(std::chrono::seconds(5));
-
-		response.value().set_value({});
-	} else {
-		cout << " no message" << endl;
+		if(breakpoint.input()){
+			cout << "the instruction at " << i << endl;
+		}
 	}
-
-	std::this_thread::sleep_for(std::chrono::seconds(10));
 }
 
 int main() {
@@ -37,12 +33,30 @@ int main() {
 
 	std::this_thread::sleep_for(std::chrono::seconds(5));
 
-	cout << "sending message" << endl;
-	auto task = broker.sendMessage(Message::Hello);
+	while (true) {
+		int choice;
 
-	cout << "waiting on task to finalize" << endl;
-	auto result = task.get();
-	cout << "task finished, response has data " << (bool)result << endl;
+		cout << "Choice: ";
+		cin >> choice;
+
+		switch (choice) {
+			case 0:
+				breakpoint.pause();
+				break;
+
+			case 1:
+				breakpoint.resume();
+				break;
+
+			case 2:
+				breakpoint.stepOver();
+				break;
+
+			case 3:
+				breakpoint.stepOver(false);
+				break;
+		}
+	}
 
 	t1.join();
 }
