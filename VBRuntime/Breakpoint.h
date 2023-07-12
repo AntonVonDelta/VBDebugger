@@ -26,12 +26,13 @@ private:
 	std::mutex mtx_debugger_signal = {};
 	std::condition_variable debugger_signal = {};
 	ExecutionState execution_state;
+	bool execute_current_instruction = true;
 
 public:
 
 	// Called by the execution side
-	void input() {
-		if (run_mode == RunMode::FreeRunning) return;
+	bool input() {
+		if (run_mode == RunMode::FreeRunning) return true;
 
 		// Prepare lock to sync execution_state for 
 		// source signal to notify others
@@ -48,6 +49,8 @@ public:
 		source_signal.notify_all();
 
 		debugger_signal.wait(lock_debugger, [this]() {return execution_state == ExecutionState::Running; });
+
+		return execute_current_instruction;
 	}
 
 
@@ -73,13 +76,14 @@ public:
 
 			run_mode = RunMode::FreeRunning;
 			execution_state = ExecutionState::Running;
+			execute_current_instruction = true;
 		}
 
 		debugger_signal.notify_all();
 	}
 
 	// Jump to next instruction
-	void stepOver() {
+	void stepOver(bool execute_instruction = true) {
 		if (run_mode != RunMode::Step)
 			throw std::runtime_error("Cannot resume execution because it is already running");
 
@@ -87,6 +91,7 @@ public:
 			std::unique_lock<std::mutex> source_lock(mtx_debugger_signal);
 
 			execution_state = ExecutionState::Running;
+			execute_current_instruction = execute_instruction;
 		}
 
 		debugger_signal.notify_all();

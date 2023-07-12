@@ -6,5 +6,6 @@
 #include <Windows.h>
 #include <WinSock2.h>
 #include <WS2tcpip.h>
+#include <Mstcpip.h>
 
 #define FOR_EVERY_CLIENT(var) if(pendingClients.size()) for (int var = pendingClients.size()-1;var>=0;var--)

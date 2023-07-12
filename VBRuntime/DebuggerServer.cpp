@@ -68,9 +68,8 @@ void DebuggerServer::processConnections() {
 				protoClient.sockid = client;
 				strcpy_s(protoClient.address, INET6_ADDRSTRLEN, InetNtopA(clientinfo.sin_family, &(clientinfo.sin_addr), strAddr, INET6_ADDRSTRLEN));
 
-
 				// Set timeout for recv command - or else it will block
-				setsockopt(protoClient.sockid, SOL_SOCKET, SO_RCVTIMEO, (char*)&maxWaitTime, sizeof(maxWaitTime));
+				setRecvTimeout(protoClient.sockid, true);
 
 				// Create debugger instance
 				auto debugger = createDebugger(protoClient);
@@ -82,6 +81,13 @@ void DebuggerServer::processConnections() {
 	}
 }
 std::unique_ptr<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
+	try {
+		setRecvTimeout(protoClient.sockid, false);
+		enableKeepAlive(protoClient.sockid);
+	} catch (std::exception ex) {
+		return nullptr;
+	}
+
 	auto init_packet = readPacketModel<NetModels::DebuggerInfo>(protoClient.sockid);
 
 	if (!init_packet) {
@@ -137,6 +143,35 @@ void DebuggerServer::stopServer() {
 	WSACleanup();
 }
 
+void DebuggerServer::setRecvTimeout(SOCKET socket, bool enable) {
+	DWORD maxWaitTime = enable ? 5000 : 0;
+
+	// Disable rcv timeout
+	setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (char*)&maxWaitTime, sizeof(maxWaitTime));
+}
+
+void DebuggerServer::enableKeepAlive(SOCKET socket) {
+
+	// Enable keep alive
+	int mode = 1;	//<>0 enable
+
+	if (setsockopt(socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&mode, sizeof(int)) == SOCKET_ERROR) {
+		//This feature is very important. If not active then no connection
+		throw std::runtime_error("No keepalive supported");
+	}
+
+	//Set first the keep alive characetrsitc...no more timeouts messing
+	tcp_keepalive params;
+	params.keepalivetime = 5000;
+	params.keepaliveinterval = 5000;
+	params.onoff = 1;
+
+	DWORD output = 0;
+	if (WSAIoctl(socket, SIO_KEEPALIVE_VALS, &params, sizeof(tcp_keepalive), 0, 0, &output, 0, 0) != 0) {
+		//This feature is very important. If not active then no connection
+		throw std::runtime_error("No keepalive supported");
+	}
+}
 
 void DebuggerServer::log(std::string log) {
 	logger(log);

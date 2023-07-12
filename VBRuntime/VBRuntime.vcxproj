@@ -143,7 +143,7 @@
   <ItemGroup>
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebuggerServer.cpp" />
-    <ClCompile Include="DebugSession.cpp" />
+    <ClCompile Include="ExecutionController.cpp" />
     <ClCompile Include="MemoryBlock.cpp" />
     <ClCompile Include="MessageBroker.cpp" />
     <ClCompile Include="MessageResponse.h" />
@@ -158,7 +158,7 @@
     <ClInclude Include="..\Shared Models\Cpluplus\DebuggerInfo_generated.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebuggerServer.h" />
-    <ClInclude Include="DebugSession.h" />
+    <ClInclude Include="ExecutionController.h" />
     <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="MessageBroker.h" />
     <ClInclude Include="Utils.h" />

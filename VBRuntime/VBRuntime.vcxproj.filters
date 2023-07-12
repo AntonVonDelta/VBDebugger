@@ -27,7 +27,7 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DebugSession.cpp">
+    <ClCompile Include="ExecutionController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MemoryBlock.cpp">
@@ -64,7 +64,7 @@
     <ClInclude Include="..\Shared Models\Cpluplus\DebuggerInfo_generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DebugSession.h">
+    <ClInclude Include="ExecutionController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MemoryBlock.h">

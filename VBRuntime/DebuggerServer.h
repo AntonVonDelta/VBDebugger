@@ -14,7 +14,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-
+#include <exception>
 
 struct CLIENT_STRUCTURE {
 	SOCKET sockid;
@@ -55,6 +55,9 @@ private:
 	void stopServer();
 
 	void log(std::string log);
+
+	static void setRecvTimeout(SOCKET socket, bool enable);
+	static void enableKeepAlive(SOCKET socket);
 
 	void onNewDebugger(std::unique_ptr<Debugger> object) {
 		if (event_new_debugger) event_new_debugger(std::move(object));
