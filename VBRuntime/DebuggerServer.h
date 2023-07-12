@@ -17,14 +17,15 @@
 #include <exception>
 #include <optional>
 
-struct CLIENT_STRUCTURE {
-	SOCKET sockid;
-	char address[INET6_ADDRSTRLEN];
-	time_t connected_timestamp;
-};
 
 class DebuggerServer {
 private:
+	struct CLIENT_STRUCTURE {
+		SOCKET sockid;
+		char address[INET6_ADDRSTRLEN];
+		time_t connected_timestamp;
+	};
+
 	std::thread debugger_listener;
 	std::atomic<bool> stop_debugging;
 	std::function<void(std::string)> logger;
@@ -50,7 +51,7 @@ public:
 private:
 	void run();
 	void processConnections();
-	std::optional<Debugger> createDebugger(CLIENT_STRUCTURE protoClient);
+	std::unique_ptr<Debugger> createDebugger(CLIENT_STRUCTURE protoClient);
 
 	bool startServer();
 	void stopServer();

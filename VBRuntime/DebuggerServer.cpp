@@ -76,20 +76,19 @@ void DebuggerServer::processConnections() {
 
 				// Create debugger instance
 				auto debugger = createDebugger(protoClient);
-
-				onNewDebugger()
+				onNewDebugger(std::move(debugger));
 			}
 		}
 	}
 }
-std::optional<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
+std::unique_ptr<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
 	auto init_packet = readPacketModel<NetModels::DebuggerInfoT>(protoClient.sockid);
 
 	if (!init_packet) {
 		log("Failed init packet");
 
 		closesocket(protoClient.sockid);
-		return {};
+		return nullptr;
 	}
 
 	auto model = init_packet->get();
@@ -100,10 +99,10 @@ std::optional<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoCli
 		setRecvTimeout(protoClient.sockid, false);
 		enableKeepAlive(protoClient.sockid);
 	} catch (std::exception ex) {
-		return {};
+		return nullptr;
 	}
 
-	return Debugger(protoClient.sockid);
+	return std::make_unique<Debugger>(protoClient.sockid);
 }
 
 

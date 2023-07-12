@@ -1,30 +1,52 @@
 #include "Winsockets.h"
-#include "DebugSession.h"
+#include "ExecutionController.h"
+#include "DebuggerServer.h"
 #include <iostream>
 
 
 using namespace std;
 
-ExecutionController debug_session(5050);
+DebuggerServer debugger_server(5050);
+ExecutionController execution_controller;
 
 void WINAPI Init() {
 	OutputDebugStringA("Init");
+
+	debugger_server.start();
 }
 
-void WINAPI Log(int line_number) {
+void WINAPI Log(char* filename, char* scope_name, int line_number, char* arguments) {
+	SourceCodeReference reference;
+
+	reference.filename = filename;
+	reference.scope_name = scope_name;
+	reference.line_number = line_number;
+
 	OutputDebugStringA("Log");
 
-	debug_session.traceLog(line_number, {});
+	execution_controller.traceLog(reference, { "var",arguments });
 }
 
-void WINAPI EnterProcedure(char* scope_name) {
+void WINAPI EnterProcedure(char* filename, char* scope_name, int line_number, char* arguments) {
+	SourceCodeReference reference;
+
+	reference.filename = filename;
+	reference.scope_name = scope_name;
+	reference.line_number = line_number;
+
 	OutputDebugStringA("EnterProcedure");
 
-	debug_session.traceEnterProcedure(scope_name);
+	execution_controller.traceEnterProcedure(reference, { "var",arguments });
 }
 
-void WINAPI LeaveProcedure(char* scope_name) {
+void WINAPI LeaveProcedure(char* filename, char* scope_name, int line_number) {
+	SourceCodeReference reference;
+
+	reference.filename = filename;
+	reference.scope_name = scope_name;
+	reference.line_number = line_number;
+
 	OutputDebugStringA("LeaveProcedure");
 
-	debug_session.traceLeaveProcedure(scope_name);
+	execution_controller.traceLeaveProcedure(reference);
 }

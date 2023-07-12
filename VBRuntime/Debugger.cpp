@@ -4,22 +4,6 @@ Debugger::Debugger(SOCKET socket) {
 	this->socket = socket;
 }
 
-Debugger::Debugger(Debugger&& other) {
-	socket = other.socket;
-	socket_closed = other.socket_closed;
-
-	other.socket_closed = true;
-}
-
-Debugger& Debugger::operator=(Debugger&& other) {
-	socket = other.socket;
-	socket_closed = other.socket_closed;
-
-	other.socket_closed = true;
-
-	return *this;
-}
-
 Debugger::~Debugger() {
 	closeConnection();
 }
