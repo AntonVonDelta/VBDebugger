@@ -10,18 +10,16 @@ private:
 
 public:
 	Debugger(SOCKET socket);
+	Debugger(const Debugger&) = delete;
+	Debugger& operator=(const Debugger&) = delete;
+
+	Debugger(Debugger&& other);
+	Debugger& operator=(Debugger&& other);
 
 	~Debugger();
 
 	void attachDebugger(ExecutionController* session);
 
 private:
-
-	void closeConnection() {
-		if (socket_closed) return;
-		socket_closed = true;
-
-		shutdown(socket, SD_SEND);
-		closesocket(socket);
-	}
+	void closeConnection();
 };

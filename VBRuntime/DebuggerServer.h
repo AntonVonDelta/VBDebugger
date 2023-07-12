@@ -2,7 +2,7 @@
 
 
 #include "Debugger.h"
-#include "Utils.h"
+#include "NetModels.h"
 #include "DebuggerInfo_generated.h"
 #include <iostream>
 #include <sstream>
@@ -15,6 +15,7 @@
 #include <memory>
 #include <mutex>
 #include <exception>
+#include <optional>
 
 struct CLIENT_STRUCTURE {
 	SOCKET sockid;
@@ -49,7 +50,7 @@ public:
 private:
 	void run();
 	void processConnections();
-	std::unique_ptr<Debugger> createDebugger(CLIENT_STRUCTURE protoClient);
+	std::optional<Debugger> createDebugger(CLIENT_STRUCTURE protoClient);
 
 	bool startServer();
 	void stopServer();

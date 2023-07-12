@@ -8,14 +8,11 @@ private:
 	uint32_t count = 0;
 
 public:
-
+	MemoryBlock();
 	MemoryBlock(int size);
 
-	// Do not allow this object to be copied
-	MemoryBlock(const MemoryBlock& other);
+	char* get() const;
 
-	char* block();
-
-	uint32_t size();
+	uint32_t size() const;
 };
 

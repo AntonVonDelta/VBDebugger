@@ -71,30 +71,39 @@ void DebuggerServer::processConnections() {
 				// Set timeout for recv command - or else it will block
 				setRecvTimeout(protoClient.sockid, true);
 
+				string_builder << "New connection to server from " << protoClient.address;
+				log(string_builder.str().c_str());
+
 				// Create debugger instance
 				auto debugger = createDebugger(protoClient);
 
-				string_builder << "New connection to server from " << protoClient.address;
-				log(string_builder.str().c_str());
+				onNewDebugger()
 			}
 		}
 	}
 }
-std::unique_ptr<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
+std::optional<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
+	auto init_packet = readPacketModel<NetModels::DebuggerInfoT>(protoClient.sockid);
+
+	if (!init_packet) {
+		log("Failed init packet");
+
+		closesocket(protoClient.sockid);
+		return {};
+	}
+
+	auto model = init_packet->get();
+
+	log(std::string("Debugger connected: ") + model->name);
+
 	try {
 		setRecvTimeout(protoClient.sockid, false);
 		enableKeepAlive(protoClient.sockid);
 	} catch (std::exception ex) {
-		return nullptr;
+		return {};
 	}
 
-	auto init_packet = readPacketModel<NetModels::DebuggerInfo>(protoClient.sockid);
-
-	if (!init_packet) {
-		log("failed packet");
-	} else log(init_packet->name()->str());
-
-	return nullptr;
+	return Debugger(protoClient.sockid);
 }
 
 

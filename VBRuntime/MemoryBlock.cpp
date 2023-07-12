@@ -1,19 +1,20 @@
 #include "MemoryBlock.h"
 
-MemoryBlock::MemoryBlock(int size) {
-	data = std::make_shared_for_overwrite<char[]>(size);
-}
-MemoryBlock::MemoryBlock(const MemoryBlock& other) {
-	data=std::move()
+MemoryBlock::MemoryBlock() {
+	count = 0;
 }
 
-char* MemoryBlock::block() {
+MemoryBlock::MemoryBlock(int size) {
+	auto raw_data = new char[size];
+
+	count = size;
+	data = std::shared_ptr<char[]>(raw_data);
+}
+
+char* MemoryBlock::get() const {
 	return data.get();
 }
-char* MemoryBlock::get() {
-	return nullptr;
-}
 
-uint32_t MemoryBlock::size() {
+uint32_t MemoryBlock::size() const {
 	return count;
 }

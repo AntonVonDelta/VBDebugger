@@ -145,10 +145,9 @@
     <ClCompile Include="DebuggerServer.cpp" />
     <ClCompile Include="ExecutionController.cpp" />
     <ClCompile Include="MemoryBlock.cpp" />
-    <ClCompile Include="MessageBroker.cpp" />
     <ClCompile Include="MessageResponse.h" />
     <ClCompile Include="Source.cpp" />
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="NetModels.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Exports.def" />
@@ -160,8 +159,7 @@
     <ClInclude Include="DebuggerServer.h" />
     <ClInclude Include="ExecutionController.h" />
     <ClInclude Include="MemoryBlock.h" />
-    <ClInclude Include="MessageBroker.h" />
-    <ClInclude Include="Utils.h" />
+    <ClInclude Include="NetModels.h" />
     <ClInclude Include="Winsockets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
