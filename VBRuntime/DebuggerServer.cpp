@@ -81,7 +81,7 @@ void DebuggerServer::processConnections() {
 	}
 }
 std::unique_ptr<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
-	auto init_packet =NetModels::readPacketModel<NetModels::DebuggerInfoT>(protoClient.sockid);
+	auto init_packet = NetModels::readPacketModel<NetModels::DebuggerInfoT>(protoClient.sockid);
 
 	if (!init_packet) {
 		log("Failed init packet");

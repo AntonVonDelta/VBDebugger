@@ -4,16 +4,20 @@
 #include "Winsockets.h"
 #include <optional>
 #include <memory>
+#include <atomic>
 
 class Debugger {
 private:
 	SOCKET socket;
+	ExecutionController* session;
+	std::atomic<bool> execution_detached = false;
 	bool socket_closed = false;
 
 public:
 	Debugger(SOCKET socket);
 	~Debugger();
 
+	bool isDetached();
 	void attachDebugger(ExecutionController* session);
 
 private:

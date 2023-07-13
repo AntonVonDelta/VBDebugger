@@ -24,6 +24,7 @@ namespace VBDebugger.Debugger
 
         public DebuggerClient(IPEndPoint address, Action<string> logger)
         {
+            _address = address;
             _logger = logger;
         }
 
