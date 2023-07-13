@@ -1,11 +1,12 @@
 #include "NetModels.h"
+#include "Util.h"
 #include "flatbuffers/flatbuffers.h"
 #include "DebugEvent_generated.h"
 #include "DebuggerInfo_generated.h"
 
 using namespace flatbuffers;
 
-std::optional<MemoryBlock> readPacket(SOCKET socket) {
+std::optional<MemoryBlock> NetModels::readPacket(SOCKET socket) {
 	unsigned int packet_size;
 	int read_bytes;
 	MemoryBlock packet_data;
@@ -24,26 +25,34 @@ std::optional<MemoryBlock> readPacket(SOCKET socket) {
 	return packet_data;
 }
 
+bool NetModels::sendPacket(SOCKET socket, MemoryBlock data) {
+	uint32_t total_sent_bytes = 0;
+
+	while (true) {
+		int sent_bytes = send()
+	}
+}
+
 template<typename T>
-std::optional<std::unique_ptr<T>> readPacketModel(SOCKET socket) {
-	Verifier verifier;
-	Verifier::Options verifier_options;
-	bool verifyResult;
-	T::TableType* root;
+std::optional<std::unique_ptr<T>> NetModels::readPacketModel(SOCKET socket) {
+	flatbuffers::Verifier::Options verifier_options;
+	bool verify_result;
+
+	typedef T::TableType ApiObject;
 	auto data = readPacket(socket);
 
 	if (!data) return {};
 
-	verifier = Verifier(data->get(), data->count, verifier_options);
-	root = GetRoot<T::TableType>(data->get());
-	verifyResult = root->Verify();
+	flatbuffers::Verifier verifier((uint8_t*)data->get(), data->size(), verifier_options);
+	const auto* root = flatbuffers::GetRoot<ApiObject>(data->get());
+	verify_result = root->Verify(verifier);
 
-	if (!verifyResult) return {};
+	if (!verify_result) return {};
 
-	return std::unique_ptr <T>(root->UnPack(nullptr));
+	return std::unique_ptr<T>(root->UnPack(nullptr));
 }
 
 // Register all models here so that the templates are compiled
 // and ready to be linked when other units are compiled
-template std::optional<NetModels::DebuggerInfoT> readPacketModel(SOCKET socket);
-template std::optional<NetModels::DebugEventT> readPacketModel(SOCKET socket)
+template std::optional<std::unique_ptr<NetModels::DebuggerInfoT>> NetModels::readPacketModel(SOCKET socket);
+template std::optional< std::unique_ptr<NetModels::DebugEventT>> NetModels::readPacketModel(SOCKET socket);

@@ -1,5 +1,5 @@
 #include "DebuggerServer.h"
-
+#include "NetModels.h"
 
 DebuggerServer::DebuggerServer(int server_port) {
 	this->server_port = server_port;
@@ -19,7 +19,7 @@ DebuggerServer::~DebuggerServer() {
 }
 
 void DebuggerServer::start() {
-	debugger_listener = std::thread(&run);
+	debugger_listener = std::thread(&DebuggerServer::run, this);
 }
 
 void DebuggerServer::run() {
@@ -32,7 +32,6 @@ void DebuggerServer::processConnections() {
 	sockaddr_in clientinfo;
 	char strAddr[INET6_ADDRSTRLEN];
 	int selRes;
-	DWORD maxWaitTime = 5000;
 	time_t current_time;
 	SOCKET client;
 	timeval timeout = { 0 , 500000 };
@@ -82,7 +81,7 @@ void DebuggerServer::processConnections() {
 	}
 }
 std::unique_ptr<Debugger> DebuggerServer::createDebugger(CLIENT_STRUCTURE protoClient) {
-	auto init_packet = readPacketModel<NetModels::DebuggerInfoT>(protoClient.sockid);
+	auto init_packet =NetModels::readPacketModel<NetModels::DebuggerInfoT>(protoClient.sockid);
 
 	if (!init_packet) {
 		log("Failed init packet");
