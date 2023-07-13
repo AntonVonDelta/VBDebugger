@@ -56,7 +56,6 @@ inline const char *EnumNameEventType(EventType e) {
 }
 
 struct DebugEventT : public ::flatbuffers::NativeTable {
-    using type = DebugEvent;
   typedef DebugEvent TableType;
   NetModels::EventType event_type = NetModels::EventType::None;
   std::string scope_name{};

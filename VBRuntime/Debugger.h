@@ -17,11 +17,11 @@ public:
 	void attachDebugger(ExecutionController* session);
 
 private:
-	void closeConnection();
-
 	template<typename T>
 	std::optional<std::unique_ptr<T>> readPacketModel();
 
 	template<typename T>
 	bool sendPacketModel(T& packet);
+
+	void closeConnection();
 };

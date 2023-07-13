@@ -1,0 +1,7 @@
+namespace NetModels;
+
+table DebuggerAttached{
+	
+}
+
+root_type DebuggerAttached;

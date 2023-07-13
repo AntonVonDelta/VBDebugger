@@ -4,13 +4,15 @@
 Debugger::Debugger(SOCKET socket) {
 	this->socket = socket;
 }
-
 Debugger::~Debugger() {
 	closeConnection();
 }
 
 
 void Debugger::attachDebugger(ExecutionController* session) {
+	NetModels::DebuggerAttachedT debugger_attached;
+
+	sendPacketModel(debugger_attached);
 	// sendDebuggerAttached
 
 	while (true) {
@@ -24,6 +26,8 @@ void Debugger::attachDebugger(ExecutionController* session) {
 }
 
 
+
+
 template<typename T>
 std::optional<std::unique_ptr<T>> Debugger::readPacketModel() {
 	return NetModels::readPacketModel(socket);
@@ -31,9 +35,8 @@ std::optional<std::unique_ptr<T>> Debugger::readPacketModel() {
 
 template<typename T>
 bool Debugger::sendPacketModel(T& packet) {
-	return false;
+	return NetModels::sendPacketModel(socket, packet);
 }
-
 
 void Debugger::closeConnection() {
 	if (socket_closed) return;

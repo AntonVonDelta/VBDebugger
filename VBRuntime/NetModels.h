@@ -2,6 +2,9 @@
 
 #include "Winsockets.h"
 #include "MemoryBlock.h"
+#include "DebugEvent_generated.h"
+#include "DebuggerInfo_generated.h"
+#include "DebuggerAttached_generated.h"
 #include <memory>
 #include <optional>
 
@@ -13,4 +16,10 @@ namespace NetModels {
 
 	template<typename T>
 	std::optional<std::unique_ptr<T>> readPacketModel(SOCKET socket);
+
+
+	bool sendPacket(SOCKET socket, const char* data, uint32_t len);
+
+	template<typename T>
+	bool sendPacketModel(SOCKET socket, T& packet);
 };

@@ -147,6 +147,11 @@
     <ClInclude Include="MessageBroker.h" />
     <ClInclude Include="MessageResponse.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VBRuntime\VBRuntime.vcxproj">
+      <Project>{af61ff2d-dea2-4cad-86e7-f222b251bfe9}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

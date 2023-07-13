@@ -15,7 +15,7 @@ void WINAPI Init() {
 	debugger_server.start();
 }
 
-void WINAPI Log(char* filename, char* scope_name, int line_number, char* arguments) {
+void WINAPI Log(const char* filename, const char* scope_name, int line_number, const char* arguments) {
 	SourceCodeReference reference;
 
 	reference.filename = filename;
@@ -24,10 +24,10 @@ void WINAPI Log(char* filename, char* scope_name, int line_number, char* argumen
 
 	OutputDebugStringA("Log");
 
-	execution_controller.traceLog(reference, { "var",arguments });
+	execution_controller.traceLog(reference, { "var", arguments });
 }
 
-void WINAPI EnterProcedure(char* filename, char* scope_name, int line_number, char* arguments) {
+void WINAPI EnterProcedure(const char* filename, const char* scope_name, int line_number, const char* arguments) {
 	SourceCodeReference reference;
 
 	reference.filename = filename;
@@ -36,10 +36,10 @@ void WINAPI EnterProcedure(char* filename, char* scope_name, int line_number, ch
 
 	OutputDebugStringA("EnterProcedure");
 
-	execution_controller.traceEnterProcedure(reference, { "var",arguments });
+	execution_controller.traceEnterProcedure(reference, { "var", arguments });
 }
 
-void WINAPI LeaveProcedure(char* filename, char* scope_name, int line_number) {
+void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int line_number) {
 	SourceCodeReference reference;
 
 	reference.filename = filename;

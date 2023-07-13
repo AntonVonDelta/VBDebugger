@@ -95,6 +95,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>Exports.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -155,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Shared Models\Cpluplus\DebugEvent_generated.h" />
+    <ClInclude Include="..\Shared Models\Cpluplus\DebuggerAttached_generated.h" />
     <ClInclude Include="..\Shared Models\Cpluplus\DebuggerInfo_generated.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebuggerServer.h" />
