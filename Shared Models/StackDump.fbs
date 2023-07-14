@@ -14,7 +14,6 @@ table StackFrame{
 	locals:[Variable];
 }
 
-
 table StackDump{
 	frames: [StackFrame];
 	messages: [string];

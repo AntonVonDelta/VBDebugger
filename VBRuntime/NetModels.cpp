@@ -81,5 +81,4 @@ template std::optional<std::unique_ptr<NetModels::DebuggerInfoT>> NetModels::rea
 template std::optional<std::unique_ptr<NetModels::DebugCommandT>> NetModels::readPacketModel(SOCKET socket);
 
 template bool NetModels::sendPacketModel(SOCKET socket, NetModels::DebuggerAttachedT& packet);
-template bool NetModels::sendPacketModel(SOCKET socket, NetModels::BreakpointEventT& packet);
 template bool NetModels::sendPacketModel(SOCKET socket, NetModels::StackDumpT& packet);

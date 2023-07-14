@@ -2,7 +2,6 @@
 
 #include "Winsockets.h"
 #include "MemoryBlock.h"
-#include "BreakpointEvent_generated.h"
 #include "DebuggerInfo_generated.h"
 #include "DebuggerAttached_generated.h"
 #include "DebugCommand_generated.h"

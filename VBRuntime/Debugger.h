@@ -2,6 +2,7 @@
 
 #include "ExecutionController.h"
 #include "Winsockets.h"
+#include "NetModels.h"
 #include <optional>
 #include <memory>
 #include <atomic>

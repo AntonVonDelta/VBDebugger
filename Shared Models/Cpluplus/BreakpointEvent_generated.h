@@ -15,6 +15,18 @@ static_assert(FLATBUFFERS_VERSION_MAJOR == 23 &&
 
 namespace NetModels {
 
+struct Variable;
+struct VariableBuilder;
+struct VariableT;
+
+struct StackFrame;
+struct StackFrameBuilder;
+struct StackFrameT;
+
+struct StackDump;
+struct StackDumpBuilder;
+struct StackDumpT;
+
 struct BreakpointEvent;
 struct BreakpointEventBuilder;
 struct BreakpointEventT;
@@ -52,23 +64,304 @@ inline const char *EnumNameEventType(EventType e) {
   return EnumNamesEventType()[index];
 }
 
+struct VariableT : public ::flatbuffers::NativeTable {
+  typedef Variable TableType;
+  std::string name{};
+  std::string value{};
+};
+
+struct Variable FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef VariableT NativeTableType;
+  typedef VariableBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_VALUE = 6
+  };
+  const ::flatbuffers::String *name() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_NAME);
+  }
+  const ::flatbuffers::String *value() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_VALUE);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyOffset(verifier, VT_VALUE) &&
+           verifier.VerifyString(value()) &&
+           verifier.EndTable();
+  }
+  VariableT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(VariableT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<Variable> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const VariableT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct VariableBuilder {
+  typedef Variable Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_name(::flatbuffers::Offset<::flatbuffers::String> name) {
+    fbb_.AddOffset(Variable::VT_NAME, name);
+  }
+  void add_value(::flatbuffers::Offset<::flatbuffers::String> value) {
+    fbb_.AddOffset(Variable::VT_VALUE, value);
+  }
+  explicit VariableBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<Variable> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<Variable>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<Variable> CreateVariable(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> name = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> value = 0) {
+  VariableBuilder builder_(_fbb);
+  builder_.add_value(value);
+  builder_.add_name(name);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<Variable> CreateVariableDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    const char *value = nullptr) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  auto value__ = value ? _fbb.CreateString(value) : 0;
+  return NetModels::CreateVariable(
+      _fbb,
+      name__,
+      value__);
+}
+
+::flatbuffers::Offset<Variable> CreateVariable(::flatbuffers::FlatBufferBuilder &_fbb, const VariableT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct StackFrameT : public ::flatbuffers::NativeTable {
+  typedef StackFrame TableType;
+  std::string filename{};
+  std::string scope_name{};
+  int32_t line_number = 0;
+  std::vector<std::unique_ptr<NetModels::VariableT>> locals{};
+  StackFrameT() = default;
+  StackFrameT(const StackFrameT &o);
+  StackFrameT(StackFrameT&&) FLATBUFFERS_NOEXCEPT = default;
+  StackFrameT &operator=(StackFrameT o) FLATBUFFERS_NOEXCEPT;
+};
+
+struct StackFrame FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef StackFrameT NativeTableType;
+  typedef StackFrameBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FILENAME = 4,
+    VT_SCOPE_NAME = 6,
+    VT_LINE_NUMBER = 8,
+    VT_LOCALS = 10
+  };
+  const ::flatbuffers::String *filename() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_FILENAME);
+  }
+  const ::flatbuffers::String *scope_name() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_SCOPE_NAME);
+  }
+  int32_t line_number() const {
+    return GetField<int32_t>(VT_LINE_NUMBER, 0);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>> *locals() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>> *>(VT_LOCALS);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_FILENAME) &&
+           verifier.VerifyString(filename()) &&
+           VerifyOffset(verifier, VT_SCOPE_NAME) &&
+           verifier.VerifyString(scope_name()) &&
+           VerifyField<int32_t>(verifier, VT_LINE_NUMBER, 4) &&
+           VerifyOffset(verifier, VT_LOCALS) &&
+           verifier.VerifyVector(locals()) &&
+           verifier.VerifyVectorOfTables(locals()) &&
+           verifier.EndTable();
+  }
+  StackFrameT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(StackFrameT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<StackFrame> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const StackFrameT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct StackFrameBuilder {
+  typedef StackFrame Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_filename(::flatbuffers::Offset<::flatbuffers::String> filename) {
+    fbb_.AddOffset(StackFrame::VT_FILENAME, filename);
+  }
+  void add_scope_name(::flatbuffers::Offset<::flatbuffers::String> scope_name) {
+    fbb_.AddOffset(StackFrame::VT_SCOPE_NAME, scope_name);
+  }
+  void add_line_number(int32_t line_number) {
+    fbb_.AddElement<int32_t>(StackFrame::VT_LINE_NUMBER, line_number, 0);
+  }
+  void add_locals(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>>> locals) {
+    fbb_.AddOffset(StackFrame::VT_LOCALS, locals);
+  }
+  explicit StackFrameBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<StackFrame> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<StackFrame>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> filename = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> scope_name = 0,
+    int32_t line_number = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>>> locals = 0) {
+  StackFrameBuilder builder_(_fbb);
+  builder_.add_locals(locals);
+  builder_.add_line_number(line_number);
+  builder_.add_scope_name(scope_name);
+  builder_.add_filename(filename);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<StackFrame> CreateStackFrameDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const char *filename = nullptr,
+    const char *scope_name = nullptr,
+    int32_t line_number = 0,
+    const std::vector<::flatbuffers::Offset<NetModels::Variable>> *locals = nullptr) {
+  auto filename__ = filename ? _fbb.CreateString(filename) : 0;
+  auto scope_name__ = scope_name ? _fbb.CreateString(scope_name) : 0;
+  auto locals__ = locals ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::Variable>>(*locals) : 0;
+  return NetModels::CreateStackFrame(
+      _fbb,
+      filename__,
+      scope_name__,
+      line_number,
+      locals__);
+}
+
+::flatbuffers::Offset<StackFrame> CreateStackFrame(::flatbuffers::FlatBufferBuilder &_fbb, const StackFrameT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct StackDumpT : public ::flatbuffers::NativeTable {
+  typedef StackDump TableType;
+  std::vector<std::unique_ptr<NetModels::StackFrameT>> frames{};
+  std::vector<std::string> messages{};
+  StackDumpT() = default;
+  StackDumpT(const StackDumpT &o);
+  StackDumpT(StackDumpT&&) FLATBUFFERS_NOEXCEPT = default;
+  StackDumpT &operator=(StackDumpT o) FLATBUFFERS_NOEXCEPT;
+};
+
+struct StackDump FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef StackDumpT NativeTableType;
+  typedef StackDumpBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FRAMES = 4,
+    VT_MESSAGES = 6
+  };
+  const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>> *frames() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>> *>(VT_FRAMES);
+  }
+  const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *messages() const {
+    return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_MESSAGES);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_FRAMES) &&
+           verifier.VerifyVector(frames()) &&
+           verifier.VerifyVectorOfTables(frames()) &&
+           VerifyOffset(verifier, VT_MESSAGES) &&
+           verifier.VerifyVector(messages()) &&
+           verifier.VerifyVectorOfStrings(messages()) &&
+           verifier.EndTable();
+  }
+  StackDumpT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(StackDumpT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<StackDump> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const StackDumpT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct StackDumpBuilder {
+  typedef StackDump Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_frames(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>>> frames) {
+    fbb_.AddOffset(StackDump::VT_FRAMES, frames);
+  }
+  void add_messages(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> messages) {
+    fbb_.AddOffset(StackDump::VT_MESSAGES, messages);
+  }
+  explicit StackDumpBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<StackDump> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<StackDump>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<StackDump> CreateStackDump(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>>> frames = 0,
+    ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> messages = 0) {
+  StackDumpBuilder builder_(_fbb);
+  builder_.add_messages(messages);
+  builder_.add_frames(frames);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<StackDump> CreateStackDumpDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const std::vector<::flatbuffers::Offset<NetModels::StackFrame>> *frames = nullptr,
+    const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *messages = nullptr) {
+  auto frames__ = frames ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::StackFrame>>(*frames) : 0;
+  auto messages__ = messages ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*messages) : 0;
+  return NetModels::CreateStackDump(
+      _fbb,
+      frames__,
+      messages__);
+}
+
+::flatbuffers::Offset<StackDump> CreateStackDump(::flatbuffers::FlatBufferBuilder &_fbb, const StackDumpT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
 struct BreakpointEventT : public ::flatbuffers::NativeTable {
   typedef BreakpointEvent TableType;
   NetModels::EventType event_type = NetModels::EventType::EnteredProcedure;
+  std::unique_ptr<NetModels::StackDumpT> stack_dump{};
+  BreakpointEventT() = default;
+  BreakpointEventT(const BreakpointEventT &o);
+  BreakpointEventT(BreakpointEventT&&) FLATBUFFERS_NOEXCEPT = default;
+  BreakpointEventT &operator=(BreakpointEventT o) FLATBUFFERS_NOEXCEPT;
 };
 
 struct BreakpointEvent FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef BreakpointEventT NativeTableType;
   typedef BreakpointEventBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_EVENT_TYPE = 4
+    VT_EVENT_TYPE = 4,
+    VT_STACK_DUMP = 6
   };
   NetModels::EventType event_type() const {
     return static_cast<NetModels::EventType>(GetField<int32_t>(VT_EVENT_TYPE, 0));
   }
+  const NetModels::StackDump *stack_dump() const {
+    return GetPointer<const NetModels::StackDump *>(VT_STACK_DUMP);
+  }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyField<int32_t>(verifier, VT_EVENT_TYPE, 4) &&
+           VerifyOffset(verifier, VT_STACK_DUMP) &&
+           verifier.VerifyTable(stack_dump()) &&
            verifier.EndTable();
   }
   BreakpointEventT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -83,6 +376,9 @@ struct BreakpointEventBuilder {
   void add_event_type(NetModels::EventType event_type) {
     fbb_.AddElement<int32_t>(BreakpointEvent::VT_EVENT_TYPE, static_cast<int32_t>(event_type), 0);
   }
+  void add_stack_dump(::flatbuffers::Offset<NetModels::StackDump> stack_dump) {
+    fbb_.AddOffset(BreakpointEvent::VT_STACK_DUMP, stack_dump);
+  }
   explicit BreakpointEventBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -96,13 +392,147 @@ struct BreakpointEventBuilder {
 
 inline ::flatbuffers::Offset<BreakpointEvent> CreateBreakpointEvent(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    NetModels::EventType event_type = NetModels::EventType::EnteredProcedure) {
+    NetModels::EventType event_type = NetModels::EventType::EnteredProcedure,
+    ::flatbuffers::Offset<NetModels::StackDump> stack_dump = 0) {
   BreakpointEventBuilder builder_(_fbb);
+  builder_.add_stack_dump(stack_dump);
   builder_.add_event_type(event_type);
   return builder_.Finish();
 }
 
 ::flatbuffers::Offset<BreakpointEvent> CreateBreakpointEvent(::flatbuffers::FlatBufferBuilder &_fbb, const BreakpointEventT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+inline VariableT *Variable::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<VariableT>(new VariableT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void Variable::UnPackTo(VariableT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = name(); if (_e) _o->name = _e->str(); }
+  { auto _e = value(); if (_e) _o->value = _e->str(); }
+}
+
+inline ::flatbuffers::Offset<Variable> Variable::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const VariableT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateVariable(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<Variable> CreateVariable(::flatbuffers::FlatBufferBuilder &_fbb, const VariableT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const VariableT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _value = _o->value.empty() ? 0 : _fbb.CreateString(_o->value);
+  return NetModels::CreateVariable(
+      _fbb,
+      _name,
+      _value);
+}
+
+inline StackFrameT::StackFrameT(const StackFrameT &o)
+      : filename(o.filename),
+        scope_name(o.scope_name),
+        line_number(o.line_number) {
+  locals.reserve(o.locals.size());
+  for (const auto &locals_ : o.locals) { locals.emplace_back((locals_) ? new NetModels::VariableT(*locals_) : nullptr); }
+}
+
+inline StackFrameT &StackFrameT::operator=(StackFrameT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(filename, o.filename);
+  std::swap(scope_name, o.scope_name);
+  std::swap(line_number, o.line_number);
+  std::swap(locals, o.locals);
+  return *this;
+}
+
+inline StackFrameT *StackFrame::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<StackFrameT>(new StackFrameT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void StackFrame::UnPackTo(StackFrameT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = filename(); if (_e) _o->filename = _e->str(); }
+  { auto _e = scope_name(); if (_e) _o->scope_name = _e->str(); }
+  { auto _e = line_number(); _o->line_number = _e; }
+  { auto _e = locals(); if (_e) { _o->locals.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->locals[_i]) { _e->Get(_i)->UnPackTo(_o->locals[_i].get(), _resolver); } else { _o->locals[_i] = std::unique_ptr<NetModels::VariableT>(_e->Get(_i)->UnPack(_resolver)); }; } } else { _o->locals.resize(0); } }
+}
+
+inline ::flatbuffers::Offset<StackFrame> StackFrame::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const StackFrameT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateStackFrame(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(::flatbuffers::FlatBufferBuilder &_fbb, const StackFrameT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const StackFrameT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _filename = _o->filename.empty() ? 0 : _fbb.CreateString(_o->filename);
+  auto _scope_name = _o->scope_name.empty() ? 0 : _fbb.CreateString(_o->scope_name);
+  auto _line_number = _o->line_number;
+  auto _locals = _o->locals.size() ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::Variable>> (_o->locals.size(), [](size_t i, _VectorArgs *__va) { return CreateVariable(*__va->__fbb, __va->__o->locals[i].get(), __va->__rehasher); }, &_va ) : 0;
+  return NetModels::CreateStackFrame(
+      _fbb,
+      _filename,
+      _scope_name,
+      _line_number,
+      _locals);
+}
+
+inline StackDumpT::StackDumpT(const StackDumpT &o)
+      : messages(o.messages) {
+  frames.reserve(o.frames.size());
+  for (const auto &frames_ : o.frames) { frames.emplace_back((frames_) ? new NetModels::StackFrameT(*frames_) : nullptr); }
+}
+
+inline StackDumpT &StackDumpT::operator=(StackDumpT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(frames, o.frames);
+  std::swap(messages, o.messages);
+  return *this;
+}
+
+inline StackDumpT *StackDump::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<StackDumpT>(new StackDumpT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void StackDump::UnPackTo(StackDumpT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = frames(); if (_e) { _o->frames.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->frames[_i]) { _e->Get(_i)->UnPackTo(_o->frames[_i].get(), _resolver); } else { _o->frames[_i] = std::unique_ptr<NetModels::StackFrameT>(_e->Get(_i)->UnPack(_resolver)); }; } } else { _o->frames.resize(0); } }
+  { auto _e = messages(); if (_e) { _o->messages.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->messages[_i] = _e->Get(_i)->str(); } } else { _o->messages.resize(0); } }
+}
+
+inline ::flatbuffers::Offset<StackDump> StackDump::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const StackDumpT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateStackDump(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<StackDump> CreateStackDump(::flatbuffers::FlatBufferBuilder &_fbb, const StackDumpT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const StackDumpT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _frames = _o->frames.size() ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::StackFrame>> (_o->frames.size(), [](size_t i, _VectorArgs *__va) { return CreateStackFrame(*__va->__fbb, __va->__o->frames[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _messages = _o->messages.size() ? _fbb.CreateVectorOfStrings(_o->messages) : 0;
+  return NetModels::CreateStackDump(
+      _fbb,
+      _frames,
+      _messages);
+}
+
+inline BreakpointEventT::BreakpointEventT(const BreakpointEventT &o)
+      : event_type(o.event_type),
+        stack_dump((o.stack_dump) ? new NetModels::StackDumpT(*o.stack_dump) : nullptr) {
+}
+
+inline BreakpointEventT &BreakpointEventT::operator=(BreakpointEventT o) FLATBUFFERS_NOEXCEPT {
+  std::swap(event_type, o.event_type);
+  std::swap(stack_dump, o.stack_dump);
+  return *this;
+}
 
 inline BreakpointEventT *BreakpointEvent::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
   auto _o = std::unique_ptr<BreakpointEventT>(new BreakpointEventT());
@@ -114,6 +544,7 @@ inline void BreakpointEvent::UnPackTo(BreakpointEventT *_o, const ::flatbuffers:
   (void)_o;
   (void)_resolver;
   { auto _e = event_type(); _o->event_type = _e; }
+  { auto _e = stack_dump(); if (_e) { if(_o->stack_dump) { _e->UnPackTo(_o->stack_dump.get(), _resolver); } else { _o->stack_dump = std::unique_ptr<NetModels::StackDumpT>(_e->UnPack(_resolver)); } } else if (_o->stack_dump) { _o->stack_dump.reset(); } }
 }
 
 inline ::flatbuffers::Offset<BreakpointEvent> BreakpointEvent::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const BreakpointEventT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
@@ -125,9 +556,11 @@ inline ::flatbuffers::Offset<BreakpointEvent> CreateBreakpointEvent(::flatbuffer
   (void)_o;
   struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const BreakpointEventT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _event_type = _o->event_type;
+  auto _stack_dump = _o->stack_dump ? CreateStackDump(_fbb, _o->stack_dump.get(), _rehasher) : 0;
   return NetModels::CreateBreakpointEvent(
       _fbb,
-      _event_type);
+      _event_type,
+      _stack_dump);
 }
 
 inline const NetModels::BreakpointEvent *GetBreakpointEvent(const void *buf) {

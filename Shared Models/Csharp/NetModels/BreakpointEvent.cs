@@ -22,16 +22,20 @@ public struct BreakpointEvent : IFlatbufferObject
   public BreakpointEvent __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
   public NetModels.EventType EventType { get { int o = __p.__offset(4); return o != 0 ? (NetModels.EventType)__p.bb.GetInt(o + __p.bb_pos) : NetModels.EventType.EnteredProcedure; } }
+  public NetModels.StackDump? StackDump { get { int o = __p.__offset(6); return o != 0 ? (NetModels.StackDump?)(new NetModels.StackDump()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
 
   public static Offset<NetModels.BreakpointEvent> CreateBreakpointEvent(FlatBufferBuilder builder,
-      NetModels.EventType event_type = NetModels.EventType.EnteredProcedure) {
-    builder.StartTable(1);
+      NetModels.EventType event_type = NetModels.EventType.EnteredProcedure,
+      Offset<NetModels.StackDump> stack_dumpOffset = default(Offset<NetModels.StackDump>)) {
+    builder.StartTable(2);
+    BreakpointEvent.AddStackDump(builder, stack_dumpOffset);
     BreakpointEvent.AddEventType(builder, event_type);
     return BreakpointEvent.EndBreakpointEvent(builder);
   }
 
-  public static void StartBreakpointEvent(FlatBufferBuilder builder) { builder.StartTable(1); }
+  public static void StartBreakpointEvent(FlatBufferBuilder builder) { builder.StartTable(2); }
   public static void AddEventType(FlatBufferBuilder builder, NetModels.EventType eventType) { builder.AddInt(0, (int)eventType, 0); }
+  public static void AddStackDump(FlatBufferBuilder builder, Offset<NetModels.StackDump> stackDumpOffset) { builder.AddOffset(1, stackDumpOffset.Value, 0); }
   public static Offset<NetModels.BreakpointEvent> EndBreakpointEvent(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<NetModels.BreakpointEvent>(o);
@@ -45,21 +49,26 @@ public struct BreakpointEvent : IFlatbufferObject
   }
   public void UnPackTo(BreakpointEventT _o) {
     _o.EventType = this.EventType;
+    _o.StackDump = this.StackDump.HasValue ? this.StackDump.Value.UnPack() : null;
   }
   public static Offset<NetModels.BreakpointEvent> Pack(FlatBufferBuilder builder, BreakpointEventT _o) {
     if (_o == null) return default(Offset<NetModels.BreakpointEvent>);
+    var _stack_dump = _o.StackDump == null ? default(Offset<NetModels.StackDump>) : NetModels.StackDump.Pack(builder, _o.StackDump);
     return CreateBreakpointEvent(
       builder,
-      _o.EventType);
+      _o.EventType,
+      _stack_dump);
   }
 }
 
 public class BreakpointEventT
 {
   public NetModels.EventType EventType { get; set; }
+  public NetModels.StackDumpT StackDump { get; set; }
 
   public BreakpointEventT() {
     this.EventType = NetModels.EventType.EnteredProcedure;
+    this.StackDump = null;
   }
   public static BreakpointEventT DeserializeFromBinary(byte[] fbBuffer) {
     return BreakpointEvent.GetRootAsBreakpointEvent(new ByteBuffer(fbBuffer)).UnPack();
@@ -78,6 +87,7 @@ static public class BreakpointEventVerify
   {
     return verifier.VerifyTableStart(tablePos)
       && verifier.VerifyField(tablePos, 4 /*EventType*/, 4 /*NetModels.EventType*/, 4, false)
+      && verifier.VerifyTable(tablePos, 6 /*StackDump*/, NetModels.StackDumpVerify.Verify, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

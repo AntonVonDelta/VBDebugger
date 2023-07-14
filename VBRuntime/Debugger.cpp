@@ -2,6 +2,9 @@
 #include "NetModels.h"
 #include <exception>
 
+NetModels::StackDumpT generateStackDumpModel(ExecutionController* session);
+
+
 Debugger::Debugger(SOCKET socket) {
 	this->socket = socket;
 }
@@ -37,6 +40,7 @@ void Debugger::loop() {
 			switch (command->get()->command_type) {
 				case NetModels::CommandType::Pause:
 					session->pause();
+					sendStackDump();
 					break;
 
 				case NetModels::CommandType::Resume:
@@ -45,10 +49,12 @@ void Debugger::loop() {
 
 				case NetModels::CommandType::NextInstruction:
 					session->stepOver(true);
+					sendStackDump();
 					break;
 
 				case NetModels::CommandType::SkipInstruction:
 					session->stepOver(false);
+					sendStackDump();
 					break;
 
 				default:
@@ -65,10 +71,35 @@ void Debugger::loop() {
 }
 
 
-
 bool Debugger::sendStackDump() {
-	NetModels::StackDumpT dump;
+	auto stack_dump_model = generateStackDumpModel(session);
 
+	return sendPacketModel<NetModels::StackDumpT>(stack_dump_model);
+}
+
+
+template<typename T>
+std::optional<std::unique_ptr<T>> Debugger::readPacketModel() {
+	return NetModels::readPacketModel<T>(socket);
+}
+
+template<typename T>
+bool Debugger::sendPacketModel(T& packet) {
+	return NetModels::sendPacketModel(socket, packet);
+}
+
+
+void Debugger::closeConnection() {
+	if (socket_closed) return;
+	socket_closed = true;
+
+	closesocket(socket);
+}
+
+
+
+NetModels::StackDumpT generateStackDumpModel(ExecutionController* session) {
+	NetModels::StackDumpT result;
 	auto stacks = session->getStack();
 	auto message = session->getMessages();
 
@@ -85,32 +116,17 @@ bool Debugger::sendStackDump() {
 			local_model->name = local.first;
 			local_model->value = local.second;
 
-			stack_frame_model->locals.push_back(local_model);
+			stack_frame_model->locals.push_back(std::move(local_model));
 		}
 
-		dump.frames.push_back(stack_frame_model);
+		result.frames.push_back(std::move(stack_frame_model));
 	}
 
 	for (const auto& message : session->getMessages()) {
-		dump.messages.push_back(message);
+		result.messages.push_back(message);
 	}
 
-	return sendPacketModel<NetModels::StackDumpT>(dump);
+	return result;
 }
 
-template<typename T>
-std::optional<std::unique_ptr<T>> Debugger::readPacketModel() {
-	return NetModels::readPacketModel(socket);
-}
 
-template<typename T>
-bool Debugger::sendPacketModel(T& packet) {
-	return NetModels::sendPacketModel(socket, packet);
-}
-
-void Debugger::closeConnection() {
-	if (socket_closed) return;
-	socket_closed = true;
-
-	closesocket(socket);
-}
