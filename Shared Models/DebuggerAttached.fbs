@@ -2,7 +2,7 @@ namespace NetModels;
 file_identifier "DEBB";
 
 table DebuggerAttached{
-	line_number: int;
+
 }
 
 root_type DebuggerAttached;

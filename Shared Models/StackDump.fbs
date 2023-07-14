@@ -1,0 +1,23 @@
+namespace NetModels;
+file_identifier "DEBB";
+
+table Variable{
+	name:string;
+	value:string;
+}
+
+table StackFrame{
+	filename:string;
+	scope_name:string;
+	line_number:int;
+
+	locals:[Variable];
+}
+
+
+table StackDump{
+	frames: [StackFrame];
+	messages: [string];
+}
+
+root_type StackDump;

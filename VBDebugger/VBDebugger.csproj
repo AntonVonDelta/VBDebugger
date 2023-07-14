@@ -49,6 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared Models\Csharp\NetModels\CommandType.cs">
+      <Link>Debugger\NetModels\CommandType.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\DebugCommand.cs">
+      <Link>Debugger\NetModels\DebugCommand.cs</Link>
+    </Compile>
     <Compile Include="..\Shared Models\Csharp\NetModels\DebugEvent.cs">
       <Link>Debugger\NetModels\DebugEvent.cs</Link>
     </Compile>

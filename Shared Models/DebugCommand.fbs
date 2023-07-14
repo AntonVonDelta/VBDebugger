@@ -1,0 +1,10 @@
+namespace NetModels;
+file_identifier "DEBB";
+
+enum CommandType : int {Pause, Resume, NextInstruction, SkipInstruction}
+
+table DebugCommand{
+	command_type : CommandType;
+}
+
+root_type DebugCommand;

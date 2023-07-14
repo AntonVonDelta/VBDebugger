@@ -21,17 +21,8 @@ public struct DebuggerAttached : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public DebuggerAttached __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int LineNumber { get { int o = __p.__offset(4); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
-  public static Offset<NetModels.DebuggerAttached> CreateDebuggerAttached(FlatBufferBuilder builder,
-      int line_number = 0) {
-    builder.StartTable(1);
-    DebuggerAttached.AddLineNumber(builder, line_number);
-    return DebuggerAttached.EndDebuggerAttached(builder);
-  }
-
-  public static void StartDebuggerAttached(FlatBufferBuilder builder) { builder.StartTable(1); }
-  public static void AddLineNumber(FlatBufferBuilder builder, int lineNumber) { builder.AddInt(0, lineNumber, 0); }
+  public static void StartDebuggerAttached(FlatBufferBuilder builder) { builder.StartTable(0); }
   public static Offset<NetModels.DebuggerAttached> EndDebuggerAttached(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<NetModels.DebuggerAttached>(o);
@@ -44,22 +35,18 @@ public struct DebuggerAttached : IFlatbufferObject
     return _o;
   }
   public void UnPackTo(DebuggerAttachedT _o) {
-    _o.LineNumber = this.LineNumber;
   }
   public static Offset<NetModels.DebuggerAttached> Pack(FlatBufferBuilder builder, DebuggerAttachedT _o) {
     if (_o == null) return default(Offset<NetModels.DebuggerAttached>);
-    return CreateDebuggerAttached(
-      builder,
-      _o.LineNumber);
+    StartDebuggerAttached(builder);
+    return EndDebuggerAttached(builder);
   }
 }
 
 public class DebuggerAttachedT
 {
-  public int LineNumber { get; set; }
 
   public DebuggerAttachedT() {
-    this.LineNumber = 0;
   }
   public static DebuggerAttachedT DeserializeFromBinary(byte[] fbBuffer) {
     return DebuggerAttached.GetRootAsDebuggerAttached(new ByteBuffer(fbBuffer)).UnPack();
@@ -77,7 +64,6 @@ static public class DebuggerAttachedVerify
   static public bool Verify(Google.FlatBuffers.Verifier verifier, uint tablePos)
   {
     return verifier.VerifyTableStart(tablePos)
-      && verifier.VerifyField(tablePos, 4 /*LineNumber*/, 4 /*int*/, 4, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

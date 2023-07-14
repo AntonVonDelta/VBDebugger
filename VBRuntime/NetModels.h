@@ -2,9 +2,11 @@
 
 #include "Winsockets.h"
 #include "MemoryBlock.h"
-#include "DebugEvent_generated.h"
+#include "BreakpointEvent_generated.h"
 #include "DebuggerInfo_generated.h"
 #include "DebuggerAttached_generated.h"
+#include "DebugCommand_generated.h"
+#include "StackDump_generated.h"
 #include <memory>
 #include <optional>
 

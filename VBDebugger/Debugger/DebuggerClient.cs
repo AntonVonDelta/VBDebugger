@@ -19,7 +19,7 @@ namespace VBDebugger.Debugger
         private readonly Action<string> _logger;
 
 
-        private bool Attached => _client.Connected;
+        public bool Attached => _client.Connected;
 
 
         public DebuggerClient(IPEndPoint address, Action<string> logger)
@@ -50,6 +50,14 @@ namespace VBDebugger.Debugger
 
             return false;
         }
+        public async Task Pause()
+        {
+            await SendPacketModel(new DebuggerInfoT() { Name = "Testing" });
+
+        }
+
+
+
 
         private async Task<T> ReadPacketModel<T>() where T : class
         {

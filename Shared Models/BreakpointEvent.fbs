@@ -1,0 +1,10 @@
+namespace NetModels;
+file_identifier "DEBB";
+
+enum EventType : int {EnteredProcedure, LeaveProcedure, Log}
+
+table BreakpointEvent{
+	event_type : EventType;
+}
+
+root_type BreakpointEvent;

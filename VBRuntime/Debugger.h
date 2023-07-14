@@ -5,11 +5,13 @@
 #include <optional>
 #include <memory>
 #include <atomic>
+#include <thread>
 
 class Debugger {
 private:
 	SOCKET socket;
-	ExecutionController* session;
+	ExecutionController* session = nullptr;
+	std::thread processing_thread;
 	std::atomic<bool> execution_detached = false;
 	bool socket_closed = false;
 
@@ -21,6 +23,10 @@ public:
 	void attachDebugger(ExecutionController* session);
 
 private:
+	void loop();
+
+	bool sendStackDump();
+
 	template<typename T>
 	std::optional<std::unique_ptr<T>> readPacketModel();
 

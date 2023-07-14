@@ -5,11 +5,12 @@
 namespace NetModels
 {
 
-public enum EventType : int
+public enum CommandType : int
 {
-  EnteredProcedure = 0,
-  LeaveProcedure = 1,
-  Log = 2,
+  Pause = 0,
+  Resume = 1,
+  NextInstruction = 2,
+  SkipInstruction = 3,
 };
 
 

@@ -78,7 +78,8 @@ bool NetModels::sendPacketModel(SOCKET socket, T& packet) {
 // Register all models here so that the templates are compiled
 // and ready to be linked when other units are compiled
 template std::optional<std::unique_ptr<NetModels::DebuggerInfoT>> NetModels::readPacketModel(SOCKET socket);
-template std::optional< std::unique_ptr<NetModels::DebugEventT>> NetModels::readPacketModel(SOCKET socket);
-template std::optional< std::unique_ptr<NetModels::DebuggerAttachedT>> NetModels::readPacketModel(SOCKET socket);
+template std::optional<std::unique_ptr<NetModels::DebugCommandT>> NetModels::readPacketModel(SOCKET socket);
 
 template bool NetModels::sendPacketModel(SOCKET socket, NetModels::DebuggerAttachedT& packet);
+template bool NetModels::sendPacketModel(SOCKET socket, NetModels::BreakpointEventT& packet);
+template bool NetModels::sendPacketModel(SOCKET socket, NetModels::StackDumpT& packet);
