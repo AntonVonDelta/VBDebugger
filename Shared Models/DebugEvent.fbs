@@ -1,4 +1,5 @@
 namespace NetModels;
+file_identifier "DEBB";
 
 enum EventType : int {None, EnteredProcedure, LeaveProcedure, Log}
 

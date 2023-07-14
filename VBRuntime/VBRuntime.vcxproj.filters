@@ -55,12 +55,6 @@
     <ClInclude Include="Winsockets.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Shared Models\Cpluplus\DebugEvent_generated.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared Models\Cpluplus\DebuggerInfo_generated.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ExecutionController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -68,9 +62,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Util.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Shared Models\Cpluplus\DebuggerAttached_generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

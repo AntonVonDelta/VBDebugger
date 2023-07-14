@@ -16,7 +16,8 @@ public struct DebuggerInfo : IFlatbufferObject
   public static void ValidateVersion() { FlatBufferConstants.FLATBUFFERS_23_5_26(); }
   public static DebuggerInfo GetRootAsDebuggerInfo(ByteBuffer _bb) { return GetRootAsDebuggerInfo(_bb, new DebuggerInfo()); }
   public static DebuggerInfo GetRootAsDebuggerInfo(ByteBuffer _bb, DebuggerInfo obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
-  public static bool VerifyDebuggerInfo(ByteBuffer _bb) {Google.FlatBuffers.Verifier verifier = new Google.FlatBuffers.Verifier(_bb); return verifier.VerifyBuffer("", false, DebuggerInfoVerify.Verify); }
+  public static bool DebuggerInfoBufferHasIdentifier(ByteBuffer _bb) { return Table.__has_identifier(_bb, "DEBB"); }
+  public static bool VerifyDebuggerInfo(ByteBuffer _bb) {Google.FlatBuffers.Verifier verifier = new Google.FlatBuffers.Verifier(_bb); return verifier.VerifyBuffer("DEBB", false, DebuggerInfoVerify.Verify); }
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public DebuggerInfo __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
@@ -42,8 +43,8 @@ public struct DebuggerInfo : IFlatbufferObject
     builder.Required(o, 4);  // name
     return new Offset<NetModels.DebuggerInfo>(o);
   }
-  public static void FinishDebuggerInfoBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerInfo> offset) { builder.Finish(offset.Value); }
-  public static void FinishSizePrefixedDebuggerInfoBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerInfo> offset) { builder.FinishSizePrefixed(offset.Value); }
+  public static void FinishDebuggerInfoBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerInfo> offset) { builder.Finish(offset.Value, "DEBB"); }
+  public static void FinishSizePrefixedDebuggerInfoBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerInfo> offset) { builder.FinishSizePrefixed(offset.Value, "DEBB"); }
   public DebuggerInfoT UnPack() {
     var _o = new DebuggerInfoT();
     this.UnPackTo(_o);

@@ -16,36 +16,50 @@ public struct DebuggerAttached : IFlatbufferObject
   public static void ValidateVersion() { FlatBufferConstants.FLATBUFFERS_23_5_26(); }
   public static DebuggerAttached GetRootAsDebuggerAttached(ByteBuffer _bb) { return GetRootAsDebuggerAttached(_bb, new DebuggerAttached()); }
   public static DebuggerAttached GetRootAsDebuggerAttached(ByteBuffer _bb, DebuggerAttached obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
-  public static bool VerifyDebuggerAttached(ByteBuffer _bb) {Google.FlatBuffers.Verifier verifier = new Google.FlatBuffers.Verifier(_bb); return verifier.VerifyBuffer("", false, DebuggerAttachedVerify.Verify); }
+  public static bool DebuggerAttachedBufferHasIdentifier(ByteBuffer _bb) { return Table.__has_identifier(_bb, "DEBB"); }
+  public static bool VerifyDebuggerAttached(ByteBuffer _bb) {Google.FlatBuffers.Verifier verifier = new Google.FlatBuffers.Verifier(_bb); return verifier.VerifyBuffer("DEBB", false, DebuggerAttachedVerify.Verify); }
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public DebuggerAttached __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
+  public int LineNumber { get { int o = __p.__offset(4); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
 
-  public static void StartDebuggerAttached(FlatBufferBuilder builder) { builder.StartTable(0); }
+  public static Offset<NetModels.DebuggerAttached> CreateDebuggerAttached(FlatBufferBuilder builder,
+      int line_number = 0) {
+    builder.StartTable(1);
+    DebuggerAttached.AddLineNumber(builder, line_number);
+    return DebuggerAttached.EndDebuggerAttached(builder);
+  }
+
+  public static void StartDebuggerAttached(FlatBufferBuilder builder) { builder.StartTable(1); }
+  public static void AddLineNumber(FlatBufferBuilder builder, int lineNumber) { builder.AddInt(0, lineNumber, 0); }
   public static Offset<NetModels.DebuggerAttached> EndDebuggerAttached(FlatBufferBuilder builder) {
     int o = builder.EndTable();
     return new Offset<NetModels.DebuggerAttached>(o);
   }
-  public static void FinishDebuggerAttachedBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerAttached> offset) { builder.Finish(offset.Value); }
-  public static void FinishSizePrefixedDebuggerAttachedBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerAttached> offset) { builder.FinishSizePrefixed(offset.Value); }
+  public static void FinishDebuggerAttachedBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerAttached> offset) { builder.Finish(offset.Value, "DEBB"); }
+  public static void FinishSizePrefixedDebuggerAttachedBuffer(FlatBufferBuilder builder, Offset<NetModels.DebuggerAttached> offset) { builder.FinishSizePrefixed(offset.Value, "DEBB"); }
   public DebuggerAttachedT UnPack() {
     var _o = new DebuggerAttachedT();
     this.UnPackTo(_o);
     return _o;
   }
   public void UnPackTo(DebuggerAttachedT _o) {
+    _o.LineNumber = this.LineNumber;
   }
   public static Offset<NetModels.DebuggerAttached> Pack(FlatBufferBuilder builder, DebuggerAttachedT _o) {
     if (_o == null) return default(Offset<NetModels.DebuggerAttached>);
-    StartDebuggerAttached(builder);
-    return EndDebuggerAttached(builder);
+    return CreateDebuggerAttached(
+      builder,
+      _o.LineNumber);
   }
 }
 
 public class DebuggerAttachedT
 {
+  public int LineNumber { get; set; }
 
   public DebuggerAttachedT() {
+    this.LineNumber = 0;
   }
   public static DebuggerAttachedT DeserializeFromBinary(byte[] fbBuffer) {
     return DebuggerAttached.GetRootAsDebuggerAttached(new ByteBuffer(fbBuffer)).UnPack();
@@ -63,6 +77,7 @@ static public class DebuggerAttachedVerify
   static public bool Verify(Google.FlatBuffers.Verifier verifier, uint tablePos)
   {
     return verifier.VerifyTableStart(tablePos)
+      && verifier.VerifyField(tablePos, 4 /*LineNumber*/, 4 /*int*/, 4, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

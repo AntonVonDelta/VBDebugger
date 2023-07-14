@@ -116,26 +116,40 @@ inline const NetModels::DebuggerInfo *GetSizePrefixedDebuggerInfo(const void *bu
   return ::flatbuffers::GetSizePrefixedRoot<NetModels::DebuggerInfo>(buf);
 }
 
+inline const char *DebuggerInfoIdentifier() {
+  return "DEBB";
+}
+
+inline bool DebuggerInfoBufferHasIdentifier(const void *buf) {
+  return ::flatbuffers::BufferHasIdentifier(
+      buf, DebuggerInfoIdentifier());
+}
+
+inline bool SizePrefixedDebuggerInfoBufferHasIdentifier(const void *buf) {
+  return ::flatbuffers::BufferHasIdentifier(
+      buf, DebuggerInfoIdentifier(), true);
+}
+
 inline bool VerifyDebuggerInfoBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifyBuffer<NetModels::DebuggerInfo>(nullptr);
+  return verifier.VerifyBuffer<NetModels::DebuggerInfo>(DebuggerInfoIdentifier());
 }
 
 inline bool VerifySizePrefixedDebuggerInfoBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifySizePrefixedBuffer<NetModels::DebuggerInfo>(nullptr);
+  return verifier.VerifySizePrefixedBuffer<NetModels::DebuggerInfo>(DebuggerInfoIdentifier());
 }
 
 inline void FinishDebuggerInfoBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
     ::flatbuffers::Offset<NetModels::DebuggerInfo> root) {
-  fbb.Finish(root);
+  fbb.Finish(root, DebuggerInfoIdentifier());
 }
 
 inline void FinishSizePrefixedDebuggerInfoBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
     ::flatbuffers::Offset<NetModels::DebuggerInfo> root) {
-  fbb.FinishSizePrefixed(root);
+  fbb.FinishSizePrefixed(root, DebuggerInfoIdentifier());
 }
 
 inline std::unique_ptr<NetModels::DebuggerInfoT> UnPackDebuggerInfo(

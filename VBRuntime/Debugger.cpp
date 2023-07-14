@@ -16,6 +16,8 @@ bool Debugger::isDetached() {
 void Debugger::attachDebugger(ExecutionController* session) {
 	NetModels::DebuggerAttachedT debugger_attached;
 
+	debugger_attached.line_number = 108;
+
 	sendPacketModel(debugger_attached);
 	// sendDebuggerAttached
 

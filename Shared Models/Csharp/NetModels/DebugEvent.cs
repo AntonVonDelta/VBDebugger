@@ -16,7 +16,8 @@ public struct DebugEvent : IFlatbufferObject
   public static void ValidateVersion() { FlatBufferConstants.FLATBUFFERS_23_5_26(); }
   public static DebugEvent GetRootAsDebugEvent(ByteBuffer _bb) { return GetRootAsDebugEvent(_bb, new DebugEvent()); }
   public static DebugEvent GetRootAsDebugEvent(ByteBuffer _bb, DebugEvent obj) { return (obj.__assign(_bb.GetInt(_bb.Position) + _bb.Position, _bb)); }
-  public static bool VerifyDebugEvent(ByteBuffer _bb) {Google.FlatBuffers.Verifier verifier = new Google.FlatBuffers.Verifier(_bb); return verifier.VerifyBuffer("", false, DebugEventVerify.Verify); }
+  public static bool DebugEventBufferHasIdentifier(ByteBuffer _bb) { return Table.__has_identifier(_bb, "DEBB"); }
+  public static bool VerifyDebugEvent(ByteBuffer _bb) {Google.FlatBuffers.Verifier verifier = new Google.FlatBuffers.Verifier(_bb); return verifier.VerifyBuffer("DEBB", false, DebugEventVerify.Verify); }
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public DebugEvent __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
@@ -72,8 +73,8 @@ public struct DebugEvent : IFlatbufferObject
     builder.Required(o, 12);  // scope_data
     return new Offset<NetModels.DebugEvent>(o);
   }
-  public static void FinishDebugEventBuffer(FlatBufferBuilder builder, Offset<NetModels.DebugEvent> offset) { builder.Finish(offset.Value); }
-  public static void FinishSizePrefixedDebugEventBuffer(FlatBufferBuilder builder, Offset<NetModels.DebugEvent> offset) { builder.FinishSizePrefixed(offset.Value); }
+  public static void FinishDebugEventBuffer(FlatBufferBuilder builder, Offset<NetModels.DebugEvent> offset) { builder.Finish(offset.Value, "DEBB"); }
+  public static void FinishSizePrefixedDebugEventBuffer(FlatBufferBuilder builder, Offset<NetModels.DebugEvent> offset) { builder.FinishSizePrefixed(offset.Value, "DEBB"); }
   public DebugEventT UnPack() {
     var _o = new DebugEventT();
     this.UnPackTo(_o);

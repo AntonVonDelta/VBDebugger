@@ -31,7 +31,7 @@ void WINAPI Log(const char* filename, const char* scope_name, int line_number, c
 	reference.scope_name = scope_name;
 	reference.line_number = line_number;
 
-	OutputDebugStringA("Log\n");
+	//OutputDebugStringA("Log\n");
 
 	execution_controller.traceLog(reference, { "var", arguments });
 }

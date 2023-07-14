@@ -1,4 +1,5 @@
 namespace NetModels;
+file_identifier "DEBB";
 
 table DebuggerInfo{
 	name:string (required);

@@ -5,6 +5,7 @@ DebuggerServer::DebuggerServer(int server_port) {
 	this->server_port = server_port;
 
 	logger = [](std::string log) {
+		log = log + "\n";
 		OutputDebugStringA(log.c_str());
 	};
 }

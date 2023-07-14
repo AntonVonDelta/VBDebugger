@@ -222,26 +222,40 @@ inline const NetModels::DebugEvent *GetSizePrefixedDebugEvent(const void *buf) {
   return ::flatbuffers::GetSizePrefixedRoot<NetModels::DebugEvent>(buf);
 }
 
+inline const char *DebugEventIdentifier() {
+  return "DEBB";
+}
+
+inline bool DebugEventBufferHasIdentifier(const void *buf) {
+  return ::flatbuffers::BufferHasIdentifier(
+      buf, DebugEventIdentifier());
+}
+
+inline bool SizePrefixedDebugEventBufferHasIdentifier(const void *buf) {
+  return ::flatbuffers::BufferHasIdentifier(
+      buf, DebugEventIdentifier(), true);
+}
+
 inline bool VerifyDebugEventBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifyBuffer<NetModels::DebugEvent>(nullptr);
+  return verifier.VerifyBuffer<NetModels::DebugEvent>(DebugEventIdentifier());
 }
 
 inline bool VerifySizePrefixedDebugEventBuffer(
     ::flatbuffers::Verifier &verifier) {
-  return verifier.VerifySizePrefixedBuffer<NetModels::DebugEvent>(nullptr);
+  return verifier.VerifySizePrefixedBuffer<NetModels::DebugEvent>(DebugEventIdentifier());
 }
 
 inline void FinishDebugEventBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
     ::flatbuffers::Offset<NetModels::DebugEvent> root) {
-  fbb.Finish(root);
+  fbb.Finish(root, DebugEventIdentifier());
 }
 
 inline void FinishSizePrefixedDebugEventBuffer(
     ::flatbuffers::FlatBufferBuilder &fbb,
     ::flatbuffers::Offset<NetModels::DebugEvent> root) {
-  fbb.FinishSizePrefixed(root);
+  fbb.FinishSizePrefixed(root, DebugEventIdentifier());
 }
 
 inline std::unique_ptr<NetModels::DebugEventT> UnPackDebugEvent(

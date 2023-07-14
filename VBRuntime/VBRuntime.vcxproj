@@ -155,9 +155,6 @@
     <None Include="Exports.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Shared Models\Cpluplus\DebugEvent_generated.h" />
-    <ClInclude Include="..\Shared Models\Cpluplus\DebuggerAttached_generated.h" />
-    <ClInclude Include="..\Shared Models\Cpluplus\DebuggerInfo_generated.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebuggerServer.h" />
     <ClInclude Include="ExecutionController.h" />

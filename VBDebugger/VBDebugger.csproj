@@ -49,6 +49,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Shared Models\Csharp\NetModels\DebugEvent.cs">
+      <Link>Debugger\NetModels\DebugEvent.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\DebuggerAttached.cs">
+      <Link>Debugger\NetModels\DebuggerAttached.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\DebuggerInfo.cs">
+      <Link>Debugger\NetModels\DebuggerInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\EventType.cs">
+      <Link>Debugger\NetModels\EventType.cs</Link>
+    </Compile>
     <Compile Include="Debugger\DebuggerClient.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -56,10 +68,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Debugger\NetModels\DebugEvent.cs" />
-    <Compile Include="Debugger\NetModels\DebuggerAttached.cs" />
-    <Compile Include="Debugger\NetModels\DebuggerInfo.cs" />
-    <Compile Include="Debugger\NetModels\EventType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

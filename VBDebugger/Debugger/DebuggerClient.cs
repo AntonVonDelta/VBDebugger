@@ -38,8 +38,8 @@ namespace VBDebugger.Debugger
 
                 EnableKeepAlive();
 
-                await sendPacketModel(new DebuggerInfoT() { Name = "Testing" });
-                await readPacketModel<DebuggerAttachedT>();
+                await SendPacketModel(new DebuggerInfoT() { Name = "Testing" });
+                await ReadPacketModel<DebuggerAttachedT>();
 
                 return true;
             }
@@ -51,14 +51,14 @@ namespace VBDebugger.Debugger
             return false;
         }
 
-        private async Task<T> readPacketModel<T>() where T : class
+        private async Task<T> ReadPacketModel<T>() where T : class
         {
             byte[] packetData;
             T packet;
 
             try
             {
-                packetData = await readPacket();
+                packetData = await ReadPacket();
             }
             catch (Exception ex)
             {
@@ -77,13 +77,13 @@ namespace VBDebugger.Debugger
 
             return packet;
         }
-        private async Task<byte[]> readPacket()
+        private async Task<byte[]> ReadPacket()
         {
-            byte[] packetSizeHeader = await readAllAsync(4);
+            byte[] packetSizeHeader = await ReadAllAsync(4);
             int packetSize = BitConverter.ToInt32(packetSizeHeader, 0);
-            return await readAllAsync(packetSize);
+            return await ReadAllAsync(packetSize);
         }
-        private async Task<byte[]> readAllAsync(int len)
+        private async Task<byte[]> ReadAllAsync(int len)
         {
             byte[] data = new byte[len];
             int total_sent_bytes = 0;
@@ -99,23 +99,18 @@ namespace VBDebugger.Debugger
         }
         private T DeserializeModel<T>(byte[] packetData) where T : class
         {
-            Verifier _verifier = new Verifier(new ByteBuffer(packetData), new Options());
+            var byteBuffer = new ByteBuffer(packetData);
 
             if (typeof(T) == typeof(DebuggerAttachedT))
             {
-                if (!DebuggerAttachedVerify.Verify(_verifier, 0)) return null;
+                if (!DebuggerAttached.VerifyDebuggerAttached(byteBuffer)) return null;
                 return (T)(object)DebuggerAttachedT.DeserializeFromBinary(packetData);
             }
-            //else if (typeof(T) == typeof(DebuggerAttachedT))
-            //{
-            //    if (!DebuggerAttachedVerify.Verify(_verifier, 0)) return null;
-            //    return (T)(object)DebuggerAttachedT.DeserializeFromBinary(packetData);
-            //}
 
             return null;
         }
 
-        private async Task<bool> sendPacketModel(object model)
+        private async Task<bool> SendPacketModel(object model)
         {
             byte[] data;
             int packetSize;
