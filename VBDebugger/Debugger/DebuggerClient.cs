@@ -68,7 +68,7 @@ namespace VBDebugger.Debugger
         {
             _currentStack = null;
 
-            return await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Pause });
+            return await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Resume });
         }
         public async Task<bool> StepOver()
         {
@@ -126,6 +126,8 @@ namespace VBDebugger.Debugger
             do
             {
                 int sent_bytes = await _stream.ReadAsync(data, total_sent_bytes, len - total_sent_bytes);
+
+                if (sent_bytes == 0) throw new Exception("Other endpoint signaled the end of stream");
 
                 total_sent_bytes += sent_bytes;
             } while (total_sent_bytes != len);
