@@ -17,10 +17,10 @@ namespace VBDebugger.Debugger
         private readonly TcpClient _client = new TcpClient();
         private readonly IPEndPoint _address;
         private readonly Action<string> _logger;
-
+        private StackDumpT _currentStack;
 
         public bool Attached => _client.Connected;
-
+        public StackDumpT CurrentStack => _currentStack;
 
         public DebuggerClient(IPEndPoint address, Action<string> logger)
         {
@@ -50,12 +50,39 @@ namespace VBDebugger.Debugger
 
             return false;
         }
-        public async Task Pause()
+
+        public async Task<bool> Pause()
         {
-            await SendPacketModel(new DebuggerInfoT() { Name = "Testing" });
+            bool result;
+            StackDumpT stackDump;
 
+            result = await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Pause });
+            if (!result) return false;
+
+            stackDump = await ReadPacketModel<StackDumpT>();
+            _currentStack = stackDump;
+
+            return stackDump != null;
         }
+        public async Task<bool> Resume()
+        {
+            _currentStack = null;
 
+            return await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Pause });
+        }
+        public async Task<bool> StepOver()
+        {
+            bool result;
+            StackDumpT stackDump;
+
+            result = await SendPacketModel(new DebugCommandT() { CommandType = CommandType.NextInstruction });
+            if (!result) return false;
+
+            stackDump = await ReadPacketModel<StackDumpT>();
+            _currentStack = stackDump;
+
+            return stackDump != null;
+        }
 
 
 
@@ -114,6 +141,11 @@ namespace VBDebugger.Debugger
                 if (!DebuggerAttached.VerifyDebuggerAttached(byteBuffer)) return null;
                 return (T)(object)DebuggerAttachedT.DeserializeFromBinary(packetData);
             }
+            else if (typeof(T) == typeof(StackDumpT))
+            {
+                if (!StackDump.VerifyStackDump(byteBuffer)) return null;
+                return (T)(object)StackDumpT.DeserializeFromBinary(packetData);
+            }
 
             return null;
         }
@@ -151,7 +183,7 @@ namespace VBDebugger.Debugger
             data = null;
 
             if (model is DebuggerInfoT castedModel1) data = castedModel1.SerializeToBinary();
-            else if (model is DebuggerInfoT castedModel2) data = castedModel2.SerializeToBinary();
+            else if (model is DebugCommandT castedModel2) data = castedModel2.SerializeToBinary();
             else return false;
 
             return true;
@@ -160,7 +192,7 @@ namespace VBDebugger.Debugger
         private void EnableKeepAlive()
         {
             var data = new byte[12];
-            
+
             Array.Copy(BitConverter.GetBytes(1), 0, data, 0, 4);
             Array.Copy(BitConverter.GetBytes(5000), 0, data, 4, 4);
             Array.Copy(BitConverter.GetBytes(5000), 0, data, 8, 4);

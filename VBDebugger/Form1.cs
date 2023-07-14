@@ -24,16 +24,21 @@ namespace VBDebugger
 
         private void AddLog(string message)
         {
-            txtOuput.Text = $"{message}\n{txtOuput.Text}";
+            txtOuput.Text = $"{txtOuput.Text}{message}\r\n";
         }
 
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            txtRemote.Text = Properties.Settings.Default.RemoteAddress;
+        }
 
         private async void btnAttachDebugger_Click(object sender, EventArgs e)
         {
             if (debugger != null && debugger.Attached) debugger.Dispose();
 
             btnAttachDebugger.Enabled = false;
+            Properties.Settings.Default.RemoteAddress = txtRemote.Text;
 
             try
             {
@@ -57,23 +62,63 @@ namespace VBDebugger
             }
         }
 
-        private void btnBreakContinue_Click(object sender, EventArgs e)
+        private async void btnBreak_Click(object sender, EventArgs e)
         {
-            if (debugger == null || debugger.Attached)
-            {
-                AddLog("No debugger attached");
-                return;
-            }
+            btnBreak.Enabled = false;
 
-            //debugger
+            try
+            {
+                if (debugger == null || !debugger.Attached)
+                {
+                    AddLog("No debugger attached");
+                    return;
+                }
+
+                await debugger.Pause();
+            }
+            finally
+            {
+                btnBreak.Enabled = true;
+            }
         }
 
-        private void btnStepOver_Click(object sender, EventArgs e)
+        private async void btnContinue_Click(object sender, EventArgs e)
         {
-            if (debugger == null || debugger.Attached)
+            btnContinue.Enabled = false;
+
+            try
             {
-                AddLog("No debugger attached");
-                return;
+                if (debugger == null || !debugger.Attached)
+                {
+                    AddLog("No debugger attached");
+                    return;
+                }
+
+                await debugger.Resume();
+            }
+            finally
+            {
+                btnContinue.Enabled = true;
+            }
+        }
+
+        private async void btnStepOver_Click(object sender, EventArgs e)
+        {
+            btnStepOver.Enabled = false;
+
+            try
+            {
+                if (debugger == null || !debugger.Attached)
+                {
+                    AddLog("No debugger attached");
+                    return;
+                }
+
+                await debugger.StepOver();
+            }
+            finally
+            {
+                btnStepOver.Enabled = true;
             }
         }
     }

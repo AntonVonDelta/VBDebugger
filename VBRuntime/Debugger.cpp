@@ -63,7 +63,10 @@ void Debugger::loop() {
 		}
 	} catch (std::exception ex) {}
 
-	// resume execution because the debugger has detached
+	// Resume execution after the debugger disconnects
+	try{
+		session->resume();
+	} catch (std::exception ex) {}
 
 	closeConnection();
 

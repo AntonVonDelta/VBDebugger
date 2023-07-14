@@ -155,6 +155,7 @@
     <None Include="Exports.def" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Breakpoint.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebuggerServer.h" />
     <ClInclude Include="ExecutionController.h" />

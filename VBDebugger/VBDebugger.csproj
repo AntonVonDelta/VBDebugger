@@ -55,17 +55,20 @@
     <Compile Include="..\Shared Models\Csharp\NetModels\DebugCommand.cs">
       <Link>Debugger\NetModels\DebugCommand.cs</Link>
     </Compile>
-    <Compile Include="..\Shared Models\Csharp\NetModels\DebugEvent.cs">
-      <Link>Debugger\NetModels\DebugEvent.cs</Link>
-    </Compile>
     <Compile Include="..\Shared Models\Csharp\NetModels\DebuggerAttached.cs">
       <Link>Debugger\NetModels\DebuggerAttached.cs</Link>
     </Compile>
     <Compile Include="..\Shared Models\Csharp\NetModels\DebuggerInfo.cs">
       <Link>Debugger\NetModels\DebuggerInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Shared Models\Csharp\NetModels\EventType.cs">
-      <Link>Debugger\NetModels\EventType.cs</Link>
+    <Compile Include="..\Shared Models\Csharp\NetModels\StackDump.cs">
+      <Link>Debugger\NetModels\StackDump.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\StackFrame.cs">
+      <Link>Debugger\NetModels\StackFrame.cs</Link>
+    </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\Variable.cs">
+      <Link>Debugger\NetModels\Variable.cs</Link>
     </Compile>
     <Compile Include="Debugger\DebuggerClient.cs" />
     <Compile Include="Form1.cs">

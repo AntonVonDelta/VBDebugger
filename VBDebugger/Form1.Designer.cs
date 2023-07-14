@@ -30,25 +30,26 @@ namespace VBDebugger
         private void InitializeComponent()
         {
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
-            this.tabViewBottom = new System.Windows.Forms.TabControl();
-            this.tabOutput = new System.Windows.Forms.TabPage();
-            this.tabLocals = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnContinue = new System.Windows.Forms.Button();
+            this.btnStepOver = new System.Windows.Forms.Button();
+            this.btnBreak = new System.Windows.Forms.Button();
             this.txtRemote = new System.Windows.Forms.TextBox();
             this.btnAttachDebugger = new System.Windows.Forms.Button();
             this.rtbSourceCode = new System.Windows.Forms.RichTextBox();
+            this.tabViewBottom = new System.Windows.Forms.TabControl();
+            this.tabOutput = new System.Windows.Forms.TabPage();
             this.txtOuput = new System.Windows.Forms.TextBox();
-            this.btnBreakContinue = new System.Windows.Forms.Button();
-            this.btnStepOver = new System.Windows.Forms.Button();
+            this.tabLocals = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
             this.mainSplitContainer.SuspendLayout();
-            this.tabViewBottom.SuspendLayout();
-            this.tabOutput.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.tabViewBottom.SuspendLayout();
+            this.tabOutput.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainSplitContainer
@@ -69,38 +70,6 @@ namespace VBDebugger
             this.mainSplitContainer.SplitterDistance = 398;
             this.mainSplitContainer.TabIndex = 1;
             // 
-            // tabViewBottom
-            // 
-            this.tabViewBottom.Controls.Add(this.tabOutput);
-            this.tabViewBottom.Controls.Add(this.tabLocals);
-            this.tabViewBottom.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabViewBottom.Location = new System.Drawing.Point(0, 0);
-            this.tabViewBottom.Name = "tabViewBottom";
-            this.tabViewBottom.SelectedIndex = 0;
-            this.tabViewBottom.Size = new System.Drawing.Size(1103, 326);
-            this.tabViewBottom.TabIndex = 0;
-            // 
-            // tabOutput
-            // 
-            this.tabOutput.Controls.Add(this.txtOuput);
-            this.tabOutput.Location = new System.Drawing.Point(4, 22);
-            this.tabOutput.Name = "tabOutput";
-            this.tabOutput.Padding = new System.Windows.Forms.Padding(3);
-            this.tabOutput.Size = new System.Drawing.Size(1095, 300);
-            this.tabOutput.TabIndex = 0;
-            this.tabOutput.Text = "Output";
-            this.tabOutput.UseVisualStyleBackColor = true;
-            // 
-            // tabLocals
-            // 
-            this.tabLocals.Location = new System.Drawing.Point(4, 22);
-            this.tabLocals.Name = "tabLocals";
-            this.tabLocals.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLocals.Size = new System.Drawing.Size(1095, 334);
-            this.tabLocals.TabIndex = 1;
-            this.tabLocals.Text = "Locals";
-            this.tabLocals.UseVisualStyleBackColor = true;
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 1;
@@ -118,8 +87,9 @@ namespace VBDebugger
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnContinue);
             this.panel1.Controls.Add(this.btnStepOver);
-            this.panel1.Controls.Add(this.btnBreakContinue);
+            this.panel1.Controls.Add(this.btnBreak);
             this.panel1.Controls.Add(this.txtRemote);
             this.panel1.Controls.Add(this.btnAttachDebugger);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -127,6 +97,36 @@ namespace VBDebugger
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1097, 34);
             this.panel1.TabIndex = 0;
+            // 
+            // btnContinue
+            // 
+            this.btnContinue.Location = new System.Drawing.Point(543, 8);
+            this.btnContinue.Name = "btnContinue";
+            this.btnContinue.Size = new System.Drawing.Size(71, 20);
+            this.btnContinue.TabIndex = 7;
+            this.btnContinue.Text = "Continue";
+            this.btnContinue.UseVisualStyleBackColor = true;
+            this.btnContinue.Click += new System.EventHandler(this.btnContinue_Click);
+            // 
+            // btnStepOver
+            // 
+            this.btnStepOver.Location = new System.Drawing.Point(620, 8);
+            this.btnStepOver.Name = "btnStepOver";
+            this.btnStepOver.Size = new System.Drawing.Size(104, 20);
+            this.btnStepOver.TabIndex = 6;
+            this.btnStepOver.Text = "Step Over";
+            this.btnStepOver.UseVisualStyleBackColor = true;
+            this.btnStepOver.Click += new System.EventHandler(this.btnStepOver_Click);
+            // 
+            // btnBreak
+            // 
+            this.btnBreak.Location = new System.Drawing.Point(464, 8);
+            this.btnBreak.Name = "btnBreak";
+            this.btnBreak.Size = new System.Drawing.Size(73, 20);
+            this.btnBreak.TabIndex = 5;
+            this.btnBreak.Text = "Break";
+            this.btnBreak.UseVisualStyleBackColor = true;
+            this.btnBreak.Click += new System.EventHandler(this.btnBreak_Click);
             // 
             // txtRemote
             // 
@@ -154,34 +154,47 @@ namespace VBDebugger
             this.rtbSourceCode.TabIndex = 1;
             this.rtbSourceCode.Text = "";
             // 
+            // tabViewBottom
+            // 
+            this.tabViewBottom.Controls.Add(this.tabOutput);
+            this.tabViewBottom.Controls.Add(this.tabLocals);
+            this.tabViewBottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabViewBottom.Location = new System.Drawing.Point(0, 0);
+            this.tabViewBottom.Name = "tabViewBottom";
+            this.tabViewBottom.SelectedIndex = 0;
+            this.tabViewBottom.Size = new System.Drawing.Size(1103, 326);
+            this.tabViewBottom.TabIndex = 0;
+            // 
+            // tabOutput
+            // 
+            this.tabOutput.Controls.Add(this.txtOuput);
+            this.tabOutput.Location = new System.Drawing.Point(4, 22);
+            this.tabOutput.Name = "tabOutput";
+            this.tabOutput.Padding = new System.Windows.Forms.Padding(3);
+            this.tabOutput.Size = new System.Drawing.Size(1095, 300);
+            this.tabOutput.TabIndex = 0;
+            this.tabOutput.Text = "Output";
+            this.tabOutput.UseVisualStyleBackColor = true;
+            // 
             // txtOuput
             // 
             this.txtOuput.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtOuput.Location = new System.Drawing.Point(3, 3);
             this.txtOuput.Multiline = true;
             this.txtOuput.Name = "txtOuput";
+            this.txtOuput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtOuput.Size = new System.Drawing.Size(1089, 294);
             this.txtOuput.TabIndex = 0;
             // 
-            // btnBreakContinue
+            // tabLocals
             // 
-            this.btnBreakContinue.Location = new System.Drawing.Point(475, 8);
-            this.btnBreakContinue.Name = "btnBreakContinue";
-            this.btnBreakContinue.Size = new System.Drawing.Size(117, 20);
-            this.btnBreakContinue.TabIndex = 5;
-            this.btnBreakContinue.Text = "Break/Continue";
-            this.btnBreakContinue.UseVisualStyleBackColor = true;
-            this.btnBreakContinue.Click += new System.EventHandler(this.btnBreakContinue_Click);
-            // 
-            // btnStepOver
-            // 
-            this.btnStepOver.Location = new System.Drawing.Point(598, 8);
-            this.btnStepOver.Name = "btnStepOver";
-            this.btnStepOver.Size = new System.Drawing.Size(104, 20);
-            this.btnStepOver.TabIndex = 6;
-            this.btnStepOver.Text = "Step Over";
-            this.btnStepOver.UseVisualStyleBackColor = true;
-            this.btnStepOver.Click += new System.EventHandler(this.btnStepOver_Click);
+            this.tabLocals.Location = new System.Drawing.Point(4, 22);
+            this.tabLocals.Name = "tabLocals";
+            this.tabLocals.Padding = new System.Windows.Forms.Padding(3);
+            this.tabLocals.Size = new System.Drawing.Size(1095, 300);
+            this.tabLocals.TabIndex = 1;
+            this.tabLocals.Text = "Locals";
+            this.tabLocals.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -191,16 +204,17 @@ namespace VBDebugger
             this.Controls.Add(this.mainSplitContainer);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.mainSplitContainer.Panel1.ResumeLayout(false);
             this.mainSplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).EndInit();
             this.mainSplitContainer.ResumeLayout(false);
-            this.tabViewBottom.ResumeLayout(false);
-            this.tabOutput.ResumeLayout(false);
-            this.tabOutput.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.tabViewBottom.ResumeLayout(false);
+            this.tabOutput.ResumeLayout(false);
+            this.tabOutput.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -218,7 +232,8 @@ namespace VBDebugger
         private System.Windows.Forms.RichTextBox rtbSourceCode;
         private System.Windows.Forms.TextBox txtOuput;
         private System.Windows.Forms.Button btnStepOver;
-        private System.Windows.Forms.Button btnBreakContinue;
+        private System.Windows.Forms.Button btnBreak;
+        private System.Windows.Forms.Button btnContinue;
     }
 }
 
