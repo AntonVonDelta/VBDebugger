@@ -70,7 +70,7 @@ bool ExecutionController::traceLog(SourceCodeReference& reference, std::vector<s
 
 		addMessage(message.str());
 	} else {
-		auto last_scope = execution_stack.front();
+		auto last_scope = execution_stack.back();
 
 		checkReferenceWithLiveScope(reference);
 
@@ -85,11 +85,11 @@ void ExecutionController::addMessage(std::string message) {
 }
 
 void ExecutionController::checkReferenceWithLiveScope(SourceCodeReference& reference) {
-	auto current_scope = execution_stack.front();
+	auto current_scope = execution_stack.back();
 	auto current_scope_name = current_scope.scope_reference.scope_name;
 	auto instruction_scope_name = reference.scope_name;
 
-	if (isReferencePartOfScope(current_scope, reference)) {
+	if (!isReferencePartOfScope(current_scope, reference)) {
 		std::ostringstream message;
 
 		message << "Current scope mismatch with current instruction's scope: ";
@@ -100,7 +100,7 @@ void ExecutionController::checkReferenceWithLiveScope(SourceCodeReference& refer
 }
 
 void ExecutionController::addLocalsToLiveScope(SourceCodeReference& reference, std::vector<std::string>& arguments) {
-	auto& current_scope = execution_stack.front();
+	auto& current_scope = execution_stack.back();
 
 	if (arguments.size() == 0) return;
 
@@ -126,7 +126,7 @@ void ExecutionController::addLocalsToLiveScope(SourceCodeReference& reference, s
 }
 
 bool ExecutionController::isReferencePartOfScope(const Scope& scope, const SourceCodeReference& reference) {
-	auto current_scope = execution_stack.front();
+	auto current_scope = execution_stack.back();
 	auto current_scope_name = current_scope.scope_reference.scope_name;
 	auto instruction_scope_name = reference.scope_name;
 
@@ -134,7 +134,7 @@ bool ExecutionController::isReferencePartOfScope(const Scope& scope, const Sourc
 }
 
 void ExecutionController::syncAndPopStack(SourceCodeReference& reference) {
-	auto current_scope = execution_stack.front();
+	auto current_scope = execution_stack.back();
 	int i;
 
 	// Search for possible matching scope

@@ -32,6 +32,7 @@ namespace VBDebugger
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.chkBreakOnException = new System.Windows.Forms.CheckBox();
             this.btnContinue = new System.Windows.Forms.Button();
             this.btnStepOver = new System.Windows.Forms.Button();
             this.btnBreak = new System.Windows.Forms.Button();
@@ -43,6 +44,10 @@ namespace VBDebugger
             this.txtOuput = new System.Windows.Forms.TextBox();
             this.tabLocals = new System.Windows.Forms.TabPage();
             this.tabStackFrames = new System.Windows.Forms.TabPage();
+            this.tblLayoutStackFrames = new System.Windows.Forms.TableLayoutPanel();
+            this.txtCurrentInstruction = new System.Windows.Forms.TextBox();
+            this.dgvStackFrames = new System.Windows.Forms.DataGridView();
+            this.txtStackMessages = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -51,6 +56,9 @@ namespace VBDebugger
             this.panel1.SuspendLayout();
             this.tabViewBottom.SuspendLayout();
             this.tabOutput.SuspendLayout();
+            this.tabStackFrames.SuspendLayout();
+            this.tblLayoutStackFrames.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).BeginInit();
             this.SuspendLayout();
             // 
             // mainSplitContainer
@@ -81,13 +89,14 @@ namespace VBDebugger
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1103, 398);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.chkBreakOnException);
             this.panel1.Controls.Add(this.btnContinue);
             this.panel1.Controls.Add(this.btnStepOver);
             this.panel1.Controls.Add(this.btnBreak);
@@ -96,12 +105,22 @@ namespace VBDebugger
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(3, 3);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1097, 34);
+            this.panel1.Size = new System.Drawing.Size(1097, 64);
             this.panel1.TabIndex = 0;
+            // 
+            // chkBreakOnException
+            // 
+            this.chkBreakOnException.AutoSize = true;
+            this.chkBreakOnException.Location = new System.Drawing.Point(543, 37);
+            this.chkBreakOnException.Name = "chkBreakOnException";
+            this.chkBreakOnException.Size = new System.Drawing.Size(118, 17);
+            this.chkBreakOnException.TabIndex = 8;
+            this.chkBreakOnException.Text = "Break on exception";
+            this.chkBreakOnException.UseVisualStyleBackColor = true;
             // 
             // btnContinue
             // 
-            this.btnContinue.Location = new System.Drawing.Point(543, 8);
+            this.btnContinue.Location = new System.Drawing.Point(464, 34);
             this.btnContinue.Name = "btnContinue";
             this.btnContinue.Size = new System.Drawing.Size(71, 20);
             this.btnContinue.TabIndex = 7;
@@ -111,7 +130,7 @@ namespace VBDebugger
             // 
             // btnStepOver
             // 
-            this.btnStepOver.Location = new System.Drawing.Point(620, 8);
+            this.btnStepOver.Location = new System.Drawing.Point(543, 8);
             this.btnStepOver.Name = "btnStepOver";
             this.btnStepOver.Size = new System.Drawing.Size(104, 20);
             this.btnStepOver.TabIndex = 6;
@@ -149,7 +168,7 @@ namespace VBDebugger
             // rtbSourceCode
             // 
             this.rtbSourceCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbSourceCode.Location = new System.Drawing.Point(3, 43);
+            this.rtbSourceCode.Location = new System.Drawing.Point(3, 73);
             this.rtbSourceCode.Name = "rtbSourceCode";
             this.rtbSourceCode.Size = new System.Drawing.Size(1097, 352);
             this.rtbSourceCode.TabIndex = 1;
@@ -200,12 +219,60 @@ namespace VBDebugger
             // 
             // tabStackFrames
             // 
+            this.tabStackFrames.Controls.Add(this.tblLayoutStackFrames);
             this.tabStackFrames.Location = new System.Drawing.Point(4, 22);
             this.tabStackFrames.Name = "tabStackFrames";
             this.tabStackFrames.Size = new System.Drawing.Size(1095, 300);
             this.tabStackFrames.TabIndex = 2;
             this.tabStackFrames.Text = "Stack Frames";
             this.tabStackFrames.UseVisualStyleBackColor = true;
+            // 
+            // tblLayoutStackFrames
+            // 
+            this.tblLayoutStackFrames.ColumnCount = 2;
+            this.tblLayoutStackFrames.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tblLayoutStackFrames.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 350F));
+            this.tblLayoutStackFrames.Controls.Add(this.txtCurrentInstruction, 0, 0);
+            this.tblLayoutStackFrames.Controls.Add(this.dgvStackFrames, 0, 1);
+            this.tblLayoutStackFrames.Controls.Add(this.txtStackMessages, 1, 0);
+            this.tblLayoutStackFrames.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tblLayoutStackFrames.Location = new System.Drawing.Point(0, 0);
+            this.tblLayoutStackFrames.Name = "tblLayoutStackFrames";
+            this.tblLayoutStackFrames.RowCount = 2;
+            this.tblLayoutStackFrames.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
+            this.tblLayoutStackFrames.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tblLayoutStackFrames.Size = new System.Drawing.Size(1095, 300);
+            this.tblLayoutStackFrames.TabIndex = 0;
+            // 
+            // txtCurrentInstruction
+            // 
+            this.txtCurrentInstruction.Location = new System.Drawing.Point(3, 3);
+            this.txtCurrentInstruction.Name = "txtCurrentInstruction";
+            this.txtCurrentInstruction.ReadOnly = true;
+            this.txtCurrentInstruction.Size = new System.Drawing.Size(485, 20);
+            this.txtCurrentInstruction.TabIndex = 0;
+            // 
+            // dgvStackFrames
+            // 
+            this.dgvStackFrames.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvStackFrames.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvStackFrames.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvStackFrames.Location = new System.Drawing.Point(3, 43);
+            this.dgvStackFrames.Name = "dgvStackFrames";
+            this.dgvStackFrames.RowHeadersVisible = false;
+            this.dgvStackFrames.Size = new System.Drawing.Size(739, 254);
+            this.dgvStackFrames.TabIndex = 1;
+            // 
+            // txtStackMessages
+            // 
+            this.txtStackMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtStackMessages.Location = new System.Drawing.Point(748, 3);
+            this.txtStackMessages.Multiline = true;
+            this.txtStackMessages.Name = "txtStackMessages";
+            this.txtStackMessages.ReadOnly = true;
+            this.tblLayoutStackFrames.SetRowSpan(this.txtStackMessages, 2);
+            this.txtStackMessages.Size = new System.Drawing.Size(344, 294);
+            this.txtStackMessages.TabIndex = 2;
             // 
             // Form1
             // 
@@ -226,6 +293,10 @@ namespace VBDebugger
             this.tabViewBottom.ResumeLayout(false);
             this.tabOutput.ResumeLayout(false);
             this.tabOutput.PerformLayout();
+            this.tabStackFrames.ResumeLayout(false);
+            this.tblLayoutStackFrames.ResumeLayout(false);
+            this.tblLayoutStackFrames.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -246,6 +317,11 @@ namespace VBDebugger
         private System.Windows.Forms.Button btnBreak;
         private System.Windows.Forms.Button btnContinue;
         private System.Windows.Forms.TabPage tabStackFrames;
+        private System.Windows.Forms.CheckBox chkBreakOnException;
+        private System.Windows.Forms.TableLayoutPanel tblLayoutStackFrames;
+        private System.Windows.Forms.TextBox txtCurrentInstruction;
+        private System.Windows.Forms.DataGridView dgvStackFrames;
+        private System.Windows.Forms.TextBox txtStackMessages;
     }
 }
 

@@ -17,10 +17,10 @@ namespace VBDebugger.Debugger
         private readonly TcpClient _client = new TcpClient();
         private readonly IPEndPoint _address;
         private readonly Action<string> _logger;
-        private StackDumpT _currentStack;
+        private StackDumpT _currentStackDump;
 
         public bool Attached => _client.Connected;
-        public StackDumpT CurrentStack => _currentStack;
+        public StackDumpT CurrentStackDump => _currentStackDump;
 
         public DebuggerClient(IPEndPoint address, Action<string> logger)
         {
@@ -60,13 +60,13 @@ namespace VBDebugger.Debugger
             if (!result) return false;
 
             stackDump = await ReadPacketModel<StackDumpT>();
-            _currentStack = stackDump;
+            _currentStackDump = stackDump;
 
             return stackDump != null;
         }
         public async Task<bool> Resume()
         {
-            _currentStack = null;
+            _currentStackDump = null;
 
             return await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Resume });
         }
@@ -79,7 +79,7 @@ namespace VBDebugger.Debugger
             if (!result) return false;
 
             stackDump = await ReadPacketModel<StackDumpT>();
-            _currentStack = stackDump;
+            _currentStackDump = stackDump;
 
             return stackDump != null;
         }

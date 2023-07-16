@@ -1,6 +1,6 @@
 LIBRARY VBRuntime
 EXPORTS
 Init
-Log
 EnterProcedure
+Log
 LeaveProcedure

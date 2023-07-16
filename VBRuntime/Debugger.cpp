@@ -4,9 +4,12 @@
 
 NetModels::StackDumpT generateStackDumpModel(ExecutionController* session);
 template<typename T, typename U> std::unique_ptr<T> map(const U&) {
-	static_assert(true, "A mapping was not defined");
+	static_assert(false, "A mapping was not defined");
 	return nullptr;
 }
+template<>
+std::unique_ptr<NetModels::SourceCodeReferenceT> map(const SourceCodeReference& reference);
+
 
 Debugger::Debugger(SOCKET socket) {
 	this->socket = socket;
@@ -136,6 +139,7 @@ NetModels::StackDumpT generateStackDumpModel(ExecutionController* session) {
 	return result;
 }
 
+template<>
 std::unique_ptr<NetModels::SourceCodeReferenceT> map(const SourceCodeReference& reference) {
 	std::unique_ptr<NetModels::SourceCodeReferenceT> result = std::make_unique< NetModels::SourceCodeReferenceT>();
 
@@ -145,5 +149,3 @@ std::unique_ptr<NetModels::SourceCodeReferenceT> map(const SourceCodeReference& 
 
 	return result;
 }
-
-

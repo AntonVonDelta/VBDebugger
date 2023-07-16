@@ -10,16 +10,20 @@ using System.Windows.Forms;
 using VBDebugger.Debugger;
 using System.Net;
 using System.Text.RegularExpressions;
+using VBDebugger.Subviews;
 
 namespace VBDebugger
 {
     public partial class Form1 : Form
     {
-        DebuggerClient debugger;
+        private DebuggerClient _debugger;
+        private readonly StackView _stackView;
 
         public Form1()
         {
             InitializeComponent();
+
+            _stackView = new StackView(dgvStackFrames, txtCurrentInstruction, txtStackMessages);
         }
 
         private void AddLog(string message)
@@ -33,9 +37,21 @@ namespace VBDebugger
             txtRemote.Text = Properties.Settings.Default.RemoteAddress;
         }
 
+        private void LoadCurrentStackDump()
+        {
+            var stackDump = _debugger.CurrentStackDump;
+
+            _stackView.LoadStackFrames(stackDump);
+        }
+        private void UnloadCurrentStackDump()
+        {
+            _stackView.Clear();
+        }
+
+
         private async void btnAttachDebugger_Click(object sender, EventArgs e)
         {
-            if (debugger != null && debugger.Attached) debugger.Dispose();
+            if (_debugger != null && _debugger.Attached) _debugger.Dispose();
 
             btnAttachDebugger.Enabled = false;
             Properties.Settings.Default.RemoteAddress = txtRemote.Text;
@@ -46,9 +62,9 @@ namespace VBDebugger
                 var addressParts = completeAddress.Split(':');
                 var endpoint = new IPEndPoint(IPAddress.Parse(addressParts[0]), int.Parse(addressParts[1]));
 
-                debugger = new DebuggerClient(endpoint, (string message) => AddLog(message));
+                _debugger = new DebuggerClient(endpoint, (string message) => AddLog(message));
 
-                await debugger.Attach();
+                await _debugger.Attach();
 
                 AddLog($"Attached to {endpoint}");
             }
@@ -68,13 +84,14 @@ namespace VBDebugger
 
             try
             {
-                if (debugger == null || !debugger.Attached)
+                if (_debugger == null || !_debugger.Attached)
                 {
                     AddLog("No debugger attached");
                     return;
                 }
 
-                await debugger.Pause();
+                if (await _debugger.Pause())
+                    LoadCurrentStackDump();
             }
             finally
             {
@@ -86,15 +103,17 @@ namespace VBDebugger
         {
             btnContinue.Enabled = false;
 
+            UnloadCurrentStackDump();
+
             try
             {
-                if (debugger == null || !debugger.Attached)
+                if (_debugger == null || !_debugger.Attached)
                 {
                     AddLog("No debugger attached");
                     return;
                 }
 
-                await debugger.Resume();
+                await _debugger.Resume();
             }
             finally
             {
@@ -108,13 +127,14 @@ namespace VBDebugger
 
             try
             {
-                if (debugger == null || !debugger.Attached)
+                if (_debugger == null || !_debugger.Attached)
                 {
                     AddLog("No debugger attached");
                     return;
                 }
 
-                await debugger.StepOver();
+                if (await _debugger.StepOver())
+                    LoadCurrentStackDump();
             }
             finally
             {
