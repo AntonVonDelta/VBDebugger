@@ -7,6 +7,7 @@
 
 using namespace std;
 
+HINSTANCE dllInstance;
 DebuggerServer debugger_server(5050);
 ExecutionController execution_controller;
 std::unique_ptr<Debugger> debugger;
@@ -58,4 +59,48 @@ void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int lin
 	OutputDebugStringA("LeaveProcedure\n");
 
 	execution_controller.traceLeaveProcedure(reference);
+}
+
+
+BOOL WINAPI DllMain(
+	HINSTANCE hinstDLL,  // handle to DLL module
+	DWORD fdwReason,     // reason for calling function
+	LPVOID lpvReserved)  // reserved
+{
+	dllInstance = hinstDLL;
+
+	switch (fdwReason) {
+		case DLL_PROCESS_ATTACH:
+			// Initialize once for each new process.
+			// Return FALSE to fail DLL load.
+			OutputDebugStringA("DLL_PROCESS_ATTACH");
+
+			break;
+
+		case DLL_THREAD_ATTACH:
+			// Do thread-specific initialization.
+			OutputDebugStringA("DLL_THREAD_ATTACH");
+
+			break;
+
+		case DLL_THREAD_DETACH:
+			// Do thread-specific cleanup.
+			OutputDebugStringA("DLL_THREAD_DETACH");
+
+			break;
+
+		case DLL_PROCESS_DETACH:
+
+			if (lpvReserved != nullptr) {
+				OutputDebugStringA("DLL_PROCESS_DETACH termination");
+
+				break; // do not do cleanup if process termination scenario
+			}
+
+			OutputDebugStringA("DLL_PROCESS_DETACH normal");
+
+			// Perform any necessary cleanup.
+			break;
+	}
+	return TRUE;  // Successful DLL_PROCESS_ATTACH.
 }
