@@ -79,17 +79,11 @@ namespace VBDebugger.Subviews
 
                 _stackFramesViewSource.Add(newFrame);
             }
-
-            if (previouslySelectedFrame != null)
+            
+            // Select most recent stack
+            if (_stackFramesView.Rows.Count != 0)
             {
-                int foundIndex = _stackFramesViewSource
-                    .Select((el, i) => new { Stack = el, Index = i })
-                    .Where(el => el.Stack.Frame == previouslySelectedFrame.Frame)
-                    .Select(el => el.Index)
-                    .FirstOrDefault();
-
-                _stackFramesView.ClearSelection();
-                _stackFramesView.Rows[foundIndex].Selected = true;
+                _stackFramesView.Rows[_stackFramesView.Rows.Count - 1].Selected = true;
             }
         }
 
