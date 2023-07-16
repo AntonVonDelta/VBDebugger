@@ -36,18 +36,18 @@ void run() {
 void run2() {
 	int i = 0;
 
-	EnterProcedure("test", "run2", __LINE__, "none");
+	EnterProcedure("test", "run2", __LINE__, "i,none");
 
 	while (true) {
 		i++;
 
 		cout << "before breakpoint " << endl;
 
-		Log("test", "run2", __LINE__, "none");
+		Log("test", "run2", __LINE__, "i,none");
 		cout << "the instruction at " << i << endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-		Log("test", "run2", __LINE__, "none");
+		Log("test", "run2", __LINE__, "i,none");
 		cout << "the instruction at " << i << endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
@@ -65,12 +65,12 @@ void run3(int passed) {
 	string password = "secret";
 	char buffer[100];
 
-	EnterProcedure("test", "run3", __LINE__, password.c_str());
+	EnterProcedure("test", "run3", __LINE__, (std::string("password,") + password).c_str());
 
 	Log("test", "run3", __LINE__, "");
 	_itoa_s(passed, buffer, 10);
 
-	Log("test", "run3", __LINE__, buffer);
+	Log("test", "run3", __LINE__, (std::string("passed,") + buffer).c_str());
 	cout << "passed: " << passed << endl;
 
 

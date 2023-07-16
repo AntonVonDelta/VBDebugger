@@ -49,7 +49,7 @@ namespace VBDebugger
         {
             InitializeComponent();
 
-            _stackView = new StackView(dgvStackFrames, txtCurrentInstruction, txtStackMessages);
+            _stackView = new StackView(dgvStackFrames, dgvLocals, txtCurrentInstruction, txtStackMessages);
         }
 
 

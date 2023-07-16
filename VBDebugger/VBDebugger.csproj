@@ -61,6 +61,9 @@
     <Compile Include="..\Shared Models\Csharp\NetModels\DebuggerInfo.cs">
       <Link>Debugger\NetModels\DebuggerInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Shared Models\Csharp\NetModels\SourceCodeReference.cs">
+      <Link>Debugger\NetModels\SourceCodeReference.cs</Link>
+    </Compile>
     <Compile Include="..\Shared Models\Csharp\NetModels\StackDump.cs">
       <Link>Debugger\NetModels\StackDump.cs</Link>
     </Compile>
@@ -71,7 +74,6 @@
       <Link>Debugger\NetModels\Variable.cs</Link>
     </Compile>
     <Compile Include="Debugger\DebuggerClient.cs" />
-    <Compile Include="Debugger\NetModels\SourceCodeReference.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

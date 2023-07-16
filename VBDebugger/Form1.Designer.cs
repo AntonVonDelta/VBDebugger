@@ -42,12 +42,13 @@ namespace VBDebugger
             this.tabViewBottom = new System.Windows.Forms.TabControl();
             this.tabOutput = new System.Windows.Forms.TabPage();
             this.txtOuput = new System.Windows.Forms.TextBox();
-            this.tabLocals = new System.Windows.Forms.TabPage();
+            this.tabStackMessages = new System.Windows.Forms.TabPage();
+            this.txtStackMessages = new System.Windows.Forms.TextBox();
             this.tabStackFrames = new System.Windows.Forms.TabPage();
             this.tblLayoutStackFrames = new System.Windows.Forms.TableLayoutPanel();
             this.txtCurrentInstruction = new System.Windows.Forms.TextBox();
             this.dgvStackFrames = new System.Windows.Forms.DataGridView();
-            this.txtStackMessages = new System.Windows.Forms.TextBox();
+            this.dgvLocals = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -56,9 +57,11 @@ namespace VBDebugger
             this.panel1.SuspendLayout();
             this.tabViewBottom.SuspendLayout();
             this.tabOutput.SuspendLayout();
+            this.tabStackMessages.SuspendLayout();
             this.tabStackFrames.SuspendLayout();
             this.tblLayoutStackFrames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLocals)).BeginInit();
             this.SuspendLayout();
             // 
             // mainSplitContainer
@@ -177,7 +180,7 @@ namespace VBDebugger
             // tabViewBottom
             // 
             this.tabViewBottom.Controls.Add(this.tabOutput);
-            this.tabViewBottom.Controls.Add(this.tabLocals);
+            this.tabViewBottom.Controls.Add(this.tabStackMessages);
             this.tabViewBottom.Controls.Add(this.tabStackFrames);
             this.tabViewBottom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabViewBottom.Location = new System.Drawing.Point(0, 0);
@@ -208,15 +211,26 @@ namespace VBDebugger
             this.txtOuput.Size = new System.Drawing.Size(1089, 294);
             this.txtOuput.TabIndex = 0;
             // 
-            // tabLocals
+            // tabStackMessages
             // 
-            this.tabLocals.Location = new System.Drawing.Point(4, 22);
-            this.tabLocals.Name = "tabLocals";
-            this.tabLocals.Padding = new System.Windows.Forms.Padding(3);
-            this.tabLocals.Size = new System.Drawing.Size(1095, 300);
-            this.tabLocals.TabIndex = 1;
-            this.tabLocals.Text = "Locals";
-            this.tabLocals.UseVisualStyleBackColor = true;
+            this.tabStackMessages.Controls.Add(this.txtStackMessages);
+            this.tabStackMessages.Location = new System.Drawing.Point(4, 22);
+            this.tabStackMessages.Name = "tabStackMessages";
+            this.tabStackMessages.Padding = new System.Windows.Forms.Padding(3);
+            this.tabStackMessages.Size = new System.Drawing.Size(1095, 300);
+            this.tabStackMessages.TabIndex = 1;
+            this.tabStackMessages.Text = "Stack Messages";
+            this.tabStackMessages.UseVisualStyleBackColor = true;
+            // 
+            // txtStackMessages
+            // 
+            this.txtStackMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtStackMessages.Location = new System.Drawing.Point(3, 3);
+            this.txtStackMessages.Multiline = true;
+            this.txtStackMessages.Name = "txtStackMessages";
+            this.txtStackMessages.ReadOnly = true;
+            this.txtStackMessages.Size = new System.Drawing.Size(1089, 294);
+            this.txtStackMessages.TabIndex = 3;
             // 
             // tabStackFrames
             // 
@@ -232,16 +246,16 @@ namespace VBDebugger
             // 
             this.tblLayoutStackFrames.ColumnCount = 2;
             this.tblLayoutStackFrames.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblLayoutStackFrames.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 350F));
+            this.tblLayoutStackFrames.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 450F));
             this.tblLayoutStackFrames.Controls.Add(this.txtCurrentInstruction, 0, 0);
             this.tblLayoutStackFrames.Controls.Add(this.dgvStackFrames, 0, 1);
-            this.tblLayoutStackFrames.Controls.Add(this.txtStackMessages, 1, 0);
+            this.tblLayoutStackFrames.Controls.Add(this.dgvLocals, 1, 0);
             this.tblLayoutStackFrames.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tblLayoutStackFrames.Location = new System.Drawing.Point(0, 0);
             this.tblLayoutStackFrames.Name = "tblLayoutStackFrames";
-            this.tblLayoutStackFrames.RowCount = 2;
+            this.tblLayoutStackFrames.RowCount = 1;
             this.tblLayoutStackFrames.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 40F));
-            this.tblLayoutStackFrames.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tblLayoutStackFrames.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblLayoutStackFrames.Size = new System.Drawing.Size(1095, 300);
             this.tblLayoutStackFrames.TabIndex = 0;
             // 
@@ -255,25 +269,31 @@ namespace VBDebugger
             // 
             // dgvStackFrames
             // 
+            this.dgvStackFrames.AllowUserToAddRows = false;
             this.dgvStackFrames.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.dgvStackFrames.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvStackFrames.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvStackFrames.Location = new System.Drawing.Point(3, 43);
             this.dgvStackFrames.Name = "dgvStackFrames";
+            this.dgvStackFrames.ReadOnly = true;
             this.dgvStackFrames.RowHeadersVisible = false;
-            this.dgvStackFrames.Size = new System.Drawing.Size(739, 254);
+            this.dgvStackFrames.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dgvStackFrames.Size = new System.Drawing.Size(639, 254);
             this.dgvStackFrames.TabIndex = 1;
             // 
-            // txtStackMessages
+            // dgvLocals
             // 
-            this.txtStackMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtStackMessages.Location = new System.Drawing.Point(748, 3);
-            this.txtStackMessages.Multiline = true;
-            this.txtStackMessages.Name = "txtStackMessages";
-            this.txtStackMessages.ReadOnly = true;
-            this.tblLayoutStackFrames.SetRowSpan(this.txtStackMessages, 2);
-            this.txtStackMessages.Size = new System.Drawing.Size(344, 294);
-            this.txtStackMessages.TabIndex = 2;
+            this.dgvLocals.AllowUserToAddRows = false;
+            this.dgvLocals.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dgvLocals.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvLocals.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvLocals.Location = new System.Drawing.Point(648, 3);
+            this.dgvLocals.Name = "dgvLocals";
+            this.dgvLocals.ReadOnly = true;
+            this.dgvLocals.RowHeadersVisible = false;
+            this.tblLayoutStackFrames.SetRowSpan(this.dgvLocals, 2);
+            this.dgvLocals.Size = new System.Drawing.Size(444, 294);
+            this.dgvLocals.TabIndex = 3;
             // 
             // Form1
             // 
@@ -294,10 +314,13 @@ namespace VBDebugger
             this.tabViewBottom.ResumeLayout(false);
             this.tabOutput.ResumeLayout(false);
             this.tabOutput.PerformLayout();
+            this.tabStackMessages.ResumeLayout(false);
+            this.tabStackMessages.PerformLayout();
             this.tabStackFrames.ResumeLayout(false);
             this.tblLayoutStackFrames.ResumeLayout(false);
             this.tblLayoutStackFrames.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvLocals)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -307,7 +330,7 @@ namespace VBDebugger
         private System.Windows.Forms.SplitContainer mainSplitContainer;
         private System.Windows.Forms.TabControl tabViewBottom;
         private System.Windows.Forms.TabPage tabOutput;
-        private System.Windows.Forms.TabPage tabLocals;
+        private System.Windows.Forms.TabPage tabStackMessages;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox txtRemote;
@@ -322,6 +345,7 @@ namespace VBDebugger
         private System.Windows.Forms.TableLayoutPanel tblLayoutStackFrames;
         private System.Windows.Forms.TextBox txtCurrentInstruction;
         private System.Windows.Forms.DataGridView dgvStackFrames;
+        private System.Windows.Forms.DataGridView dgvLocals;
         private System.Windows.Forms.TextBox txtStackMessages;
     }
 }

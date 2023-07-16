@@ -4,8 +4,14 @@
 #include <iostream>
 #include <memory>
 #include <functional>
+#include <string>
+#include <vector>
+#include <regex>
 
 using namespace std;
+
+std::vector<std::string> deserializeArguments(std::string data);
+
 
 HINSTANCE dllInstance;
 DebuggerServer debugger_server(5050);
@@ -34,7 +40,7 @@ void WINAPI EnterProcedure(const char* filename, const char* scope_name, int lin
 
 	OutputDebugStringA("EnterProcedure\n");
 
-	execution_controller.traceEnterProcedure(reference, { "var", arguments });
+	execution_controller.traceEnterProcedure(reference, deserializeArguments(arguments));
 }
 
 void WINAPI Log(const char* filename, const char* scope_name, int line_number, const char* arguments) {
@@ -46,7 +52,7 @@ void WINAPI Log(const char* filename, const char* scope_name, int line_number, c
 
 	//OutputDebugStringA("Log\n");
 
-	execution_controller.traceLog(reference, { "var", arguments });
+	execution_controller.traceLog(reference, deserializeArguments(arguments));
 }
 
 void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int line_number) {
@@ -60,6 +66,35 @@ void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int lin
 
 	execution_controller.traceLeaveProcedure(reference);
 }
+
+std::vector<std::string> deserializeArguments(std::string data) {
+	std::vector<std::string> result;
+	std::string temp_value = "";
+	bool previousCharWasEscape = false;
+
+	for (const auto& el : data) {
+		// Use flag to escape forward slashes
+		if (el == '\\') {
+			if (previousCharWasEscape) {
+				// Previous slash escaped this one
+				result.push_back(temp_value);
+			}
+
+			previousCharWasEscape = !previousCharWasEscape;
+		} else if (el == ',' && !previousCharWasEscape) {
+			result.push_back(temp_value);
+			temp_value.clear();
+		} else {
+			temp_value += el;
+		}
+	}
+
+	if(temp_value.size()!=0)
+		result.push_back(temp_value);
+
+	return result;
+}
+
 
 
 BOOL WINAPI DllMain(
