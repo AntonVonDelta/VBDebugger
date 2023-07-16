@@ -45,9 +45,11 @@ void run2() {
 
 		Log("test", "run2", __LINE__, "none");
 		cout << "the instruction at " << i << endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		Log("test", "run2", __LINE__, "none");
 		cout << "the instruction at " << i << endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
 		Log("test", "run2", __LINE__, "");
 		run3(i);

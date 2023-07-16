@@ -16,8 +16,34 @@ namespace VBDebugger
 {
     public partial class Form1 : Form
     {
+        enum State
+        {
+            None,
+            ChangingSettings,
+            IntroAttachToRemote,
+            SavingSettings,
+
+            AttachingDebugger,
+            RedirectAttachSuccess,  // Non-flow states (used only for bridging over the next flow) 
+            RedirectAttachFailed,   // Non-flow states (used only for bridging over the next flow)
+
+            IntroPausingExecution,
+            RedirectPausedExecution,
+
+            IntroResumingExecution,
+            RedirectResumedExecution,
+
+            IntroSteppingOver,
+            RedirectSteppedOver,
+
+            RedirectDebuggingFailed,
+        }
+
+        private State _state = State.None;
         private DebuggerClient _debugger;
         private readonly StackView _stackView;
+
+
 
         public Form1()
         {
@@ -26,15 +52,16 @@ namespace VBDebugger
             _stackView = new StackView(dgvStackFrames, txtCurrentInstruction, txtStackMessages);
         }
 
+
         private void AddLog(string message)
         {
             txtOuput.Text = $"{txtOuput.Text}{message}\r\n";
         }
 
 
-        private void Form1_Load(object sender, EventArgs e)
+        private async void Form1_Load(object sender, EventArgs e)
         {
-            txtRemote.Text = Properties.Settings.Default.RemoteAddress;
+            await NextFlow();
         }
 
         private void LoadCurrentStackDump()
@@ -51,36 +78,13 @@ namespace VBDebugger
 
         private async void btnAttachDebugger_Click(object sender, EventArgs e)
         {
-            if (_debugger != null && _debugger.Attached) _debugger.Dispose();
-
-            btnAttachDebugger.Enabled = false;
-            Properties.Settings.Default.RemoteAddress = txtRemote.Text;
-
-            try
-            {
-                var completeAddress = txtRemote.Text;
-                var addressParts = completeAddress.Split(':');
-                var endpoint = new IPEndPoint(IPAddress.Parse(addressParts[0]), int.Parse(addressParts[1]));
-
-                _debugger = new DebuggerClient(endpoint, (string message) => AddLog(message));
-
-                await _debugger.Attach();
-
-                AddLog($"Attached to {endpoint}");
-            }
-            catch (Exception ex)
-            {
-                AddLog(ex.Message);
-            }
-            finally
-            {
-                btnAttachDebugger.Enabled = true;
-            }
+            UpdateState(State.IntroAttachToRemote);
+            await NextFlow();
         }
 
         private async void btnBreak_Click(object sender, EventArgs e)
         {
-            btnBreak.Enabled = false;
+            UpdateState(State.IntroPausingExecution);
 
             try
             {
@@ -91,17 +95,28 @@ namespace VBDebugger
                 }
 
                 if (await _debugger.Pause())
+                {
                     LoadCurrentStackDump();
+                    UpdateState(State.RedirectPausedExecution);
+                }
+                else
+                {
+                    UpdateState(State.RedirectDebuggingFailed);
+                }
             }
-            finally
+            catch (Exception ex)
             {
-                btnBreak.Enabled = true;
+                AddLog(ex.Message);
+
+                UpdateState(State.RedirectDebuggingFailed);
             }
+
+            await NextFlow();
         }
 
         private async void btnContinue_Click(object sender, EventArgs e)
         {
-            btnContinue.Enabled = false;
+            UpdateState(State.IntroResumingExecution);
 
             UnloadCurrentStackDump();
 
@@ -113,17 +128,23 @@ namespace VBDebugger
                     return;
                 }
 
-                await _debugger.Resume();
+                if (await _debugger.Resume())
+                    UpdateState(State.RedirectResumedExecution);
+                else UpdateState(State.RedirectDebuggingFailed);
             }
-            finally
+            catch (Exception ex)
             {
-                btnContinue.Enabled = true;
+                AddLog(ex.Message);
+
+                UpdateState(State.RedirectDebuggingFailed);
             }
+
+            await NextFlow();
         }
 
         private async void btnStepOver_Click(object sender, EventArgs e)
         {
-            btnStepOver.Enabled = false;
+            UpdateState(State.IntroSteppingOver);
 
             try
             {
@@ -134,12 +155,23 @@ namespace VBDebugger
                 }
 
                 if (await _debugger.StepOver())
+                {
                     LoadCurrentStackDump();
+                    UpdateState(State.RedirectSteppedOver);
+                }
+                else
+                {
+                    UpdateState(State.RedirectDebuggingFailed);
+                }
             }
-            finally
+            catch (Exception ex)
             {
-                btnStepOver.Enabled = true;
+                AddLog(ex.Message);
+
+                UpdateState(State.RedirectDebuggingFailed);
             }
+
+            await NextFlow();
         }
     }
 }

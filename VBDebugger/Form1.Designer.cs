@@ -203,6 +203,7 @@ namespace VBDebugger
             this.txtOuput.Location = new System.Drawing.Point(3, 3);
             this.txtOuput.Multiline = true;
             this.txtOuput.Name = "txtOuput";
+            this.txtOuput.ReadOnly = true;
             this.txtOuput.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.txtOuput.Size = new System.Drawing.Size(1089, 294);
             this.txtOuput.TabIndex = 0;
