@@ -3,7 +3,10 @@
 #include <exception>
 
 NetModels::StackDumpT generateStackDumpModel(ExecutionController* session);
-
+template<typename T, typename U> std::unique_ptr<T> map(const U&) {
+	static_assert(true, "A mapping was not defined");
+	return nullptr;
+}
 
 Debugger::Debugger(SOCKET socket) {
 	this->socket = socket;
@@ -64,7 +67,7 @@ void Debugger::loop() {
 	} catch (std::exception ex) {}
 
 	// Resume execution after the debugger disconnects
-	try{
+	try {
 		session->resume();
 	} catch (std::exception ex) {}
 
@@ -103,15 +106,16 @@ void Debugger::closeConnection() {
 
 NetModels::StackDumpT generateStackDumpModel(ExecutionController* session) {
 	NetModels::StackDumpT result;
-	auto stacks = session->getStack();
+	auto frames = session->getStack();
+	auto current_instruction = session->getCurrentInstruction();
 	auto message = session->getMessages();
 
-	for (const auto& stack_frame : stacks) {
+	result.curent_instruction = map<NetModels::SourceCodeReferenceT>(current_instruction);
+
+	for (const auto& stack_frame : frames) {
 		std::unique_ptr<NetModels::StackFrameT> stack_frame_model = std::make_unique< NetModels::StackFrameT>();
 
-		stack_frame_model->filename = stack_frame.reference.filename;
-		stack_frame_model->scope_name = stack_frame.reference.scope_name;
-		stack_frame_model->line_number = stack_frame.reference.line_number;
+		stack_frame_model->reference = map<NetModels::SourceCodeReferenceT>(stack_frame.scope_reference);
 
 		for (const auto& local : stack_frame.locals) {
 			std::unique_ptr<NetModels::VariableT> local_model = std::make_unique< NetModels::VariableT>();
@@ -128,6 +132,16 @@ NetModels::StackDumpT generateStackDumpModel(ExecutionController* session) {
 	for (const auto& message : session->getMessages()) {
 		result.messages.push_back(message);
 	}
+
+	return result;
+}
+
+std::unique_ptr<NetModels::SourceCodeReferenceT> map(const SourceCodeReference& reference) {
+	std::unique_ptr<NetModels::SourceCodeReferenceT> result = std::make_unique< NetModels::SourceCodeReferenceT>();
+
+	result->filename = reference.filename;
+	result->scope_name = reference.scope_name;
+	result->line_number = reference.line_number;
 
 	return result;
 }

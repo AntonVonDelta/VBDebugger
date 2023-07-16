@@ -19,42 +19,22 @@ public struct StackFrame : IFlatbufferObject
   public void __init(int _i, ByteBuffer _bb) { __p = new Table(_i, _bb); }
   public StackFrame __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public string Filename { get { int o = __p.__offset(4); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
-#if ENABLE_SPAN_T
-  public Span<byte> GetFilenameBytes() { return __p.__vector_as_span<byte>(4, 1); }
-#else
-  public ArraySegment<byte>? GetFilenameBytes() { return __p.__vector_as_arraysegment(4); }
-#endif
-  public byte[] GetFilenameArray() { return __p.__vector_as_array<byte>(4); }
-  public string ScopeName { get { int o = __p.__offset(6); return o != 0 ? __p.__string(o + __p.bb_pos) : null; } }
-#if ENABLE_SPAN_T
-  public Span<byte> GetScopeNameBytes() { return __p.__vector_as_span<byte>(6, 1); }
-#else
-  public ArraySegment<byte>? GetScopeNameBytes() { return __p.__vector_as_arraysegment(6); }
-#endif
-  public byte[] GetScopeNameArray() { return __p.__vector_as_array<byte>(6); }
-  public int LineNumber { get { int o = __p.__offset(8); return o != 0 ? __p.bb.GetInt(o + __p.bb_pos) : (int)0; } }
-  public NetModels.Variable? Locals(int j) { int o = __p.__offset(10); return o != 0 ? (NetModels.Variable?)(new NetModels.Variable()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
-  public int LocalsLength { get { int o = __p.__offset(10); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public NetModels.SourceCodeReference? Reference { get { int o = __p.__offset(4); return o != 0 ? (NetModels.SourceCodeReference?)(new NetModels.SourceCodeReference()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
+  public NetModels.Variable? Locals(int j) { int o = __p.__offset(6); return o != 0 ? (NetModels.Variable?)(new NetModels.Variable()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
+  public int LocalsLength { get { int o = __p.__offset(6); return o != 0 ? __p.__vector_len(o) : 0; } }
 
   public static Offset<NetModels.StackFrame> CreateStackFrame(FlatBufferBuilder builder,
-      StringOffset filenameOffset = default(StringOffset),
-      StringOffset scope_nameOffset = default(StringOffset),
-      int line_number = 0,
+      Offset<NetModels.SourceCodeReference> referenceOffset = default(Offset<NetModels.SourceCodeReference>),
       VectorOffset localsOffset = default(VectorOffset)) {
-    builder.StartTable(4);
+    builder.StartTable(2);
     StackFrame.AddLocals(builder, localsOffset);
-    StackFrame.AddLineNumber(builder, line_number);
-    StackFrame.AddScopeName(builder, scope_nameOffset);
-    StackFrame.AddFilename(builder, filenameOffset);
+    StackFrame.AddReference(builder, referenceOffset);
     return StackFrame.EndStackFrame(builder);
   }
 
-  public static void StartStackFrame(FlatBufferBuilder builder) { builder.StartTable(4); }
-  public static void AddFilename(FlatBufferBuilder builder, StringOffset filenameOffset) { builder.AddOffset(0, filenameOffset.Value, 0); }
-  public static void AddScopeName(FlatBufferBuilder builder, StringOffset scopeNameOffset) { builder.AddOffset(1, scopeNameOffset.Value, 0); }
-  public static void AddLineNumber(FlatBufferBuilder builder, int lineNumber) { builder.AddInt(2, lineNumber, 0); }
-  public static void AddLocals(FlatBufferBuilder builder, VectorOffset localsOffset) { builder.AddOffset(3, localsOffset.Value, 0); }
+  public static void StartStackFrame(FlatBufferBuilder builder) { builder.StartTable(2); }
+  public static void AddReference(FlatBufferBuilder builder, Offset<NetModels.SourceCodeReference> referenceOffset) { builder.AddOffset(0, referenceOffset.Value, 0); }
+  public static void AddLocals(FlatBufferBuilder builder, VectorOffset localsOffset) { builder.AddOffset(1, localsOffset.Value, 0); }
   public static VectorOffset CreateLocalsVector(FlatBufferBuilder builder, Offset<NetModels.Variable>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static VectorOffset CreateLocalsVectorBlock(FlatBufferBuilder builder, Offset<NetModels.Variable>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateLocalsVectorBlock(FlatBufferBuilder builder, ArraySegment<Offset<NetModels.Variable>> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
@@ -70,16 +50,13 @@ public struct StackFrame : IFlatbufferObject
     return _o;
   }
   public void UnPackTo(StackFrameT _o) {
-    _o.Filename = this.Filename;
-    _o.ScopeName = this.ScopeName;
-    _o.LineNumber = this.LineNumber;
+    _o.Reference = this.Reference.HasValue ? this.Reference.Value.UnPack() : null;
     _o.Locals = new List<NetModels.VariableT>();
     for (var _j = 0; _j < this.LocalsLength; ++_j) {_o.Locals.Add(this.Locals(_j).HasValue ? this.Locals(_j).Value.UnPack() : null);}
   }
   public static Offset<NetModels.StackFrame> Pack(FlatBufferBuilder builder, StackFrameT _o) {
     if (_o == null) return default(Offset<NetModels.StackFrame>);
-    var _filename = _o.Filename == null ? default(StringOffset) : builder.CreateString(_o.Filename);
-    var _scope_name = _o.ScopeName == null ? default(StringOffset) : builder.CreateString(_o.ScopeName);
+    var _reference = _o.Reference == null ? default(Offset<NetModels.SourceCodeReference>) : NetModels.SourceCodeReference.Pack(builder, _o.Reference);
     var _locals = default(VectorOffset);
     if (_o.Locals != null) {
       var __locals = new Offset<NetModels.Variable>[_o.Locals.Count];
@@ -88,24 +65,18 @@ public struct StackFrame : IFlatbufferObject
     }
     return CreateStackFrame(
       builder,
-      _filename,
-      _scope_name,
-      _o.LineNumber,
+      _reference,
       _locals);
   }
 }
 
 public class StackFrameT
 {
-  public string Filename { get; set; }
-  public string ScopeName { get; set; }
-  public int LineNumber { get; set; }
+  public NetModels.SourceCodeReferenceT Reference { get; set; }
   public List<NetModels.VariableT> Locals { get; set; }
 
   public StackFrameT() {
-    this.Filename = null;
-    this.ScopeName = null;
-    this.LineNumber = 0;
+    this.Reference = null;
     this.Locals = null;
   }
 }
@@ -116,10 +87,8 @@ static public class StackFrameVerify
   static public bool Verify(Google.FlatBuffers.Verifier verifier, uint tablePos)
   {
     return verifier.VerifyTableStart(tablePos)
-      && verifier.VerifyString(tablePos, 4 /*Filename*/, false)
-      && verifier.VerifyString(tablePos, 6 /*ScopeName*/, false)
-      && verifier.VerifyField(tablePos, 8 /*LineNumber*/, 4 /*int*/, 4, false)
-      && verifier.VerifyVectorOfTables(tablePos, 10 /*Locals*/, NetModels.VariableVerify.Verify, false)
+      && verifier.VerifyTable(tablePos, 4 /*Reference*/, NetModels.SourceCodeReferenceVerify.Verify, false)
+      && verifier.VerifyVectorOfTables(tablePos, 6 /*Locals*/, NetModels.VariableVerify.Verify, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }

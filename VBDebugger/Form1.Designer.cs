@@ -42,6 +42,7 @@ namespace VBDebugger
             this.tabOutput = new System.Windows.Forms.TabPage();
             this.txtOuput = new System.Windows.Forms.TextBox();
             this.tabLocals = new System.Windows.Forms.TabPage();
+            this.tabStackFrames = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -158,6 +159,7 @@ namespace VBDebugger
             // 
             this.tabViewBottom.Controls.Add(this.tabOutput);
             this.tabViewBottom.Controls.Add(this.tabLocals);
+            this.tabViewBottom.Controls.Add(this.tabStackFrames);
             this.tabViewBottom.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabViewBottom.Location = new System.Drawing.Point(0, 0);
             this.tabViewBottom.Name = "tabViewBottom";
@@ -195,6 +197,15 @@ namespace VBDebugger
             this.tabLocals.TabIndex = 1;
             this.tabLocals.Text = "Locals";
             this.tabLocals.UseVisualStyleBackColor = true;
+            // 
+            // tabStackFrames
+            // 
+            this.tabStackFrames.Location = new System.Drawing.Point(4, 22);
+            this.tabStackFrames.Name = "tabStackFrames";
+            this.tabStackFrames.Size = new System.Drawing.Size(1095, 300);
+            this.tabStackFrames.TabIndex = 2;
+            this.tabStackFrames.Text = "Stack Frames";
+            this.tabStackFrames.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -234,6 +245,7 @@ namespace VBDebugger
         private System.Windows.Forms.Button btnStepOver;
         private System.Windows.Forms.Button btnBreak;
         private System.Windows.Forms.Button btnContinue;
+        private System.Windows.Forms.TabPage tabStackFrames;
     }
 }
 

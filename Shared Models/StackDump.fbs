@@ -6,16 +6,20 @@ table Variable{
 	value:string;
 }
 
-table StackFrame{
+table SourceCodeReference{
 	filename:string;
 	scope_name:string;
 	line_number:int;
+}
 
+table StackFrame{
+	reference: SourceCodeReference;
 	locals:[Variable];
 }
 
 table StackDump{
 	frames: [StackFrame];
+	curent_instruction: SourceCodeReference;
 	messages: [string];
 }
 

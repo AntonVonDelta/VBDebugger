@@ -19,6 +19,10 @@ struct Variable;
 struct VariableBuilder;
 struct VariableT;
 
+struct SourceCodeReference;
+struct SourceCodeReferenceBuilder;
+struct SourceCodeReferenceT;
+
 struct StackFrame;
 struct StackFrameBuilder;
 struct StackFrameT;
@@ -104,11 +108,99 @@ inline ::flatbuffers::Offset<Variable> CreateVariableDirect(
 
 ::flatbuffers::Offset<Variable> CreateVariable(::flatbuffers::FlatBufferBuilder &_fbb, const VariableT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
-struct StackFrameT : public ::flatbuffers::NativeTable {
-  typedef StackFrame TableType;
+struct SourceCodeReferenceT : public ::flatbuffers::NativeTable {
+  typedef SourceCodeReference TableType;
   std::string filename{};
   std::string scope_name{};
   int32_t line_number = 0;
+};
+
+struct SourceCodeReference FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
+  typedef SourceCodeReferenceT NativeTableType;
+  typedef SourceCodeReferenceBuilder Builder;
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_FILENAME = 4,
+    VT_SCOPE_NAME = 6,
+    VT_LINE_NUMBER = 8
+  };
+  const ::flatbuffers::String *filename() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_FILENAME);
+  }
+  const ::flatbuffers::String *scope_name() const {
+    return GetPointer<const ::flatbuffers::String *>(VT_SCOPE_NAME);
+  }
+  int32_t line_number() const {
+    return GetField<int32_t>(VT_LINE_NUMBER, 0);
+  }
+  bool Verify(::flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_FILENAME) &&
+           verifier.VerifyString(filename()) &&
+           VerifyOffset(verifier, VT_SCOPE_NAME) &&
+           verifier.VerifyString(scope_name()) &&
+           VerifyField<int32_t>(verifier, VT_LINE_NUMBER, 4) &&
+           verifier.EndTable();
+  }
+  SourceCodeReferenceT *UnPack(const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(SourceCodeReferenceT *_o, const ::flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static ::flatbuffers::Offset<SourceCodeReference> Pack(::flatbuffers::FlatBufferBuilder &_fbb, const SourceCodeReferenceT* _o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct SourceCodeReferenceBuilder {
+  typedef SourceCodeReference Table;
+  ::flatbuffers::FlatBufferBuilder &fbb_;
+  ::flatbuffers::uoffset_t start_;
+  void add_filename(::flatbuffers::Offset<::flatbuffers::String> filename) {
+    fbb_.AddOffset(SourceCodeReference::VT_FILENAME, filename);
+  }
+  void add_scope_name(::flatbuffers::Offset<::flatbuffers::String> scope_name) {
+    fbb_.AddOffset(SourceCodeReference::VT_SCOPE_NAME, scope_name);
+  }
+  void add_line_number(int32_t line_number) {
+    fbb_.AddElement<int32_t>(SourceCodeReference::VT_LINE_NUMBER, line_number, 0);
+  }
+  explicit SourceCodeReferenceBuilder(::flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  ::flatbuffers::Offset<SourceCodeReference> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = ::flatbuffers::Offset<SourceCodeReference>(end);
+    return o;
+  }
+};
+
+inline ::flatbuffers::Offset<SourceCodeReference> CreateSourceCodeReference(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    ::flatbuffers::Offset<::flatbuffers::String> filename = 0,
+    ::flatbuffers::Offset<::flatbuffers::String> scope_name = 0,
+    int32_t line_number = 0) {
+  SourceCodeReferenceBuilder builder_(_fbb);
+  builder_.add_line_number(line_number);
+  builder_.add_scope_name(scope_name);
+  builder_.add_filename(filename);
+  return builder_.Finish();
+}
+
+inline ::flatbuffers::Offset<SourceCodeReference> CreateSourceCodeReferenceDirect(
+    ::flatbuffers::FlatBufferBuilder &_fbb,
+    const char *filename = nullptr,
+    const char *scope_name = nullptr,
+    int32_t line_number = 0) {
+  auto filename__ = filename ? _fbb.CreateString(filename) : 0;
+  auto scope_name__ = scope_name ? _fbb.CreateString(scope_name) : 0;
+  return NetModels::CreateSourceCodeReference(
+      _fbb,
+      filename__,
+      scope_name__,
+      line_number);
+}
+
+::flatbuffers::Offset<SourceCodeReference> CreateSourceCodeReference(::flatbuffers::FlatBufferBuilder &_fbb, const SourceCodeReferenceT *_o, const ::flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct StackFrameT : public ::flatbuffers::NativeTable {
+  typedef StackFrame TableType;
+  std::unique_ptr<NetModels::SourceCodeReferenceT> reference{};
   std::vector<std::unique_ptr<NetModels::VariableT>> locals{};
   StackFrameT() = default;
   StackFrameT(const StackFrameT &o);
@@ -120,30 +212,19 @@ struct StackFrame FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef StackFrameT NativeTableType;
   typedef StackFrameBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_FILENAME = 4,
-    VT_SCOPE_NAME = 6,
-    VT_LINE_NUMBER = 8,
-    VT_LOCALS = 10
+    VT_REFERENCE = 4,
+    VT_LOCALS = 6
   };
-  const ::flatbuffers::String *filename() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_FILENAME);
-  }
-  const ::flatbuffers::String *scope_name() const {
-    return GetPointer<const ::flatbuffers::String *>(VT_SCOPE_NAME);
-  }
-  int32_t line_number() const {
-    return GetField<int32_t>(VT_LINE_NUMBER, 0);
+  const NetModels::SourceCodeReference *reference() const {
+    return GetPointer<const NetModels::SourceCodeReference *>(VT_REFERENCE);
   }
   const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>> *locals() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>> *>(VT_LOCALS);
   }
   bool Verify(::flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyOffset(verifier, VT_FILENAME) &&
-           verifier.VerifyString(filename()) &&
-           VerifyOffset(verifier, VT_SCOPE_NAME) &&
-           verifier.VerifyString(scope_name()) &&
-           VerifyField<int32_t>(verifier, VT_LINE_NUMBER, 4) &&
+           VerifyOffset(verifier, VT_REFERENCE) &&
+           verifier.VerifyTable(reference()) &&
            VerifyOffset(verifier, VT_LOCALS) &&
            verifier.VerifyVector(locals()) &&
            verifier.VerifyVectorOfTables(locals()) &&
@@ -158,14 +239,8 @@ struct StackFrameBuilder {
   typedef StackFrame Table;
   ::flatbuffers::FlatBufferBuilder &fbb_;
   ::flatbuffers::uoffset_t start_;
-  void add_filename(::flatbuffers::Offset<::flatbuffers::String> filename) {
-    fbb_.AddOffset(StackFrame::VT_FILENAME, filename);
-  }
-  void add_scope_name(::flatbuffers::Offset<::flatbuffers::String> scope_name) {
-    fbb_.AddOffset(StackFrame::VT_SCOPE_NAME, scope_name);
-  }
-  void add_line_number(int32_t line_number) {
-    fbb_.AddElement<int32_t>(StackFrame::VT_LINE_NUMBER, line_number, 0);
+  void add_reference(::flatbuffers::Offset<NetModels::SourceCodeReference> reference) {
+    fbb_.AddOffset(StackFrame::VT_REFERENCE, reference);
   }
   void add_locals(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>>> locals) {
     fbb_.AddOffset(StackFrame::VT_LOCALS, locals);
@@ -183,32 +258,22 @@ struct StackFrameBuilder {
 
 inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    ::flatbuffers::Offset<::flatbuffers::String> filename = 0,
-    ::flatbuffers::Offset<::flatbuffers::String> scope_name = 0,
-    int32_t line_number = 0,
+    ::flatbuffers::Offset<NetModels::SourceCodeReference> reference = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>>> locals = 0) {
   StackFrameBuilder builder_(_fbb);
   builder_.add_locals(locals);
-  builder_.add_line_number(line_number);
-  builder_.add_scope_name(scope_name);
-  builder_.add_filename(filename);
+  builder_.add_reference(reference);
   return builder_.Finish();
 }
 
 inline ::flatbuffers::Offset<StackFrame> CreateStackFrameDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
-    const char *filename = nullptr,
-    const char *scope_name = nullptr,
-    int32_t line_number = 0,
+    ::flatbuffers::Offset<NetModels::SourceCodeReference> reference = 0,
     const std::vector<::flatbuffers::Offset<NetModels::Variable>> *locals = nullptr) {
-  auto filename__ = filename ? _fbb.CreateString(filename) : 0;
-  auto scope_name__ = scope_name ? _fbb.CreateString(scope_name) : 0;
   auto locals__ = locals ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::Variable>>(*locals) : 0;
   return NetModels::CreateStackFrame(
       _fbb,
-      filename__,
-      scope_name__,
-      line_number,
+      reference,
       locals__);
 }
 
@@ -217,6 +282,7 @@ inline ::flatbuffers::Offset<StackFrame> CreateStackFrameDirect(
 struct StackDumpT : public ::flatbuffers::NativeTable {
   typedef StackDump TableType;
   std::vector<std::unique_ptr<NetModels::StackFrameT>> frames{};
+  std::unique_ptr<NetModels::SourceCodeReferenceT> curent_instruction{};
   std::vector<std::string> messages{};
   StackDumpT() = default;
   StackDumpT(const StackDumpT &o);
@@ -229,10 +295,14 @@ struct StackDump FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef StackDumpBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_FRAMES = 4,
-    VT_MESSAGES = 6
+    VT_CURENT_INSTRUCTION = 6,
+    VT_MESSAGES = 8
   };
   const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>> *frames() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>> *>(VT_FRAMES);
+  }
+  const NetModels::SourceCodeReference *curent_instruction() const {
+    return GetPointer<const NetModels::SourceCodeReference *>(VT_CURENT_INSTRUCTION);
   }
   const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *messages() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_MESSAGES);
@@ -242,6 +312,8 @@ struct StackDump FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyOffset(verifier, VT_FRAMES) &&
            verifier.VerifyVector(frames()) &&
            verifier.VerifyVectorOfTables(frames()) &&
+           VerifyOffset(verifier, VT_CURENT_INSTRUCTION) &&
+           verifier.VerifyTable(curent_instruction()) &&
            VerifyOffset(verifier, VT_MESSAGES) &&
            verifier.VerifyVector(messages()) &&
            verifier.VerifyVectorOfStrings(messages()) &&
@@ -258,6 +330,9 @@ struct StackDumpBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_frames(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>>> frames) {
     fbb_.AddOffset(StackDump::VT_FRAMES, frames);
+  }
+  void add_curent_instruction(::flatbuffers::Offset<NetModels::SourceCodeReference> curent_instruction) {
+    fbb_.AddOffset(StackDump::VT_CURENT_INSTRUCTION, curent_instruction);
   }
   void add_messages(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> messages) {
     fbb_.AddOffset(StackDump::VT_MESSAGES, messages);
@@ -276,9 +351,11 @@ struct StackDumpBuilder {
 inline ::flatbuffers::Offset<StackDump> CreateStackDump(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>>> frames = 0,
+    ::flatbuffers::Offset<NetModels::SourceCodeReference> curent_instruction = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> messages = 0) {
   StackDumpBuilder builder_(_fbb);
   builder_.add_messages(messages);
+  builder_.add_curent_instruction(curent_instruction);
   builder_.add_frames(frames);
   return builder_.Finish();
 }
@@ -286,12 +363,14 @@ inline ::flatbuffers::Offset<StackDump> CreateStackDump(
 inline ::flatbuffers::Offset<StackDump> CreateStackDumpDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<::flatbuffers::Offset<NetModels::StackFrame>> *frames = nullptr,
+    ::flatbuffers::Offset<NetModels::SourceCodeReference> curent_instruction = 0,
     const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *messages = nullptr) {
   auto frames__ = frames ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::StackFrame>>(*frames) : 0;
   auto messages__ = messages ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*messages) : 0;
   return NetModels::CreateStackDump(
       _fbb,
       frames__,
+      curent_instruction,
       messages__);
 }
 
@@ -326,18 +405,46 @@ inline ::flatbuffers::Offset<Variable> CreateVariable(::flatbuffers::FlatBufferB
       _value);
 }
 
+inline SourceCodeReferenceT *SourceCodeReference::UnPack(const ::flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<SourceCodeReferenceT>(new SourceCodeReferenceT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void SourceCodeReference::UnPackTo(SourceCodeReferenceT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = filename(); if (_e) _o->filename = _e->str(); }
+  { auto _e = scope_name(); if (_e) _o->scope_name = _e->str(); }
+  { auto _e = line_number(); _o->line_number = _e; }
+}
+
+inline ::flatbuffers::Offset<SourceCodeReference> SourceCodeReference::Pack(::flatbuffers::FlatBufferBuilder &_fbb, const SourceCodeReferenceT* _o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateSourceCodeReference(_fbb, _o, _rehasher);
+}
+
+inline ::flatbuffers::Offset<SourceCodeReference> CreateSourceCodeReference(::flatbuffers::FlatBufferBuilder &_fbb, const SourceCodeReferenceT *_o, const ::flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const SourceCodeReferenceT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _filename = _o->filename.empty() ? 0 : _fbb.CreateString(_o->filename);
+  auto _scope_name = _o->scope_name.empty() ? 0 : _fbb.CreateString(_o->scope_name);
+  auto _line_number = _o->line_number;
+  return NetModels::CreateSourceCodeReference(
+      _fbb,
+      _filename,
+      _scope_name,
+      _line_number);
+}
+
 inline StackFrameT::StackFrameT(const StackFrameT &o)
-      : filename(o.filename),
-        scope_name(o.scope_name),
-        line_number(o.line_number) {
+      : reference((o.reference) ? new NetModels::SourceCodeReferenceT(*o.reference) : nullptr) {
   locals.reserve(o.locals.size());
   for (const auto &locals_ : o.locals) { locals.emplace_back((locals_) ? new NetModels::VariableT(*locals_) : nullptr); }
 }
 
 inline StackFrameT &StackFrameT::operator=(StackFrameT o) FLATBUFFERS_NOEXCEPT {
-  std::swap(filename, o.filename);
-  std::swap(scope_name, o.scope_name);
-  std::swap(line_number, o.line_number);
+  std::swap(reference, o.reference);
   std::swap(locals, o.locals);
   return *this;
 }
@@ -351,9 +458,7 @@ inline StackFrameT *StackFrame::UnPack(const ::flatbuffers::resolver_function_t 
 inline void StackFrame::UnPackTo(StackFrameT *_o, const ::flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = filename(); if (_e) _o->filename = _e->str(); }
-  { auto _e = scope_name(); if (_e) _o->scope_name = _e->str(); }
-  { auto _e = line_number(); _o->line_number = _e; }
+  { auto _e = reference(); if (_e) { if(_o->reference) { _e->UnPackTo(_o->reference.get(), _resolver); } else { _o->reference = std::unique_ptr<NetModels::SourceCodeReferenceT>(_e->UnPack(_resolver)); } } else if (_o->reference) { _o->reference.reset(); } }
   { auto _e = locals(); if (_e) { _o->locals.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->locals[_i]) { _e->Get(_i)->UnPackTo(_o->locals[_i].get(), _resolver); } else { _o->locals[_i] = std::unique_ptr<NetModels::VariableT>(_e->Get(_i)->UnPack(_resolver)); }; } } else { _o->locals.resize(0); } }
 }
 
@@ -365,26 +470,24 @@ inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(::flatbuffers::FlatBuf
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const StackFrameT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _filename = _o->filename.empty() ? 0 : _fbb.CreateString(_o->filename);
-  auto _scope_name = _o->scope_name.empty() ? 0 : _fbb.CreateString(_o->scope_name);
-  auto _line_number = _o->line_number;
+  auto _reference = _o->reference ? CreateSourceCodeReference(_fbb, _o->reference.get(), _rehasher) : 0;
   auto _locals = _o->locals.size() ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::Variable>> (_o->locals.size(), [](size_t i, _VectorArgs *__va) { return CreateVariable(*__va->__fbb, __va->__o->locals[i].get(), __va->__rehasher); }, &_va ) : 0;
   return NetModels::CreateStackFrame(
       _fbb,
-      _filename,
-      _scope_name,
-      _line_number,
+      _reference,
       _locals);
 }
 
 inline StackDumpT::StackDumpT(const StackDumpT &o)
-      : messages(o.messages) {
+      : curent_instruction((o.curent_instruction) ? new NetModels::SourceCodeReferenceT(*o.curent_instruction) : nullptr),
+        messages(o.messages) {
   frames.reserve(o.frames.size());
   for (const auto &frames_ : o.frames) { frames.emplace_back((frames_) ? new NetModels::StackFrameT(*frames_) : nullptr); }
 }
 
 inline StackDumpT &StackDumpT::operator=(StackDumpT o) FLATBUFFERS_NOEXCEPT {
   std::swap(frames, o.frames);
+  std::swap(curent_instruction, o.curent_instruction);
   std::swap(messages, o.messages);
   return *this;
 }
@@ -399,6 +502,7 @@ inline void StackDump::UnPackTo(StackDumpT *_o, const ::flatbuffers::resolver_fu
   (void)_o;
   (void)_resolver;
   { auto _e = frames(); if (_e) { _o->frames.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->frames[_i]) { _e->Get(_i)->UnPackTo(_o->frames[_i].get(), _resolver); } else { _o->frames[_i] = std::unique_ptr<NetModels::StackFrameT>(_e->Get(_i)->UnPack(_resolver)); }; } } else { _o->frames.resize(0); } }
+  { auto _e = curent_instruction(); if (_e) { if(_o->curent_instruction) { _e->UnPackTo(_o->curent_instruction.get(), _resolver); } else { _o->curent_instruction = std::unique_ptr<NetModels::SourceCodeReferenceT>(_e->UnPack(_resolver)); } } else if (_o->curent_instruction) { _o->curent_instruction.reset(); } }
   { auto _e = messages(); if (_e) { _o->messages.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->messages[_i] = _e->Get(_i)->str(); } } else { _o->messages.resize(0); } }
 }
 
@@ -411,10 +515,12 @@ inline ::flatbuffers::Offset<StackDump> CreateStackDump(::flatbuffers::FlatBuffe
   (void)_o;
   struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const StackDumpT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _frames = _o->frames.size() ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::StackFrame>> (_o->frames.size(), [](size_t i, _VectorArgs *__va) { return CreateStackFrame(*__va->__fbb, __va->__o->frames[i].get(), __va->__rehasher); }, &_va ) : 0;
+  auto _curent_instruction = _o->curent_instruction ? CreateSourceCodeReference(_fbb, _o->curent_instruction.get(), _rehasher) : 0;
   auto _messages = _o->messages.size() ? _fbb.CreateVectorOfStrings(_o->messages) : 0;
   return NetModels::CreateStackDump(
       _fbb,
       _frames,
+      _curent_instruction,
       _messages);
 }
 
