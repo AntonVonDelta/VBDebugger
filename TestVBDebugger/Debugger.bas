@@ -5,7 +5,7 @@ Private Declare Sub Init Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VB
 
 Private Declare Sub EnterProcedure Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
 Private Declare Sub Log Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
-Private Declare Sub LeaveProcedure Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long)
+Private Declare Sub LeaveProcedure Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
 
 
 '' Each local is composed of two pairs: first string representing the name of the local, a string which stores the value
@@ -19,23 +19,38 @@ Public Sub DebugEnterProcedure(filename As String, scopeName As String, lineNumb
 End Sub
 
 Public Sub DebugLog(filename As String, scopeName As String, lineNumber As Long, ParamArray locals() As Variant)
-   Log filename, scopeName, lineNumber, Serialize(locals)
+   Log filename, scopeName, lineNumber, AddSerializedErr(Serialize(locals))
 End Sub
 
 Public Sub DebugLeaveProcedure(filename As String, scopeName As String, lineNumber As Long)
-    LeaveProcedure filename, scopeName, lineNumber
+    LeaveProcedure filename, scopeName, lineNumber, AddSerializedErr("")
 End Sub
 
 
 
-Private Function Serialize(ParamArray locals() As Variant) As String
+Private Function AddSerializedErr(data As String) As String
+    If Err.Number = 0 Then
+        AddSerializedErr = data
+        Exit Function
+    End If
+    
+    AddSerializedErr = "ErrNumber," & Err.Number & ","
+    AddSerializedErr = AddSerializedErr & "ErrSource," & EscapeContent(Err.Source) & ","
+    AddSerializedErr = AddSerializedErr & "ErrDescription," & EscapeContent(Err.Description)
+    
+    If Len(data) <> 0 Then AddSerializedErr = AddSerializedErr & "," & data
+End Function
+
+Private Function Serialize(ParamArray paramContainingParam() As Variant) As String
     Dim result As String
     Dim i As Integer
     Dim countItems As Integer
+    Dim locals() As Variant
     
+    locals = paramContainingParam(0)
     Serialize = ""
     
-    countItems = UBound(locals(0)) + 1
+    countItems = UBound(locals) + 1
     
     If countItems Mod 2 <> 0 Then
         Exit Function
@@ -53,21 +68,23 @@ Private Function Serialize(ParamArray locals() As Variant) As String
             Serialize = Serialize & ","
         End If
         
-        localName = SerializeContent(locals(0)(i))
-        localValue = SerializeContent(locals(0)(i + 1))
+        localName = EscapeContent(locals(i))
+        
+        localValue = EscapeContent(locals(i + 1))
         Serialize = Serialize & localName & "," & localValue
     Next
     
 End Function
 
 
-Private Function SerializeContent(value As Variant) As String
+Private Function EscapeContent(value As Variant) As String
     Dim result As String
     
     result = Replace(value, "\", "\\")
     result = Replace(value, ",", "\,")
     
-    SerializeContent = result
+    EscapeContent = result
 End Function
+
 
 

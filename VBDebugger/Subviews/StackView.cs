@@ -56,13 +56,6 @@ namespace VBDebugger.Subviews
         public void LoadStackFrames(StackDumpT stackDump)
         {
             var selectedFrames = _stackFramesView.SelectedRows;
-            FrameModel previouslySelectedFrame = null;
-            FrameModel foundSelectedFrame = null;
-
-            if (selectedFrames.Count > 0)
-            {
-                previouslySelectedFrame = (FrameModel)selectedFrames[0].DataBoundItem;
-            }
 
             _currentInstructionView.Text = ToString(stackDump.CurentInstruction);
             _stackMessagesView.Text = string.Join("\r\n", stackDump.Messages);
@@ -70,7 +63,7 @@ namespace VBDebugger.Subviews
             _stackFramesViewSource.Clear();
             foreach (var frame in stackDump.Frames)
             {
-                var frameName = ToString(frame.Reference);
+                var frameName = $"{frame.Reference.Filename} - {frame.Reference.ScopeName}";
                 var newFrame = new FrameModel()
                 {
                     Frame = frameName,
@@ -79,10 +72,11 @@ namespace VBDebugger.Subviews
 
                 _stackFramesViewSource.Add(newFrame);
             }
-            
+
             // Select most recent stack
             if (_stackFramesView.Rows.Count != 0)
             {
+                _stackFramesView.ClearSelection();
                 _stackFramesView.Rows[_stackFramesView.Rows.Count - 1].Selected = true;
             }
         }

@@ -110,3 +110,30 @@ Sub Test4()
     MsgBox "test"
 
 End Sub
+
+Sub Test5()
+
+On Error Resume Next
+
+Dim a As Integer
+
+a = 2 / 0
+
+Test6
+a = 1
+
+Err.Raise Err.Number, Err.Source, Err.Description
+
+End Sub
+
+Sub Test6()
+On Error Resume Next
+    Debug.Print Err.Number
+    Debug.Print Err.Description
+    
+    Dim b As Integer
+    
+    b = 4 / 0
+    
+End Sub
+

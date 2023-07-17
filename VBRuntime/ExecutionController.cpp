@@ -33,33 +33,6 @@ void ExecutionController::traceEnterProcedure(SourceCodeReference& reference, st
 
 	breakpoint.input();
 }
-
-void ExecutionController::traceLeaveProcedure(SourceCodeReference& reference) {
-	current_instruction = reference;
-
-	if (execution_stack.size() == 0) {
-		std::ostringstream message;
-
-		message << "Exiting scope but no stack frames available: " << reference.toString();
-
-		addMessage(message.str());
-
-		breakpoint.input();
-	} else {
-		checkReferenceWithLiveScope(reference);
-
-		breakpoint.input();
-
-		// Remove this scope after the breakpoint is signaled
-		syncAndPopStack(reference);
-	}
-
-	if (execution_stack.size() == 0) {
-		// Clean message
-		error_messages.clear();
-	}
-}
-
 bool ExecutionController::traceLog(SourceCodeReference& reference, std::vector<std::string> arguments) {
 	current_instruction = reference;
 
@@ -73,12 +46,39 @@ bool ExecutionController::traceLog(SourceCodeReference& reference, std::vector<s
 		auto last_scope = execution_stack.back();
 
 		checkReferenceWithLiveScope(reference);
-
 		addLocalsToLiveScope(current_instruction, arguments);
 	}
 
 	return breakpoint.input();
 }
+void ExecutionController::traceLeaveProcedure(SourceCodeReference& reference, std::vector<std::string> arguments) {
+	current_instruction = reference;
+
+	if (execution_stack.size() == 0) {
+		std::ostringstream message;
+
+		message << "Exiting scope but no stack frames available: " << reference.toString();
+
+		addMessage(message.str());
+
+		breakpoint.input();
+	} else {
+		checkReferenceWithLiveScope(reference);
+		addLocalsToLiveScope(current_instruction, arguments);
+
+		breakpoint.input();
+
+		// Remove this scope after the breakpoint is signaled
+		syncAndPopStack(reference);
+	}
+
+	if (execution_stack.size() == 0) {
+		// Clean message
+		error_messages.clear();
+	}
+}
+
+
 
 void ExecutionController::addMessage(std::string message) {
 	error_messages.push_back(message);
@@ -120,7 +120,7 @@ void ExecutionController::addLocalsToLiveScope(SourceCodeReference& reference, s
 		return;
 	}
 
-	for (int i = 0; i < arguments.size() - 1; i += 1) {
+	for (int i = 0; i < arguments.size() - 1; i += 2) {
 		current_scope.locals[arguments[i]] = arguments[i + 1];
 	}
 }

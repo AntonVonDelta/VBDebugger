@@ -12,14 +12,16 @@ using namespace std;
 
 std::vector<std::string> deserializeArguments(std::string data);
 
-
-HINSTANCE dllInstance;
+bool initialized = false;
 DebuggerServer debugger_server(5050);
 ExecutionController execution_controller;
 std::unique_ptr<Debugger> debugger;
 
 void WINAPI Init() {
 	OutputDebugStringA("Init\n");
+
+	if (initialized) return;
+	initialized = true;
 
 	debugger_server.registerNewDebugger([](std::unique_ptr<Debugger> temp_debugger) {
 		if (debugger && !debugger->isDetached()) return;
@@ -50,12 +52,12 @@ void WINAPI Log(const char* filename, const char* scope_name, int line_number, c
 	reference.scope_name = scope_name;
 	reference.line_number = line_number;
 
-	//OutputDebugStringA("Log\n");
+	OutputDebugStringA("Log\n");
 
 	execution_controller.traceLog(reference, deserializeArguments(arguments));
 }
 
-void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int line_number) {
+void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int line_number, const char* arguments) {
 	SourceCodeReference reference;
 
 	reference.filename = filename;
@@ -64,7 +66,7 @@ void WINAPI LeaveProcedure(const char* filename, const char* scope_name, int lin
 
 	OutputDebugStringA("LeaveProcedure\n");
 
-	execution_controller.traceLeaveProcedure(reference);
+	execution_controller.traceLeaveProcedure(reference, deserializeArguments(arguments));
 }
 
 std::vector<std::string> deserializeArguments(std::string data) {
@@ -89,7 +91,7 @@ std::vector<std::string> deserializeArguments(std::string data) {
 		}
 	}
 
-	if(temp_value.size()!=0)
+	if (temp_value.size() != 0)
 		result.push_back(temp_value);
 
 	return result;
@@ -102,8 +104,6 @@ BOOL WINAPI DllMain(
 	DWORD fdwReason,     // reason for calling function
 	LPVOID lpvReserved)  // reserved
 {
-	dllInstance = hinstDLL;
-
 	switch (fdwReason) {
 		case DLL_PROCESS_ATTACH:
 			// Initialize once for each new process.

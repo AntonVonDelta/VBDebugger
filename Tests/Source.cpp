@@ -9,9 +9,9 @@
 using namespace std;
 
 void WINAPI Init();
-void WINAPI Log(const char* filename, const char* scope_name, int line_number, const char* arguments);
 void WINAPI EnterProcedure(const char* filename, const  char* scope_name, int line_number, const char* arguments);
-void WINAPI LeaveProcedure(const char* filename, const  char* scope_name, int line_number);
+void WINAPI Log(const char* filename, const char* scope_name, int line_number, const char* arguments);
+void WINAPI LeaveProcedure(const char* filename, const  char* scope_name, int line_number, const char* arguments);
 
 void run3(int passed);
 
@@ -57,7 +57,7 @@ void run2() {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 
-	LeaveProcedure("test", "run2", __LINE__);
+	LeaveProcedure("test", "run2", __LINE__, "");
 }
 
 
@@ -74,7 +74,7 @@ void run3(int passed) {
 	cout << "passed: " << passed << endl;
 
 
-	LeaveProcedure("test", "run3", __LINE__);
+	LeaveProcedure("test", "run3", __LINE__, "");
 }
 
 

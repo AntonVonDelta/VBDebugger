@@ -11,6 +11,7 @@ using VBDebugger.Debugger;
 using System.Net;
 using System.Text.RegularExpressions;
 using VBDebugger.Subviews;
+using System.Threading;
 
 namespace VBDebugger
 {
@@ -27,14 +28,17 @@ namespace VBDebugger
             RedirectAttachSuccess,  // Non-flow states (used only for bridging over the next flow) 
             RedirectAttachFailed,   // Non-flow states (used only for bridging over the next flow)
 
-            IntroPausingExecution,
+            PausingExecution,
             RedirectPausedExecution,
 
-            IntroResumingExecution,
+            ResumingExecution,
             RedirectResumedExecution,
+            RedirectRunningWithCondition,
 
-            IntroSteppingOver,
+            SteppingOver,
             RedirectSteppedOver,
+
+            RunningWithCondition,
 
             RedirectDebuggingFailed,
         }
@@ -42,8 +46,7 @@ namespace VBDebugger
         private State _state = State.None;
         private DebuggerClient _debugger;
         private readonly StackView _stackView;
-
-
+        private CancellationTokenSource _runningCts;
 
         public Form1()
         {
@@ -84,7 +87,7 @@ namespace VBDebugger
 
         private async void btnBreak_Click(object sender, EventArgs e)
         {
-            UpdateState(State.IntroPausingExecution);
+            UpdateState(State.PausingExecution);
 
             try
             {
@@ -116,7 +119,7 @@ namespace VBDebugger
 
         private async void btnContinue_Click(object sender, EventArgs e)
         {
-            UpdateState(State.IntroResumingExecution);
+            UpdateState(State.ResumingExecution);
 
             UnloadCurrentStackDump();
 
@@ -128,9 +131,22 @@ namespace VBDebugger
                     return;
                 }
 
-                if (await _debugger.Resume())
-                    UpdateState(State.RedirectResumedExecution);
-                else UpdateState(State.RedirectDebuggingFailed);
+                if (chkBreakOnException.Checked)
+                {
+                    UpdateState(State.RedirectRunningWithCondition);
+
+                    _runningCts = new CancellationTokenSource();
+
+                    await NextFlow(_runningCts.Token);
+                    return;
+                }
+                else
+                {
+                    if (await _debugger.Resume())
+                        UpdateState(State.RedirectResumedExecution);
+                    else
+                        UpdateState(State.RedirectDebuggingFailed);
+                }
             }
             catch (Exception ex)
             {
@@ -144,7 +160,7 @@ namespace VBDebugger
 
         private async void btnStepOver_Click(object sender, EventArgs e)
         {
-            UpdateState(State.IntroSteppingOver);
+            UpdateState(State.SteppingOver);
 
             try
             {

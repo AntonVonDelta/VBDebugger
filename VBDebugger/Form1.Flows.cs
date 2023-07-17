@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using VBDebugger.Debugger;
@@ -47,7 +48,7 @@ namespace VBDebugger
 
 
 
-                case State.IntroPausingExecution:
+                case State.PausingExecution:
                     btnBreak.Enabled = false;
                     break;
                 case State.RedirectPausedExecution:
@@ -57,7 +58,7 @@ namespace VBDebugger
                     break;
 
 
-                case State.IntroResumingExecution:
+                case State.ResumingExecution:
                     btnBreak.Enabled = false;
                     btnStepOver.Enabled = false;
                     btnContinue.Enabled = false;
@@ -66,21 +67,26 @@ namespace VBDebugger
                 case State.RedirectResumedExecution:
                     btnBreak.Enabled = true;
                     break;
+                case State.RedirectRunningWithCondition:
+                    btnBreak.Enabled = true;
+                    break;
 
-
-                case State.IntroSteppingOver:
+                case State.SteppingOver:
                     btnBreak.Enabled = false;
                     btnStepOver.Enabled = false;
                     btnContinue.Enabled = false;
                     chkBreakOnException.Enabled = false;
                     break;
-
                 case State.RedirectSteppedOver:
                     btnStepOver.Enabled = true;
                     btnContinue.Enabled = true;
                     chkBreakOnException.Enabled = true;
                     break;
 
+
+                case State.RunningWithCondition:
+                    btnBreak.Enabled = true;
+                    break;
 
                 case State.RedirectDebuggingFailed:
                     btnBreak.Enabled = false;
@@ -91,7 +97,7 @@ namespace VBDebugger
             }
         }
 
-        private async Task NextFlow()
+        private async Task NextFlow(CancellationToken token = default)
         {
             switch (_state)
             {
@@ -114,16 +120,18 @@ namespace VBDebugger
                     await FlowChangingSettings();
                     break;
 
-                case State.IntroPausingExecution:
+                case State.PausingExecution:
                     break;
                 case State.RedirectPausedExecution:
                     break;
 
-                case State.IntroResumingExecution:
+                case State.ResumingExecution:
                     break;
                 case State.RedirectResumedExecution:
                     break;
-
+                case State.RedirectRunningWithCondition:
+                    await FlowRunningWithCondition(token);
+                    break;
 
                 case State.RedirectDebuggingFailed:
                     await FlowChangingSettings();
@@ -161,7 +169,7 @@ namespace VBDebugger
 
                 _debugger = new DebuggerClient(endpoint, (string message) => AddLog(message));
 
-                if(await _debugger.Attach())
+                if (await _debugger.Attach())
                 {
                     AddLog($"Attached to {endpoint}");
                     UpdateState(State.RedirectAttachSuccess);
@@ -179,6 +187,17 @@ namespace VBDebugger
             }
 
             await NextFlow();
+        }
+
+        private async Task FlowRunningWithCondition(CancellationToken token)
+        {
+            UpdateState(State.RunningWithCondition);
+
+
+            while (true)
+            {
+
+            }
         }
     }
 }

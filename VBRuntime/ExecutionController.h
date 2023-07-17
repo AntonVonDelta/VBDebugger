@@ -57,8 +57,8 @@ public:
 	std::vector<std::string> getMessages();
 
 	void traceEnterProcedure(SourceCodeReference& reference, std::vector<std::string> arguments);
-	void traceLeaveProcedure(SourceCodeReference& reference);
 	bool traceLog(SourceCodeReference& reference, std::vector<std::string> arguments);
+	void traceLeaveProcedure(SourceCodeReference& reference, std::vector<std::string> arguments);
 
 private:
 	void addMessage(std::string message);
