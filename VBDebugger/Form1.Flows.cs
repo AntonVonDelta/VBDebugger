@@ -23,6 +23,10 @@ namespace VBDebugger
                     btnContinue.Enabled = false;
                     chkBreakOnException.Enabled = false;
                     break;
+
+                case State.RunningWithCondition:
+                    btnBreak.Enabled = false;
+                    break;
             }
 
             _state = newState;
@@ -85,7 +89,6 @@ namespace VBDebugger
 
 
                 case State.RunningWithCondition:
-                    btnBreak.Enabled = true;
                     break;
 
                 case State.RedirectDebuggingFailed:
@@ -201,13 +204,19 @@ namespace VBDebugger
                 {
                     if (!await _debugger.StepOver())
                     {
-                        // No new exception found
-                        if (InstructionException.Equals(initialException, _debugger.CurrentException))
-                            continue;
-
-                        // Process new exception
-                        break;
+                        UpdateState(State.RedirectDebuggingFailed);
+                        await NextFlow();
+                        return;
                     }
+
+                    LoadCurrentStackDump();
+
+                    // No new exception found
+                    if (InstructionException.Equals(initialException, _debugger.CurrentException))
+                        continue;
+
+                    // Process new exception
+                    break;
                 }
 
                 UpdateState(State.RedirectPausedExecution);

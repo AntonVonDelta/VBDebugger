@@ -43,7 +43,7 @@ On Error GoTo debug_handler
     Exit Sub
 debug_handler:
     DebugLeaveProcedure "Form1.frm", "Command1_Click", 19
-    Err.Raise Err.Number, Err.Source, Err.Description
+    'Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
 

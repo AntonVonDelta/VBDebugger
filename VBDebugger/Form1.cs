@@ -96,10 +96,10 @@ namespace VBDebugger
                 {
                     // This is actually a simulated "running" state
                     _runningCts.Cancel();
-                    await _runningWithCondition;
 
-                    LoadCurrentStackDump();
-                    UpdateState(State.RedirectPausedExecution);
+                    // The running flow will be signaled to close
+                    // and will complete the transition to whichever state it wants
+                    return;
                 }
                 else
                 {

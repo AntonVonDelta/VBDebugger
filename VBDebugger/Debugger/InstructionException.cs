@@ -16,8 +16,12 @@ namespace VBDebugger.Debugger
         {
             if (obj1 == obj2) return true;
 
-            return obj1.Number == obj2.Number && 
-                obj1.Source == obj2.Source && 
+            if (obj1 == null && obj2.Number == 0) return true;
+            if (obj2 == null && obj1.Number == 0) return true;
+            if (obj1 == null || obj2 == null) return false;
+
+            return obj1.Number == obj2.Number &&
+                obj1.Source == obj2.Source &&
                 obj1.Description == obj2.Description;
         }
 
