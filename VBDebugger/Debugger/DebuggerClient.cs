@@ -18,9 +18,11 @@ namespace VBDebugger.Debugger
         private readonly IPEndPoint _address;
         private readonly Action<string> _logger;
         private StackDumpT _currentStackDump;
+        private InstructionException _currentException;
 
         public bool Attached => _client.Connected;
         public StackDumpT CurrentStackDump => _currentStackDump;
+        public InstructionException CurrentException => _currentException;
 
         public DebuggerClient(IPEndPoint address, Action<string> logger)
         {
@@ -60,13 +62,13 @@ namespace VBDebugger.Debugger
             if (!result) return false;
 
             stackDump = await ReadPacketModel<StackDumpT>();
-            _currentStackDump = stackDump;
+            ProcessStackDump(stackDump);
 
             return stackDump != null;
         }
         public async Task<bool> Resume()
         {
-            _currentStackDump = null;
+            ProcessStackDump(null);
 
             return await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Resume });
         }
@@ -79,11 +81,34 @@ namespace VBDebugger.Debugger
             if (!result) return false;
 
             stackDump = await ReadPacketModel<StackDumpT>();
-            _currentStackDump = stackDump;
+            ProcessStackDump(stackDump);
 
             return stackDump != null;
         }
 
+
+        private void ProcessStackDump(StackDumpT stackDump)
+        {
+            _currentStackDump = stackDump;
+            _currentException = null;
+
+            if (stackDump == null || stackDump.Frames.Count == 0)
+                return;
+
+            var errNumber = stackDump.Frames.Last().Locals.Where(el => el.Name == "ErrNumber").FirstOrDefault();
+            var errSource = stackDump.Frames.Last().Locals.Where(el => el.Name == "ErrSource").FirstOrDefault();
+            var errDescription = stackDump.Frames.Last().Locals.Where(el => el.Name == "ErrDescription").FirstOrDefault();
+
+            if (errNumber != null)
+            {
+                _currentException = new InstructionException()
+                {
+                    Number = long.Parse(errNumber.Value),
+                    Source = errSource.Value,
+                    Description = errDescription.Value
+                };
+            }
+        }
 
 
         private async Task<T> ReadPacketModel<T>() where T : class

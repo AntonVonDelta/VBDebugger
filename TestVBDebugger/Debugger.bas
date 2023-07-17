@@ -29,10 +29,10 @@ End Sub
 
 
 Private Function AddSerializedErr(data As String) As String
-    If Err.Number = 0 Then
-        AddSerializedErr = data
-        Exit Function
-    End If
+    '' We must always include the exception information even when its empty
+    '' because the debugging runtime adds all the locals in the scope and keeps them
+    '' during the entire scope
+    '' Setting once the Err local will keep it set if we do not resync it every time
     
     AddSerializedErr = "ErrNumber," & Err.Number & ","
     AddSerializedErr = AddSerializedErr & "ErrSource," & EscapeContent(Err.Source) & ","

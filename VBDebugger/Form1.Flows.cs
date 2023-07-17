@@ -193,11 +193,32 @@ namespace VBDebugger
         {
             UpdateState(State.RunningWithCondition);
 
-
-            while (true)
+            try
             {
+                var initialException = _debugger.CurrentException;
 
+                while (!token.IsCancellationRequested)
+                {
+                    if (!await _debugger.StepOver())
+                    {
+                        // No new exception found
+                        if (InstructionException.Equals(initialException, _debugger.CurrentException))
+                            continue;
+
+                        // Process new exception
+                        break;
+                    }
+                }
+
+                UpdateState(State.RedirectPausedExecution);
             }
+            catch (Exception ex)
+            {
+                AddLog(ex.Message);
+                UpdateState(State.RedirectDebuggingFailed);
+            }
+
+            await NextFlow();
         }
     }
 }

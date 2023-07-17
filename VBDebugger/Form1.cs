@@ -47,6 +47,7 @@ namespace VBDebugger
         private DebuggerClient _debugger;
         private readonly StackView _stackView;
         private CancellationTokenSource _runningCts;
+        private Task _runningWithCondition;
 
         public Form1()
         {
@@ -91,20 +92,26 @@ namespace VBDebugger
 
             try
             {
-                if (_debugger == null || !_debugger.Attached)
+                if (_state == State.RunningWithCondition)
                 {
-                    AddLog("No debugger attached");
-                    return;
-                }
+                    // This is actually a simulated "running" state
+                    _runningCts.Cancel();
+                    await _runningWithCondition;
 
-                if (await _debugger.Pause())
-                {
                     LoadCurrentStackDump();
                     UpdateState(State.RedirectPausedExecution);
                 }
                 else
                 {
-                    UpdateState(State.RedirectDebuggingFailed);
+                    if (await _debugger.Pause())
+                    {
+                        LoadCurrentStackDump();
+                        UpdateState(State.RedirectPausedExecution);
+                    }
+                    else
+                    {
+                        UpdateState(State.RedirectDebuggingFailed);
+                    }
                 }
             }
             catch (Exception ex)
@@ -125,19 +132,14 @@ namespace VBDebugger
 
             try
             {
-                if (_debugger == null || !_debugger.Attached)
-                {
-                    AddLog("No debugger attached");
-                    return;
-                }
-
                 if (chkBreakOnException.Checked)
                 {
                     UpdateState(State.RedirectRunningWithCondition);
 
                     _runningCts = new CancellationTokenSource();
 
-                    await NextFlow(_runningCts.Token);
+                    _runningWithCondition = NextFlow(_runningCts.Token);
+                    await _runningWithCondition;
                     return;
                 }
                 else
@@ -164,12 +166,6 @@ namespace VBDebugger
 
             try
             {
-                if (_debugger == null || !_debugger.Attached)
-                {
-                    AddLog("No debugger attached");
-                    return;
-                }
-
                 if (await _debugger.StepOver())
                 {
                     LoadCurrentStackDump();
