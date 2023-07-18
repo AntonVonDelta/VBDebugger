@@ -27,8 +27,8 @@ namespace VBCodeTransformer.Parsers
         public override object VisitSubStmt([NotNull] VisualBasic6Parser.SubStmtContext context)
         {
             var scopeName = context.ambiguousIdentifier().GetText();
-            var scopeStartLine = context.SUB().Symbol.Line;
-            var scopeStartColumn = context.SUB().Symbol.Column;
+            var scopeStartLine = context.Start.Line;
+            var scopeStartColumn = context.Start.Column;
             var newPreambleCode = CodeTemplates.GetFunctionPreamble(_filename, scopeName, scopeStartLine, scopeStartColumn);
             var newPostambleCode = CodeTemplates.GetFunctionPostamble(_filename, scopeName, scopeStartLine, scopeStartColumn);
 

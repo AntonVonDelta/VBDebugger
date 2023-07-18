@@ -31,6 +31,8 @@ namespace VBCodeTransformer
         {
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.btnTransform = new System.Windows.Forms.Button();
+            this.btnLoad = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // richTextBox1
@@ -43,7 +45,7 @@ namespace VBCodeTransformer
             // 
             // btnTransform
             // 
-            this.btnTransform.Location = new System.Drawing.Point(12, 562);
+            this.btnTransform.Location = new System.Drawing.Point(295, 562);
             this.btnTransform.Name = "btnTransform";
             this.btnTransform.Size = new System.Drawing.Size(198, 35);
             this.btnTransform.TabIndex = 1;
@@ -51,11 +53,26 @@ namespace VBCodeTransformer
             this.btnTransform.UseVisualStyleBackColor = true;
             this.btnTransform.Click += new System.EventHandler(this.btnTransform_Click);
             // 
+            // btnLoad
+            // 
+            this.btnLoad.Location = new System.Drawing.Point(12, 562);
+            this.btnLoad.Name = "btnLoad";
+            this.btnLoad.Size = new System.Drawing.Size(198, 35);
+            this.btnLoad.TabIndex = 2;
+            this.btnLoad.Text = "Load File";
+            this.btnLoad.UseVisualStyleBackColor = true;
+            this.btnLoad.Click += new System.EventHandler(this.btnLoad_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1103, 741);
+            this.Controls.Add(this.btnLoad);
             this.Controls.Add(this.btnTransform);
             this.Controls.Add(this.richTextBox1);
             this.Name = "Form1";
@@ -68,6 +85,8 @@ namespace VBCodeTransformer
 
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Button btnTransform;
+        private System.Windows.Forms.Button btnLoad;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 

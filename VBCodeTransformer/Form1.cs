@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,9 @@ namespace VBCodeTransformer
 {
     public partial class Form1 : Form
     {
+        private string _loadedFilePath = null;
+        private string _loadedFileSource = "";
+
         public Form1()
         {
             InitializeComponent();
@@ -36,20 +40,9 @@ namespace VBCodeTransformer
 
         private void btnTransform_Click(object sender, EventArgs e)
         {
-            var input = @"
-                dim a as string
+            if (_loadedFilePath == null) return;
 
-                sub main()
-
-                end sub
-
-                sub test(a as string)
-                        MsgBox ""da""
-                end sub
-                function test2() as Integer
-
-                end function
-";
+            var input = _loadedFileSource;
             var charStream = new CaseInsensitiveStream(input);
             var lexer = new VisualBasic6Lexer(charStream);
             CommonTokenStream tokenStream;
@@ -60,10 +53,27 @@ namespace VBCodeTransformer
             parser = new VisualBasic6Parser(tokenStream);
             tree = parser.startRule();
 
-            TraceVisitor traceVisitor = new TraceVisitor("Form1.frm", tokenStream);
+            TraceVisitor traceVisitor = new TraceVisitor(Path.GetFileName(_loadedFilePath), tokenStream);
             traceVisitor.Visit(tree);
 
             richTextBox1.Text = traceVisitor.GetNewSourceCode();
+        }
+
+        private void btnLoad_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                var filePath = openFileDialog1.FileName;
+
+                _loadedFilePath = filePath;
+
+                using (var stream = new StreamReader(filePath))
+                {
+                    _loadedFileSource = stream.ReadToEnd();
+
+                    richTextBox1.Text = _loadedFileSource;
+                }
+            }
         }
     }
 }
