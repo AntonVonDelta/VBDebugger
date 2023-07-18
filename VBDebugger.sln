@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxproj", "{ABEDF709-ABB4-4E5F-A084-9FF8AA05D271}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBCodeTransformer", "VBCodeTransformer\VBCodeTransformer.csproj", "{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,18 @@ Global
 		{ABEDF709-ABB4-4E5F-A084-9FF8AA05D271}.Release|x64.Build.0 = Release|x64
 		{ABEDF709-ABB4-4E5F-A084-9FF8AA05D271}.Release|x86.ActiveCfg = Release|Win32
 		{ABEDF709-ABB4-4E5F-A084-9FF8AA05D271}.Release|x86.Build.0 = Release|Win32
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Debug|x64.Build.0 = Debug|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Debug|x86.Build.0 = Debug|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Release|x64.ActiveCfg = Release|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Release|x64.Build.0 = Release|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Release|x86.ActiveCfg = Release|Any CPU
+		{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
