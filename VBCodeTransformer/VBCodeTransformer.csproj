@@ -59,7 +59,10 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Parsers\CodeTemplates.cs" />
+    <Compile Include="Parsers\Models\VariableModel.cs" />
+    <Compile Include="Parsers\ProcedureVisitor.cs" />
     <Compile Include="Parsers\TraceVisitor.cs" />
+    <Compile Include="Parsers\Util.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CaseInsensitiveStream.cs" />

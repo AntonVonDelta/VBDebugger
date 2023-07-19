@@ -1,24 +1,18 @@
 ﻿using Antlr4.Runtime;
 using Antlr4.Runtime.Misc;
+using Antlr4.Runtime.Tree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using VBCodeTransformer.Parsers.Models;
 
 namespace VBCodeTransformer.Parsers
 {
     public class TraceVisitor : VisualBasic6ParserBaseVisitor<object>
     {
-        class VariableModel
-        {
-            public string Name { get; set; }
-            public string Type { get; set; }
-        }
-
-        private List<string> _printableVariableTypes = new List<string>{
-            "string", "Integer", "Long", "Boolean" };
         private readonly string _filename;
         private readonly TokenStreamRewriter _rewriter;
 
@@ -50,39 +44,7 @@ namespace VBCodeTransformer.Parsers
             return result;
         }
 
-        private List<VariableModel> GetPrintableProcedureArguments(VisualBasic6Parser.ArgListContext argListContext)
-        {
-            var result = GetProcedureArguments(argListContext);
 
-            return result.Where(el => _printableVariableTypes.Contains(el.Type)).ToList();
-        }
-
-        private List<VariableModel> GetProcedureArguments(VisualBasic6Parser.ArgListContext argListContext)
-        {
-            var result = new List<VariableModel>();
-
-            foreach (var arg in argListContext.arg())
-            {
-                VariableModel variable;
-                if (arg.asTypeClause() == null) continue;
-                if (arg.asTypeClause().type_().baseType() == null) continue;
-
-                variable = new VariableModel()
-                {
-                    Name = arg.ambiguousIdentifier().GetText(),
-                    Type = arg.asTypeClause().type_().baseType().GetText().ToLower()
-                };
-
-                result.Add(variable);
-            }
-
-            return result;
-        }
-
-        private string PrepareSerializedVariables(List<VariableModel> variables)
-        {
-            return string.Join(",", variables.Select(el => $"\"{el.Name}\", {el.Name}"));
-        }
 
         public override object VisitModuleOptions([NotNull] VisualBasic6Parser.ModuleOptionsContext context)
         {
@@ -103,14 +65,17 @@ namespace VBCodeTransformer.Parsers
         {
             var scopeName = context.ambiguousIdentifier().GetText();
             var scopeStartColumn = context.Start.Column;
-            var printableArguments = GetPrintableProcedureArguments(context.argList());
-            var serializedProcedureArguments = PrepareSerializedVariables(printableArguments);
+            var printableArguments = Util.GetPrintableProcedureArguments(context.argList());
+            var serializedProcedureArguments = Util.PrepareSerializedVariables(printableArguments);
 
             var newPreambleCode = CodeTemplates.GetFunctionPreamble(_filename, scopeName, serializedProcedureArguments, scopeStartColumn);
             var newPostambleCode = CodeTemplates.GetFunctionPostamble(_filename, scopeName, scopeStartColumn);
+            var procedureVisitor = new ProcedureVisitor(_filename, _sourceCodeStartingLine, printableArguments, _rewriter);
 
             _rewriter.InsertAfter(context.argList().Stop, $"\r\n{newPreambleCode}");
             _rewriter.InsertBefore(context.END_SUB().Symbol, $"{newPostambleCode}");
+
+            procedureVisitor.VisitSubStmt(context);
 
             return base.VisitSubStmt(context);
         }

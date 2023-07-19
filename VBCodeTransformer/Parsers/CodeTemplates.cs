@@ -42,5 +42,19 @@ namespace VBCodeTransformer.Parsers
                 $"{padding}    Err.Raise Err.Number, Err.Source, Err.Description\r\n" +
                 $"{padding}";
         }
+
+        public static string GetProcedureCallPreamble(string filename, string scopeName, string serializedArguments, int columnsShift)
+        {
+            var padding = new string(' ', columnsShift);
+            var result =$"DebugLog \"{filename}\", \"{scopeName}\", {LineMacro}";
+
+            if (serializedArguments.Any())
+                result += $", {serializedArguments}";
+
+            result += "\r\n" +
+                $"{padding}";
+
+            return result;
+        }
     }
 }
