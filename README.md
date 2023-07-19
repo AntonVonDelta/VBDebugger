@@ -33,6 +33,15 @@ debug_handler:
 End Sub
 ```
 
+## Auto Template Generator
+The project also include an auto template creator `VBAutoTransformer` which may be unstable (work in progress) which uses ANTLR with a VB6 lexer and parser.
+The tool automatically injects the exception guards and some `DebugLog` above procedure calls.
+
+#### Running
+  - Run the compiled executable, load `.frm` files containing VB6 code and process the file.
+  - The results can manually be edited after processing for adding more checkpoints.
+
+
 ## Issues
  - Exceptions are treated like common variables.
  - Because VB6 uses one object for errors, there are many possible cases when the exception is jumped over but the object remains filled (`On Resume Next`). It's hard for the frontend to know when a new exception is raised:
