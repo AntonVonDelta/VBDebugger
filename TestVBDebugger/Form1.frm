@@ -25,32 +25,19 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 Private Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
+
 Private Sub Form_Load()
     DebugInit
 End Sub
 
 
 Private Sub Command1_Click()
-On Error GoTo debug_handler
-    Sleep 2000
-    DebugEnterProcedure "Form1.frm", "Command1_Click", 10
-
-
     DebugLog "Form1.frm", "Command1_Click", 13
     Test1 "test"
-    
-    DebugLeaveProcedure "Form1.frm", "Command1_Click", 16
-    Exit Sub
-debug_handler:
-    DebugLeaveProcedure "Form1.frm", "Command1_Click", 19
-    'Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
 
-Sub Test1(ParamArray locals() As Variant)
-On Error GoTo debug_handler
-    DebugEnterProcedure "Form1.frm", "Test1", 26
-
+Sub Test1(var As String, ParamArray locals() As Variant)
     Dim a(0) As Integer
     Dim str As String
     
@@ -71,30 +58,15 @@ On Error GoTo debug_handler
 
     DebugLog "Form1.frm", "Test1", 46
     Test2
-
-    DebugLeaveProcedure "Form1.frm", "Test1", 49
-    Exit Sub
-debug_handler:
-    DebugLeaveProcedure "Form1.frm", "Test1", 52
-    Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
 
 
 Sub Test2()
-On Error GoTo debug_handler
-    DebugEnterProcedure "Form1.frm", "Test2", 60
-
     Dim a As Integer
     
     DebugLog "Form1.frm", "Test2", 64
     a = a / 0
-    
-    DebugLeaveProcedure "Form1.frm", "Test2", 67
-    Exit Sub
-debug_handler:
-    DebugLeaveProcedure "Form1.frm", "Test2", 70
-    Err.Raise Err.Number, Err.Source, Err.Description
 End Sub
 
 
