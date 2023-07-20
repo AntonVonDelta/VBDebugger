@@ -33,9 +33,15 @@ namespace VBCodeTransformer.Parsers
             var lines = Regex.Matches(sourceCode, @"^(.*?)\r?$", RegexOptions.Multiline);
             var result = "";
 
-            for (int i = _sourceCodeStartingLine; i < lines.Count; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines[i].Groups[1].Value;
+
+                if (i < _sourceCodeStartingLine)
+                {
+                    result += $"{line}\r\n";
+                    continue;
+                }
 
                 result += line.Replace(CodeTemplates.LineMacro, $"{i - _sourceCodeStartingLine + 1}");
                 result += "\r\n";

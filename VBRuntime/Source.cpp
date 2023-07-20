@@ -27,6 +27,11 @@ void WINAPI Init() {
 		if (debugger && !debugger->isDetached()) return;
 		debugger = std::move(temp_debugger);
 
+		if (MessageBoxA(0, "A debugger is ready to attach. Do you allow it?", "Debugger Attaching", MB_YESNO) == IDNO) {
+			debugger.reset();
+			return;
+		}
+
 		debugger->attachDebugger(&execution_controller);
 		});
 

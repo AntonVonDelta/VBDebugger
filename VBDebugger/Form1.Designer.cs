@@ -49,6 +49,8 @@ namespace VBDebugger
             this.txtCurrentInstruction = new System.Windows.Forms.TextBox();
             this.dgvStackFrames = new System.Windows.Forms.DataGridView();
             this.dgvLocals = new System.Windows.Forms.DataGridView();
+            this.btnSolutionPath = new System.Windows.Forms.Button();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -99,6 +101,7 @@ namespace VBDebugger
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.btnSolutionPath);
             this.panel1.Controls.Add(this.chkBreakOnException);
             this.panel1.Controls.Add(this.btnContinue);
             this.panel1.Controls.Add(this.btnStepOver);
@@ -295,6 +298,16 @@ namespace VBDebugger
             this.dgvLocals.Size = new System.Drawing.Size(444, 294);
             this.dgvLocals.TabIndex = 3;
             // 
+            // btnSolutionPath
+            // 
+            this.btnSolutionPath.Location = new System.Drawing.Point(293, 33);
+            this.btnSolutionPath.Name = "btnSolutionPath";
+            this.btnSolutionPath.Size = new System.Drawing.Size(130, 21);
+            this.btnSolutionPath.TabIndex = 9;
+            this.btnSolutionPath.Text = "Path to source code";
+            this.btnSolutionPath.UseVisualStyleBackColor = true;
+            this.btnSolutionPath.Click += new System.EventHandler(this.btnSolutionPath_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -347,6 +360,8 @@ namespace VBDebugger
         private System.Windows.Forms.DataGridView dgvStackFrames;
         private System.Windows.Forms.DataGridView dgvLocals;
         private System.Windows.Forms.TextBox txtStackMessages;
+        private System.Windows.Forms.Button btnSolutionPath;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 

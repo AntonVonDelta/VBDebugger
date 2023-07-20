@@ -40,8 +40,11 @@ namespace VBDebugger.Debugger
 
                 EnableKeepAlive();
 
-                await SendPacketModel(new DebuggerInfoT() { Name = "Testing" });
-                await ReadPacketModel<DebuggerAttachedT>();
+                if (!(await SendPacketModel(new DebuggerInfoT() { Name = "Testing" })))
+                    return false;
+
+                if (await ReadPacketModel<DebuggerAttachedT>() == null)
+                    return false;
 
                 return true;
             }

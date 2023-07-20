@@ -48,6 +48,7 @@ namespace VBDebugger
         private readonly StackView _stackView;
         private CancellationTokenSource _runningCts;
         private Task _runningWithCondition;
+        private string _solutionFolderPath;
 
         public Form1()
         {
@@ -184,6 +185,14 @@ namespace VBDebugger
             }
 
             await NextFlow();
+        }
+
+        private void btnSolutionPath_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                _solutionFolderPath = folderBrowserDialog1.SelectedPath;
+            }
         }
     }
 }
