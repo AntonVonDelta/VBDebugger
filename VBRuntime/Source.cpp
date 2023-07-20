@@ -79,12 +79,14 @@ std::vector<std::string> deserializeArguments(std::string data) {
 	std::string temp_value = "";
 	bool previousCharWasEscape = false;
 
+	if (data.size() == 0) return result;
+
 	for (const auto& el : data) {
 		// Use flag to escape forward slashes
 		if (el == '\\') {
 			if (previousCharWasEscape) {
 				// Previous slash escaped this one
-				result.push_back(temp_value);
+				temp_value += "\\";
 			}
 
 			previousCharWasEscape = !previousCharWasEscape;
@@ -96,8 +98,7 @@ std::vector<std::string> deserializeArguments(std::string data) {
 		}
 	}
 
-	if (temp_value.size() != 0)
-		result.push_back(temp_value);
+	result.push_back(temp_value);
 
 	return result;
 }
