@@ -15,7 +15,7 @@ Public Sub DebugInit()
 End Sub
 
 Public Sub DebugEnterProcedure(filename As String, scopeName As String, lineNumber As Long, ParamArray locals() As Variant)
-    EnterProcedure filename, scopeName, lineNumber, Serialize(locals)
+    EnterProcedure filename, scopeName, lineNumber, AddSerializedErr(Serialize(locals))
 End Sub
 
 Public Sub DebugLog(filename As String, scopeName As String, lineNumber As Long, ParamArray locals() As Variant)

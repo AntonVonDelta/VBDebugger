@@ -8,14 +8,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using VBDebugger.Debugger;
 
-namespace VBDebugger
-{
-    public partial class Form1 : Form
-    {
-        private void UpdateState(State newState)
-        {
-            switch (_state)
-            {
+namespace VBDebugger {
+    public partial class Form1 : Form {
+        private void UpdateState(State newState) {
+            switch (_state) {
                 case State.None:
                     // Initial view setup
                     btnBreak.Enabled = false;
@@ -31,8 +27,7 @@ namespace VBDebugger
 
             _state = newState;
 
-            switch (_state)
-            {
+            switch (_state) {
                 case State.ChangingSettings:
                     txtRemote.Enabled = true;
                     btnAttachDebugger.Enabled = true;
@@ -51,16 +46,19 @@ namespace VBDebugger
                     break;
 
 
-
                 case State.PausingExecution:
                     btnBreak.Enabled = false;
                     break;
                 case State.RedirectPausedExecution:
+                    break;
+                case State.RedirectPauseExecutionFailed:
+                    break;
+
+                case State.PausedExecution:
                     btnStepOver.Enabled = true;
                     btnContinue.Enabled = true;
                     chkBreakOnException.Enabled = true;
                     break;
-
 
                 case State.ResumingExecution:
                     btnBreak.Enabled = false;
@@ -72,8 +70,15 @@ namespace VBDebugger
                     btnBreak.Enabled = true;
                     break;
                 case State.RedirectRunningWithCondition:
+                    break;
+
+
+                case State.RunningWithCondition:
                     btnBreak.Enabled = true;
                     break;
+                case State.RedirectRunningWithConditionTriggered:
+                    break;
+
 
                 case State.SteppingOver:
                     btnBreak.Enabled = false;
@@ -86,12 +91,10 @@ namespace VBDebugger
                     btnContinue.Enabled = true;
                     chkBreakOnException.Enabled = true;
                     break;
-
-
-                case State.RunningWithCondition:
+                case State.RedirectStepOverFailed:
                     break;
 
-                case State.RedirectDebuggingFailed:
+                case State.DebuggingFailed:
                     btnBreak.Enabled = false;
                     btnStepOver.Enabled = false;
                     btnContinue.Enabled = false;
@@ -100,10 +103,8 @@ namespace VBDebugger
             }
         }
 
-        private async Task NextFlow(CancellationToken token = default)
-        {
-            switch (_state)
-            {
+        private async Task NextFlow(CancellationToken token = default) {
+            switch (_state) {
                 case State.None:
                     await FlowChangingSettings();
                     break;
@@ -126,6 +127,13 @@ namespace VBDebugger
                 case State.PausingExecution:
                     break;
                 case State.RedirectPausedExecution:
+                    await FlowPausedExecution();
+                    break;
+                case State.RedirectPauseExecutionFailed:
+                    await FlowDebuggingFailed();
+                    break;
+
+                case State.PausedExecution:
                     break;
 
                 case State.ResumingExecution:
@@ -135,15 +143,30 @@ namespace VBDebugger
                 case State.RedirectRunningWithCondition:
                     await FlowRunningWithCondition(token);
                     break;
+                case State.RedirectResumingExecutionFailed:
+                    await FlowDebuggingFailed();
+                    break;
 
-                case State.RedirectDebuggingFailed:
+                case State.RunningWithCondition:
+                    break;
+                case State.RedirectRunningWithConditionTriggered:
+                    await FlowPausedExecution();
+                    break;
+                case State.RedirectRunningWithConditionFailed:
+                    await FlowDebuggingFailed();
+                    break;
+
+                case State.RedirectStepOverFailed:
+                    await FlowDebuggingFailed();
+                    break;
+
+                case State.DebuggingFailed:
                     await FlowChangingSettings();
                     break;
             }
         }
 
-        private async Task FlowChangingSettings()
-        {
+        private async Task FlowChangingSettings() {
             UpdateState(State.ChangingSettings);
 
             txtRemote.Text = Properties.Settings.Default.RemoteAddress;
@@ -151,8 +174,7 @@ namespace VBDebugger
             return;
         }
 
-        private async Task FlowSavingSettings()
-        {
+        private async Task FlowSavingSettings() {
             UpdateState(State.SavingSettings);
 
             Properties.Settings.Default.RemoteAddress = txtRemote.Text;
@@ -160,31 +182,24 @@ namespace VBDebugger
             await NextFlow();
         }
 
-        private async Task FlowAttachingDebugger()
-        {
+        private async Task FlowAttachingDebugger() {
             UpdateState(State.AttachingDebugger);
 
-            try
-            {
+            try {
                 var completeAddress = txtRemote.Text;
                 var addressParts = completeAddress.Split(':');
                 var endpoint = new IPEndPoint(IPAddress.Parse(addressParts[0]), int.Parse(addressParts[1]));
 
                 _debugger = new DebuggerClient(endpoint, (string message) => AddLog(message));
 
-                if (await _debugger.Attach())
-                {
+                if (await _debugger.Attach()) {
                     AddLog($"Attached to {endpoint}");
                     UpdateState(State.RedirectAttachSuccess);
-                }
-                else
-                {
+                } else {
                     AddLog($"Failed to attach {endpoint}");
                     UpdateState(State.RedirectAttachFailed);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 AddLog(ex.Message);
                 UpdateState(State.RedirectAttachFailed);
             }
@@ -192,41 +207,57 @@ namespace VBDebugger
             await NextFlow();
         }
 
-        private async Task FlowRunningWithCondition(CancellationToken token)
-        {
+        private async Task FlowPausedExecution() {
+            UpdateState(State.PausedExecution);
+            await NextFlow();
+        }
+
+        private async Task FlowRunningWithCondition(CancellationToken token) {
             UpdateState(State.RunningWithCondition);
 
-            try
-            {
+            try {
                 var initialException = _debugger.CurrentException;
 
-                while (!token.IsCancellationRequested)
-                {
-                    if (!await _debugger.StepOver())
-                    {
-                        UpdateState(State.RedirectDebuggingFailed);
+                while (!token.IsCancellationRequested) {
+                    if (!await _debugger.StepOver()) {
+                        UpdateState(State.RedirectRunningWithConditionFailed);
                         await NextFlow();
                         return;
                     }
 
                     LoadCurrentStackDump();
 
-                    // No new exception found
-                    if (InstructionException.Equals(initialException, _debugger.CurrentException))
+
+                    // Blindspot here: if a new exception is raised with same number and description as last one
+                    // (and without a reset in between)
+                    // then the exception will not be seen as a being a new one but ignored
+                    if (_debugger.CurrentException == null ||
+                        _debugger.CurrentException.Number == 0 ||
+                        InstructionException.Equals(initialException, _debugger.CurrentException)) {
+
+                        // No new exception found
+
+                        initialException = _debugger.CurrentException;
                         continue;
+                    }
 
                     // Process new exception
                     break;
                 }
 
-                UpdateState(State.RedirectPausedExecution);
-            }
-            catch (Exception ex)
-            {
+                UpdateState(State.RedirectRunningWithConditionTriggered);
+            } catch (Exception ex) {
                 AddLog(ex.Message);
-                UpdateState(State.RedirectDebuggingFailed);
+                UpdateState(State.RedirectRunningWithConditionFailed);
             }
 
+            await NextFlow();
+        }
+
+
+
+        private async Task FlowDebuggingFailed() {
+            UpdateState(State.DebuggingFailed);
             await NextFlow();
         }
     }

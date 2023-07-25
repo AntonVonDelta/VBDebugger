@@ -4,16 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace VBDebugger.Debugger
-{
-    public class InstructionException
-    {
+namespace VBDebugger.Debugger {
+    public class InstructionException {
         public long Number { get; set; }
         public string Source { get; set; }
         public string Description { get; set; }
 
-        public static bool Equals(InstructionException obj1, InstructionException obj2)
-        {
+        public static bool Equals(InstructionException obj1, InstructionException obj2) {
             if (obj1 == obj2) return true;
 
             if (obj1 == null && obj2.Number == 0) return true;
@@ -25,8 +22,7 @@ namespace VBDebugger.Debugger
                 obj1.Description == obj2.Description;
         }
 
-        public override int GetHashCode()
-        {
+        public override int GetHashCode() {
             return Number.GetHashCode() + Source.GetHashCode() + Description.GetHashCode();
         }
     }

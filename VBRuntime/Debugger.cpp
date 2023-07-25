@@ -110,15 +110,13 @@ void Debugger::closeConnection() {
 NetModels::StackDumpT generateStackDumpModel(ExecutionController* session) {
 	NetModels::StackDumpT result;
 	auto frames = session->getStack();
-	auto current_instruction = session->getCurrentInstruction();
 	auto message = session->getMessages();
-
-	result.curent_instruction = map<NetModels::SourceCodeReferenceT>(current_instruction);
 
 	for (const auto& stack_frame : frames) {
 		std::unique_ptr<NetModels::StackFrameT> stack_frame_model = std::make_unique< NetModels::StackFrameT>();
 
 		stack_frame_model->reference = map<NetModels::SourceCodeReferenceT>(stack_frame.scope_reference);
+		stack_frame_model->current_instruction = map<NetModels::SourceCodeReferenceT>(stack_frame.current_instruction);
 
 		for (const auto& local : stack_frame.locals) {
 			std::unique_ptr<NetModels::VariableT> local_model = std::make_unique< NetModels::VariableT>();

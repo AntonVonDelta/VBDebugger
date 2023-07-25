@@ -13,12 +13,9 @@ using System.Text.RegularExpressions;
 using VBDebugger.Subviews;
 using System.Threading;
 
-namespace VBDebugger
-{
-    public partial class Form1 : Form
-    {
-        enum State
-        {
+namespace VBDebugger {
+    public partial class Form1 : Form {
+        enum State {
             None,
             ChangingSettings,
             IntroAttachToRemote,
@@ -30,17 +27,24 @@ namespace VBDebugger
 
             PausingExecution,
             RedirectPausedExecution,
+            RedirectPauseExecutionFailed,
+
+            PausedExecution,
 
             ResumingExecution,
             RedirectResumedExecution,
             RedirectRunningWithCondition,
+            RedirectResumingExecutionFailed,
+
+            RunningWithCondition,
+            RedirectRunningWithConditionTriggered,
+            RedirectRunningWithConditionFailed,
 
             SteppingOver,
             RedirectSteppedOver,
+            RedirectStepOverFailed,
 
-            RunningWithCondition,
-
-            RedirectDebuggingFailed,
+            DebuggingFailed,
         }
 
         private State _state = State.None;
@@ -50,91 +54,74 @@ namespace VBDebugger
         private Task _runningWithCondition;
         private string _solutionFolderPath;
 
-        public Form1()
-        {
+        public Form1() {
             InitializeComponent();
 
             _stackView = new StackView(dgvStackFrames, dgvLocals, txtCurrentInstruction, txtStackMessages);
         }
 
 
-        private void AddLog(string message)
-        {
+        private void AddLog(string message) {
             txtOuput.Text = $"{txtOuput.Text}{message}\r\n";
         }
 
 
-        private async void Form1_Load(object sender, EventArgs e)
-        {
+        private async void Form1_Load(object sender, EventArgs e) {
             await NextFlow();
         }
 
-        private void LoadCurrentStackDump()
-        {
+        private void LoadCurrentStackDump() {
             var stackDump = _debugger.CurrentStackDump;
 
             _stackView.LoadStackFrames(stackDump);
         }
-        private void UnloadCurrentStackDump()
-        {
+        private void UnloadCurrentStackDump() {
             _stackView.Clear();
         }
 
 
-        private async void btnAttachDebugger_Click(object sender, EventArgs e)
-        {
+        private async void btnAttachDebugger_Click(object sender, EventArgs e) {
             UpdateState(State.IntroAttachToRemote);
             await NextFlow();
         }
 
-        private async void btnBreak_Click(object sender, EventArgs e)
-        {
+        private async void btnBreak_Click(object sender, EventArgs e) {
+            var previousState = _state;
+
             UpdateState(State.PausingExecution);
 
-            try
-            {
-                if (_state == State.RunningWithCondition)
-                {
+            try {
+                if (previousState == State.RunningWithCondition) {
                     // This is actually a simulated "running" state
                     _runningCts.Cancel();
 
                     // The running flow will be signaled to close
                     // and will complete the transition to whichever state it wants
                     return;
-                }
-                else
-                {
-                    if (await _debugger.Pause())
-                    {
+                } else {
+                    if (await _debugger.Pause()) {
                         LoadCurrentStackDump();
                         UpdateState(State.RedirectPausedExecution);
-                    }
-                    else
-                    {
-                        UpdateState(State.RedirectDebuggingFailed);
+                    } else {
+                        UpdateState(State.RedirectPauseExecutionFailed);
                     }
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 AddLog(ex.Message);
 
-                UpdateState(State.RedirectDebuggingFailed);
+                UpdateState(State.RedirectPauseExecutionFailed);
             }
 
             await NextFlow();
         }
 
-        private async void btnContinue_Click(object sender, EventArgs e)
-        {
+        private async void btnContinue_Click(object sender, EventArgs e) {
             UpdateState(State.ResumingExecution);
 
             UnloadCurrentStackDump();
 
-            try
-            {
-                if (chkBreakOnException.Checked)
-                {
+            try {
+                if (chkBreakOnException.Checked) {
                     UpdateState(State.RedirectRunningWithCondition);
 
                     _runningCts = new CancellationTokenSource();
@@ -142,55 +129,42 @@ namespace VBDebugger
                     _runningWithCondition = NextFlow(_runningCts.Token);
                     await _runningWithCondition;
                     return;
-                }
-                else
-                {
+                } else {
                     if (await _debugger.Resume())
                         UpdateState(State.RedirectResumedExecution);
                     else
-                        UpdateState(State.RedirectDebuggingFailed);
+                        UpdateState(State.RedirectResumingExecutionFailed);
                 }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 AddLog(ex.Message);
 
-                UpdateState(State.RedirectDebuggingFailed);
+                UpdateState(State.RedirectResumingExecutionFailed);
             }
 
             await NextFlow();
         }
 
-        private async void btnStepOver_Click(object sender, EventArgs e)
-        {
+        private async void btnStepOver_Click(object sender, EventArgs e) {
             UpdateState(State.SteppingOver);
 
-            try
-            {
-                if (await _debugger.StepOver())
-                {
+            try {
+                if (await _debugger.StepOver()) {
                     LoadCurrentStackDump();
                     UpdateState(State.RedirectSteppedOver);
+                } else {
+                    UpdateState(State.RedirectStepOverFailed);
                 }
-                else
-                {
-                    UpdateState(State.RedirectDebuggingFailed);
-                }
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 AddLog(ex.Message);
 
-                UpdateState(State.RedirectDebuggingFailed);
+                UpdateState(State.RedirectStepOverFailed);
             }
 
             await NextFlow();
         }
 
-        private void btnSolutionPath_Click(object sender, EventArgs e)
-        {
-            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
-            {
+        private void btnSolutionPath_Click(object sender, EventArgs e) {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
                 _solutionFolderPath = folderBrowserDialog1.SelectedPath;
             }
         }

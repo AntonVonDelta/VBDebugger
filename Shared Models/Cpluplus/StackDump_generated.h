@@ -201,6 +201,7 @@ inline ::flatbuffers::Offset<SourceCodeReference> CreateSourceCodeReferenceDirec
 struct StackFrameT : public ::flatbuffers::NativeTable {
   typedef StackFrame TableType;
   std::unique_ptr<NetModels::SourceCodeReferenceT> reference{};
+  std::unique_ptr<NetModels::SourceCodeReferenceT> current_instruction{};
   std::vector<std::unique_ptr<NetModels::VariableT>> locals{};
   StackFrameT() = default;
   StackFrameT(const StackFrameT &o);
@@ -213,10 +214,14 @@ struct StackFrame FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef StackFrameBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_REFERENCE = 4,
-    VT_LOCALS = 6
+    VT_CURRENT_INSTRUCTION = 6,
+    VT_LOCALS = 8
   };
   const NetModels::SourceCodeReference *reference() const {
     return GetPointer<const NetModels::SourceCodeReference *>(VT_REFERENCE);
+  }
+  const NetModels::SourceCodeReference *current_instruction() const {
+    return GetPointer<const NetModels::SourceCodeReference *>(VT_CURRENT_INSTRUCTION);
   }
   const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>> *locals() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>> *>(VT_LOCALS);
@@ -225,6 +230,8 @@ struct StackFrame FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_REFERENCE) &&
            verifier.VerifyTable(reference()) &&
+           VerifyOffset(verifier, VT_CURRENT_INSTRUCTION) &&
+           verifier.VerifyTable(current_instruction()) &&
            VerifyOffset(verifier, VT_LOCALS) &&
            verifier.VerifyVector(locals()) &&
            verifier.VerifyVectorOfTables(locals()) &&
@@ -241,6 +248,9 @@ struct StackFrameBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_reference(::flatbuffers::Offset<NetModels::SourceCodeReference> reference) {
     fbb_.AddOffset(StackFrame::VT_REFERENCE, reference);
+  }
+  void add_current_instruction(::flatbuffers::Offset<NetModels::SourceCodeReference> current_instruction) {
+    fbb_.AddOffset(StackFrame::VT_CURRENT_INSTRUCTION, current_instruction);
   }
   void add_locals(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>>> locals) {
     fbb_.AddOffset(StackFrame::VT_LOCALS, locals);
@@ -259,9 +269,11 @@ struct StackFrameBuilder {
 inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<NetModels::SourceCodeReference> reference = 0,
+    ::flatbuffers::Offset<NetModels::SourceCodeReference> current_instruction = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::Variable>>> locals = 0) {
   StackFrameBuilder builder_(_fbb);
   builder_.add_locals(locals);
+  builder_.add_current_instruction(current_instruction);
   builder_.add_reference(reference);
   return builder_.Finish();
 }
@@ -269,11 +281,13 @@ inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(
 inline ::flatbuffers::Offset<StackFrame> CreateStackFrameDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<NetModels::SourceCodeReference> reference = 0,
+    ::flatbuffers::Offset<NetModels::SourceCodeReference> current_instruction = 0,
     const std::vector<::flatbuffers::Offset<NetModels::Variable>> *locals = nullptr) {
   auto locals__ = locals ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::Variable>>(*locals) : 0;
   return NetModels::CreateStackFrame(
       _fbb,
       reference,
+      current_instruction,
       locals__);
 }
 
@@ -282,7 +296,6 @@ inline ::flatbuffers::Offset<StackFrame> CreateStackFrameDirect(
 struct StackDumpT : public ::flatbuffers::NativeTable {
   typedef StackDump TableType;
   std::vector<std::unique_ptr<NetModels::StackFrameT>> frames{};
-  std::unique_ptr<NetModels::SourceCodeReferenceT> curent_instruction{};
   std::vector<std::string> messages{};
   StackDumpT() = default;
   StackDumpT(const StackDumpT &o);
@@ -295,14 +308,10 @@ struct StackDump FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
   typedef StackDumpBuilder Builder;
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_FRAMES = 4,
-    VT_CURENT_INSTRUCTION = 6,
-    VT_MESSAGES = 8
+    VT_MESSAGES = 6
   };
   const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>> *frames() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>> *>(VT_FRAMES);
-  }
-  const NetModels::SourceCodeReference *curent_instruction() const {
-    return GetPointer<const NetModels::SourceCodeReference *>(VT_CURENT_INSTRUCTION);
   }
   const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *messages() const {
     return GetPointer<const ::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>> *>(VT_MESSAGES);
@@ -312,8 +321,6 @@ struct StackDump FLATBUFFERS_FINAL_CLASS : private ::flatbuffers::Table {
            VerifyOffset(verifier, VT_FRAMES) &&
            verifier.VerifyVector(frames()) &&
            verifier.VerifyVectorOfTables(frames()) &&
-           VerifyOffset(verifier, VT_CURENT_INSTRUCTION) &&
-           verifier.VerifyTable(curent_instruction()) &&
            VerifyOffset(verifier, VT_MESSAGES) &&
            verifier.VerifyVector(messages()) &&
            verifier.VerifyVectorOfStrings(messages()) &&
@@ -330,9 +337,6 @@ struct StackDumpBuilder {
   ::flatbuffers::uoffset_t start_;
   void add_frames(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>>> frames) {
     fbb_.AddOffset(StackDump::VT_FRAMES, frames);
-  }
-  void add_curent_instruction(::flatbuffers::Offset<NetModels::SourceCodeReference> curent_instruction) {
-    fbb_.AddOffset(StackDump::VT_CURENT_INSTRUCTION, curent_instruction);
   }
   void add_messages(::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> messages) {
     fbb_.AddOffset(StackDump::VT_MESSAGES, messages);
@@ -351,11 +355,9 @@ struct StackDumpBuilder {
 inline ::flatbuffers::Offset<StackDump> CreateStackDump(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<NetModels::StackFrame>>> frames = 0,
-    ::flatbuffers::Offset<NetModels::SourceCodeReference> curent_instruction = 0,
     ::flatbuffers::Offset<::flatbuffers::Vector<::flatbuffers::Offset<::flatbuffers::String>>> messages = 0) {
   StackDumpBuilder builder_(_fbb);
   builder_.add_messages(messages);
-  builder_.add_curent_instruction(curent_instruction);
   builder_.add_frames(frames);
   return builder_.Finish();
 }
@@ -363,14 +365,12 @@ inline ::flatbuffers::Offset<StackDump> CreateStackDump(
 inline ::flatbuffers::Offset<StackDump> CreateStackDumpDirect(
     ::flatbuffers::FlatBufferBuilder &_fbb,
     const std::vector<::flatbuffers::Offset<NetModels::StackFrame>> *frames = nullptr,
-    ::flatbuffers::Offset<NetModels::SourceCodeReference> curent_instruction = 0,
     const std::vector<::flatbuffers::Offset<::flatbuffers::String>> *messages = nullptr) {
   auto frames__ = frames ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::StackFrame>>(*frames) : 0;
   auto messages__ = messages ? _fbb.CreateVector<::flatbuffers::Offset<::flatbuffers::String>>(*messages) : 0;
   return NetModels::CreateStackDump(
       _fbb,
       frames__,
-      curent_instruction,
       messages__);
 }
 
@@ -438,13 +438,15 @@ inline ::flatbuffers::Offset<SourceCodeReference> CreateSourceCodeReference(::fl
 }
 
 inline StackFrameT::StackFrameT(const StackFrameT &o)
-      : reference((o.reference) ? new NetModels::SourceCodeReferenceT(*o.reference) : nullptr) {
+      : reference((o.reference) ? new NetModels::SourceCodeReferenceT(*o.reference) : nullptr),
+        current_instruction((o.current_instruction) ? new NetModels::SourceCodeReferenceT(*o.current_instruction) : nullptr) {
   locals.reserve(o.locals.size());
   for (const auto &locals_ : o.locals) { locals.emplace_back((locals_) ? new NetModels::VariableT(*locals_) : nullptr); }
 }
 
 inline StackFrameT &StackFrameT::operator=(StackFrameT o) FLATBUFFERS_NOEXCEPT {
   std::swap(reference, o.reference);
+  std::swap(current_instruction, o.current_instruction);
   std::swap(locals, o.locals);
   return *this;
 }
@@ -459,6 +461,7 @@ inline void StackFrame::UnPackTo(StackFrameT *_o, const ::flatbuffers::resolver_
   (void)_o;
   (void)_resolver;
   { auto _e = reference(); if (_e) { if(_o->reference) { _e->UnPackTo(_o->reference.get(), _resolver); } else { _o->reference = std::unique_ptr<NetModels::SourceCodeReferenceT>(_e->UnPack(_resolver)); } } else if (_o->reference) { _o->reference.reset(); } }
+  { auto _e = current_instruction(); if (_e) { if(_o->current_instruction) { _e->UnPackTo(_o->current_instruction.get(), _resolver); } else { _o->current_instruction = std::unique_ptr<NetModels::SourceCodeReferenceT>(_e->UnPack(_resolver)); } } else if (_o->current_instruction) { _o->current_instruction.reset(); } }
   { auto _e = locals(); if (_e) { _o->locals.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->locals[_i]) { _e->Get(_i)->UnPackTo(_o->locals[_i].get(), _resolver); } else { _o->locals[_i] = std::unique_ptr<NetModels::VariableT>(_e->Get(_i)->UnPack(_resolver)); }; } } else { _o->locals.resize(0); } }
 }
 
@@ -471,23 +474,23 @@ inline ::flatbuffers::Offset<StackFrame> CreateStackFrame(::flatbuffers::FlatBuf
   (void)_o;
   struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const StackFrameT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _reference = _o->reference ? CreateSourceCodeReference(_fbb, _o->reference.get(), _rehasher) : 0;
+  auto _current_instruction = _o->current_instruction ? CreateSourceCodeReference(_fbb, _o->current_instruction.get(), _rehasher) : 0;
   auto _locals = _o->locals.size() ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::Variable>> (_o->locals.size(), [](size_t i, _VectorArgs *__va) { return CreateVariable(*__va->__fbb, __va->__o->locals[i].get(), __va->__rehasher); }, &_va ) : 0;
   return NetModels::CreateStackFrame(
       _fbb,
       _reference,
+      _current_instruction,
       _locals);
 }
 
 inline StackDumpT::StackDumpT(const StackDumpT &o)
-      : curent_instruction((o.curent_instruction) ? new NetModels::SourceCodeReferenceT(*o.curent_instruction) : nullptr),
-        messages(o.messages) {
+      : messages(o.messages) {
   frames.reserve(o.frames.size());
   for (const auto &frames_ : o.frames) { frames.emplace_back((frames_) ? new NetModels::StackFrameT(*frames_) : nullptr); }
 }
 
 inline StackDumpT &StackDumpT::operator=(StackDumpT o) FLATBUFFERS_NOEXCEPT {
   std::swap(frames, o.frames);
-  std::swap(curent_instruction, o.curent_instruction);
   std::swap(messages, o.messages);
   return *this;
 }
@@ -502,7 +505,6 @@ inline void StackDump::UnPackTo(StackDumpT *_o, const ::flatbuffers::resolver_fu
   (void)_o;
   (void)_resolver;
   { auto _e = frames(); if (_e) { _o->frames.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { if(_o->frames[_i]) { _e->Get(_i)->UnPackTo(_o->frames[_i].get(), _resolver); } else { _o->frames[_i] = std::unique_ptr<NetModels::StackFrameT>(_e->Get(_i)->UnPack(_resolver)); }; } } else { _o->frames.resize(0); } }
-  { auto _e = curent_instruction(); if (_e) { if(_o->curent_instruction) { _e->UnPackTo(_o->curent_instruction.get(), _resolver); } else { _o->curent_instruction = std::unique_ptr<NetModels::SourceCodeReferenceT>(_e->UnPack(_resolver)); } } else if (_o->curent_instruction) { _o->curent_instruction.reset(); } }
   { auto _e = messages(); if (_e) { _o->messages.resize(_e->size()); for (::flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->messages[_i] = _e->Get(_i)->str(); } } else { _o->messages.resize(0); } }
 }
 
@@ -515,12 +517,10 @@ inline ::flatbuffers::Offset<StackDump> CreateStackDump(::flatbuffers::FlatBuffe
   (void)_o;
   struct _VectorArgs { ::flatbuffers::FlatBufferBuilder *__fbb; const StackDumpT* __o; const ::flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _frames = _o->frames.size() ? _fbb.CreateVector<::flatbuffers::Offset<NetModels::StackFrame>> (_o->frames.size(), [](size_t i, _VectorArgs *__va) { return CreateStackFrame(*__va->__fbb, __va->__o->frames[i].get(), __va->__rehasher); }, &_va ) : 0;
-  auto _curent_instruction = _o->curent_instruction ? CreateSourceCodeReference(_fbb, _o->curent_instruction.get(), _rehasher) : 0;
   auto _messages = _o->messages.size() ? _fbb.CreateVectorOfStrings(_o->messages) : 0;
   return NetModels::CreateStackDump(
       _fbb,
       _frames,
-      _curent_instruction,
       _messages);
 }
 

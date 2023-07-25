@@ -8,10 +8,8 @@ using System.Net.Sockets;
 using NetModels;
 using Google.FlatBuffers;
 
-namespace VBDebugger.Debugger
-{
-    class DebuggerClient : IDisposable
-    {
+namespace VBDebugger.Debugger {
+    class DebuggerClient : IDisposable {
         private NetworkStream _stream;
         private bool disposedValue;
         private readonly TcpClient _client = new TcpClient();
@@ -24,17 +22,14 @@ namespace VBDebugger.Debugger
         public StackDumpT CurrentStackDump => _currentStackDump;
         public InstructionException CurrentException => _currentException;
 
-        public DebuggerClient(IPEndPoint address, Action<string> logger)
-        {
+        public DebuggerClient(IPEndPoint address, Action<string> logger) {
             _address = address;
             _logger = logger;
         }
 
 
-        public async Task<bool> Attach()
-        {
-            try
-            {
+        public async Task<bool> Attach() {
+            try {
                 await _client.ConnectAsync(_address.Address, _address.Port);
                 _stream = _client.GetStream();
 
@@ -47,17 +42,14 @@ namespace VBDebugger.Debugger
                     return false;
 
                 return true;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 _logger(ex.ToString());
             }
 
             return false;
         }
 
-        public async Task<bool> Pause()
-        {
+        public async Task<bool> Pause() {
             bool result;
             StackDumpT stackDump;
 
@@ -69,14 +61,12 @@ namespace VBDebugger.Debugger
 
             return stackDump != null;
         }
-        public async Task<bool> Resume()
-        {
+        public async Task<bool> Resume() {
             ProcessStackDump(null);
 
             return await SendPacketModel(new DebugCommandT() { CommandType = CommandType.Resume });
         }
-        public async Task<bool> StepOver()
-        {
+        public async Task<bool> StepOver() {
             bool result;
             StackDumpT stackDump;
 
@@ -90,8 +80,7 @@ namespace VBDebugger.Debugger
         }
 
 
-        private void ProcessStackDump(StackDumpT stackDump)
-        {
+        private void ProcessStackDump(StackDumpT stackDump) {
             _currentStackDump = stackDump;
             _currentException = null;
 
@@ -102,10 +91,8 @@ namespace VBDebugger.Debugger
             var errSource = stackDump.Frames.Last().Locals.Where(el => el.Name == "ErrSource").FirstOrDefault();
             var errDescription = stackDump.Frames.Last().Locals.Where(el => el.Name == "ErrDescription").FirstOrDefault();
 
-            if (errNumber != null)
-            {
-                _currentException = new InstructionException()
-                {
+            if (errNumber != null) {
+                _currentException = new InstructionException() {
                     Number = long.Parse(errNumber.Value),
                     Source = errSource.Value,
                     Description = errDescription.Value
@@ -114,25 +101,20 @@ namespace VBDebugger.Debugger
         }
 
 
-        private async Task<T> ReadPacketModel<T>() where T : class
-        {
+        private async Task<T> ReadPacketModel<T>() where T : class {
             byte[] packetData;
             T packet;
 
-            try
-            {
+            try {
                 packetData = await ReadPacket();
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 _logger($"Could not read packet for type {typeof(T)}, {ex}");
                 return null;
             }
 
             packet = DeserializeModel<T>(packetData);
 
-            if (packet == null)
-            {
+            if (packet == null) {
                 _logger($"Received packet malformed, size {packetData.Length}");
 
                 _client.Close();
@@ -140,19 +122,16 @@ namespace VBDebugger.Debugger
 
             return packet;
         }
-        private async Task<byte[]> ReadPacket()
-        {
+        private async Task<byte[]> ReadPacket() {
             byte[] packetSizeHeader = await ReadAllAsync(4);
             int packetSize = BitConverter.ToInt32(packetSizeHeader, 0);
             return await ReadAllAsync(packetSize);
         }
-        private async Task<byte[]> ReadAllAsync(int len)
-        {
+        private async Task<byte[]> ReadAllAsync(int len) {
             byte[] data = new byte[len];
             int total_sent_bytes = 0;
 
-            do
-            {
+            do {
                 int sent_bytes = await _stream.ReadAsync(data, total_sent_bytes, len - total_sent_bytes);
 
                 if (sent_bytes == 0) throw new Exception("Other endpoint signaled the end of stream");
@@ -162,17 +141,13 @@ namespace VBDebugger.Debugger
 
             return data;
         }
-        private T DeserializeModel<T>(byte[] packetData) where T : class
-        {
+        private T DeserializeModel<T>(byte[] packetData) where T : class {
             var byteBuffer = new ByteBuffer(packetData);
 
-            if (typeof(T) == typeof(DebuggerAttachedT))
-            {
+            if (typeof(T) == typeof(DebuggerAttachedT)) {
                 if (!DebuggerAttached.VerifyDebuggerAttached(byteBuffer)) return null;
                 return (T)(object)DebuggerAttachedT.DeserializeFromBinary(packetData);
-            }
-            else if (typeof(T) == typeof(StackDumpT))
-            {
+            } else if (typeof(T) == typeof(StackDumpT)) {
                 if (!StackDump.VerifyStackDump(byteBuffer)) return null;
                 return (T)(object)StackDumpT.DeserializeFromBinary(packetData);
             }
@@ -180,13 +155,11 @@ namespace VBDebugger.Debugger
             return null;
         }
 
-        private async Task<bool> SendPacketModel(object model)
-        {
+        private async Task<bool> SendPacketModel(object model) {
             byte[] data;
             int packetSize;
 
-            if (!SerializeModel(model, out data))
-            {
+            if (!SerializeModel(model, out data)) {
                 _logger($"No packet handler registered for given packet type {model}");
                 _client.Close();
                 return false;
@@ -194,22 +167,18 @@ namespace VBDebugger.Debugger
 
             packetSize = data.Length;
 
-            try
-            {
+            try {
                 await _stream.WriteAsync(BitConverter.GetBytes(packetSize), 0, 4);
                 await _stream.WriteAsync(data, 0, packetSize);
 
                 return true;
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 _logger($"Could not send packet: {model}, {ex}");
             }
 
             return false;
         }
-        private bool SerializeModel(object model, out byte[] data)
-        {
+        private bool SerializeModel(object model, out byte[] data) {
             data = null;
 
             if (model is DebuggerInfoT castedModel1) data = castedModel1.SerializeToBinary();
@@ -219,8 +188,7 @@ namespace VBDebugger.Debugger
             return true;
         }
 
-        private void EnableKeepAlive()
-        {
+        private void EnableKeepAlive() {
             var data = new byte[12];
 
             Array.Copy(BitConverter.GetBytes(1), 0, data, 0, 4);
@@ -231,18 +199,15 @@ namespace VBDebugger.Debugger
             _client.Client.IOControl(IOControlCode.KeepAliveValues, data, new byte[0] { });
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
                 if (disposing)
                     _client.Dispose();
 
                 disposedValue = true;
             }
         }
-        public void Dispose()
-        {
+        public void Dispose() {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
             Dispose(disposing: true);
             GC.SuppressFinalize(this);

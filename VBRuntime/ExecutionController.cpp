@@ -13,9 +13,6 @@ void ExecutionController::stepOver(bool execute_instruction) {
 std::vector<Scope> ExecutionController::getStack() {
 	return execution_stack;
 }
-SourceCodeReference ExecutionController::getCurrentInstruction() {
-	return current_instruction;
-}
 std::vector<std::string> ExecutionController::getMessages() {
 	return error_messages;
 }
@@ -23,9 +20,8 @@ std::vector<std::string> ExecutionController::getMessages() {
 void ExecutionController::traceEnterProcedure(SourceCodeReference& reference, std::vector<std::string> arguments) {
 	Scope scope;
 
-	current_instruction = reference;
-
 	scope.scope_reference = reference;
+	scope.current_instruction = reference;
 	scope.locals = {};
 
 	execution_stack.push_back(scope);
@@ -34,8 +30,6 @@ void ExecutionController::traceEnterProcedure(SourceCodeReference& reference, st
 	breakpoint.input();
 }
 bool ExecutionController::traceLog(SourceCodeReference& reference, std::vector<std::string> arguments) {
-	current_instruction = reference;
-
 	if (execution_stack.size() == 0) {
 		std::ostringstream message;
 
@@ -43,17 +37,17 @@ bool ExecutionController::traceLog(SourceCodeReference& reference, std::vector<s
 
 		addMessage(message.str());
 	} else {
-		auto last_scope = execution_stack.back();
+		auto& last_scope = execution_stack.back();
+
+		last_scope.current_instruction = reference;
 
 		checkReferenceWithLiveScope(reference);
-		addLocalsToLiveScope(current_instruction, arguments);
+		addLocalsToLiveScope(reference, arguments);
 	}
 
 	return breakpoint.input();
 }
 void ExecutionController::traceLeaveProcedure(SourceCodeReference& reference, std::vector<std::string> arguments) {
-	current_instruction = reference;
-
 	if (execution_stack.size() == 0) {
 		std::ostringstream message;
 
@@ -63,8 +57,12 @@ void ExecutionController::traceLeaveProcedure(SourceCodeReference& reference, st
 
 		breakpoint.input();
 	} else {
+		auto& last_scope = execution_stack.back();
+
+		last_scope.current_instruction = reference;
+
 		checkReferenceWithLiveScope(reference);
-		addLocalsToLiveScope(current_instruction, arguments);
+		addLocalsToLiveScope(reference, arguments);
 
 		breakpoint.input();
 

@@ -14,12 +14,13 @@ table SourceCodeReference{
 
 table StackFrame{
 	reference: SourceCodeReference;
+	current_instruction: SourceCodeReference;
+	
 	locals:[Variable];
 }
 
 table StackDump{
 	frames: [StackFrame];
-	curent_instruction: SourceCodeReference;
 	messages: [string];
 }
 

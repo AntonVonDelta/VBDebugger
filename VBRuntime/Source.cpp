@@ -33,7 +33,7 @@ void WINAPI Init() {
 		}
 
 		debugger->attachDebugger(&execution_controller);
-		});
+	});
 
 	debugger_server.start();
 }

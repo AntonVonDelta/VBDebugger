@@ -30,17 +30,14 @@ struct SourceCodeReference {
 
 struct Scope {
 	SourceCodeReference scope_reference;
+	SourceCodeReference current_instruction;
+
 	std::map<std::string, std::string> locals;
 };
 
 class ExecutionController {
 private:
-	// We keep scope and current line decoupled because we cannot guarantee
-	// perfect stack tracking, thus it's possible to have the current instruction
-	// not in the current stack
-
 	std::vector<Scope> execution_stack;
-	SourceCodeReference current_instruction;
 
 	// Errors which are kept until the stack empties
 	std::vector<std::string> error_messages;
@@ -53,7 +50,6 @@ public:
 	void stepOver(bool execute_instruction);
 
 	std::vector<Scope> getStack();
-	SourceCodeReference getCurrentInstruction();
 	std::vector<std::string> getMessages();
 
 	void traceEnterProcedure(SourceCodeReference& reference, std::vector<std::string> arguments);

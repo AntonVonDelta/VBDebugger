@@ -23,30 +23,26 @@ public struct StackDump : IFlatbufferObject
 
   public NetModels.StackFrame? Frames(int j) { int o = __p.__offset(4); return o != 0 ? (NetModels.StackFrame?)(new NetModels.StackFrame()).__assign(__p.__indirect(__p.__vector(o) + j * 4), __p.bb) : null; }
   public int FramesLength { get { int o = __p.__offset(4); return o != 0 ? __p.__vector_len(o) : 0; } }
-  public NetModels.SourceCodeReference? CurentInstruction { get { int o = __p.__offset(6); return o != 0 ? (NetModels.SourceCodeReference?)(new NetModels.SourceCodeReference()).__assign(__p.__indirect(o + __p.bb_pos), __p.bb) : null; } }
-  public string Messages(int j) { int o = __p.__offset(8); return o != 0 ? __p.__string(__p.__vector(o) + j * 4) : null; }
-  public int MessagesLength { get { int o = __p.__offset(8); return o != 0 ? __p.__vector_len(o) : 0; } }
+  public string Messages(int j) { int o = __p.__offset(6); return o != 0 ? __p.__string(__p.__vector(o) + j * 4) : null; }
+  public int MessagesLength { get { int o = __p.__offset(6); return o != 0 ? __p.__vector_len(o) : 0; } }
 
   public static Offset<NetModels.StackDump> CreateStackDump(FlatBufferBuilder builder,
       VectorOffset framesOffset = default(VectorOffset),
-      Offset<NetModels.SourceCodeReference> curent_instructionOffset = default(Offset<NetModels.SourceCodeReference>),
       VectorOffset messagesOffset = default(VectorOffset)) {
-    builder.StartTable(3);
+    builder.StartTable(2);
     StackDump.AddMessages(builder, messagesOffset);
-    StackDump.AddCurentInstruction(builder, curent_instructionOffset);
     StackDump.AddFrames(builder, framesOffset);
     return StackDump.EndStackDump(builder);
   }
 
-  public static void StartStackDump(FlatBufferBuilder builder) { builder.StartTable(3); }
+  public static void StartStackDump(FlatBufferBuilder builder) { builder.StartTable(2); }
   public static void AddFrames(FlatBufferBuilder builder, VectorOffset framesOffset) { builder.AddOffset(0, framesOffset.Value, 0); }
   public static VectorOffset CreateFramesVector(FlatBufferBuilder builder, Offset<NetModels.StackFrame>[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static VectorOffset CreateFramesVectorBlock(FlatBufferBuilder builder, Offset<NetModels.StackFrame>[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateFramesVectorBlock(FlatBufferBuilder builder, ArraySegment<Offset<NetModels.StackFrame>> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateFramesVectorBlock(FlatBufferBuilder builder, IntPtr dataPtr, int sizeInBytes) { builder.StartVector(1, sizeInBytes, 1); builder.Add<Offset<NetModels.StackFrame>>(dataPtr, sizeInBytes); return builder.EndVector(); }
   public static void StartFramesVector(FlatBufferBuilder builder, int numElems) { builder.StartVector(4, numElems, 4); }
-  public static void AddCurentInstruction(FlatBufferBuilder builder, Offset<NetModels.SourceCodeReference> curentInstructionOffset) { builder.AddOffset(1, curentInstructionOffset.Value, 0); }
-  public static void AddMessages(FlatBufferBuilder builder, VectorOffset messagesOffset) { builder.AddOffset(2, messagesOffset.Value, 0); }
+  public static void AddMessages(FlatBufferBuilder builder, VectorOffset messagesOffset) { builder.AddOffset(1, messagesOffset.Value, 0); }
   public static VectorOffset CreateMessagesVector(FlatBufferBuilder builder, StringOffset[] data) { builder.StartVector(4, data.Length, 4); for (int i = data.Length - 1; i >= 0; i--) builder.AddOffset(data[i].Value); return builder.EndVector(); }
   public static VectorOffset CreateMessagesVectorBlock(FlatBufferBuilder builder, StringOffset[] data) { builder.StartVector(4, data.Length, 4); builder.Add(data); return builder.EndVector(); }
   public static VectorOffset CreateMessagesVectorBlock(FlatBufferBuilder builder, ArraySegment<StringOffset> data) { builder.StartVector(4, data.Count, 4); builder.Add(data); return builder.EndVector(); }
@@ -66,7 +62,6 @@ public struct StackDump : IFlatbufferObject
   public void UnPackTo(StackDumpT _o) {
     _o.Frames = new List<NetModels.StackFrameT>();
     for (var _j = 0; _j < this.FramesLength; ++_j) {_o.Frames.Add(this.Frames(_j).HasValue ? this.Frames(_j).Value.UnPack() : null);}
-    _o.CurentInstruction = this.CurentInstruction.HasValue ? this.CurentInstruction.Value.UnPack() : null;
     _o.Messages = new List<string>();
     for (var _j = 0; _j < this.MessagesLength; ++_j) {_o.Messages.Add(this.Messages(_j));}
   }
@@ -78,7 +73,6 @@ public struct StackDump : IFlatbufferObject
       for (var _j = 0; _j < __frames.Length; ++_j) { __frames[_j] = NetModels.StackFrame.Pack(builder, _o.Frames[_j]); }
       _frames = CreateFramesVector(builder, __frames);
     }
-    var _curent_instruction = _o.CurentInstruction == null ? default(Offset<NetModels.SourceCodeReference>) : NetModels.SourceCodeReference.Pack(builder, _o.CurentInstruction);
     var _messages = default(VectorOffset);
     if (_o.Messages != null) {
       var __messages = new StringOffset[_o.Messages.Count];
@@ -88,7 +82,6 @@ public struct StackDump : IFlatbufferObject
     return CreateStackDump(
       builder,
       _frames,
-      _curent_instruction,
       _messages);
   }
 }
@@ -96,12 +89,10 @@ public struct StackDump : IFlatbufferObject
 public class StackDumpT
 {
   public List<NetModels.StackFrameT> Frames { get; set; }
-  public NetModels.SourceCodeReferenceT CurentInstruction { get; set; }
   public List<string> Messages { get; set; }
 
   public StackDumpT() {
     this.Frames = null;
-    this.CurentInstruction = null;
     this.Messages = null;
   }
   public static StackDumpT DeserializeFromBinary(byte[] fbBuffer) {
@@ -121,8 +112,7 @@ static public class StackDumpVerify
   {
     return verifier.VerifyTableStart(tablePos)
       && verifier.VerifyVectorOfTables(tablePos, 4 /*Frames*/, NetModels.StackFrameVerify.Verify, false)
-      && verifier.VerifyTable(tablePos, 6 /*CurentInstruction*/, NetModels.SourceCodeReferenceVerify.Verify, false)
-      && verifier.VerifyVectorOfStrings(tablePos, 8 /*Messages*/, false)
+      && verifier.VerifyVectorOfStrings(tablePos, 6 /*Messages*/, false)
       && verifier.VerifyTableEnd(tablePos);
   }
 }
