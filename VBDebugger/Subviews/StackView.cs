@@ -24,6 +24,8 @@ namespace VBDebugger.Subviews {
         private readonly BindingList<FrameModel> _stackFramesViewSource = new BindingList<FrameModel>();
         private readonly BindingList<LocalModel> _localsViewSource = new BindingList<LocalModel>();
 
+        public event Action<StackFrameT> StackFrameSelected;
+
         public StackView(DataGridView stackFramesView, DataGridView localsView, TextBox currentInstructionView, TextBox stackMessagesView) {
             _stackFramesView = stackFramesView;
             _localsView = localsView;
@@ -67,11 +69,14 @@ namespace VBDebugger.Subviews {
             }
         }
 
-
         private string ToString(SourceCodeReferenceT reference) {
             return $"{reference.Filename} - {reference.ScopeName} on line {reference.LineNumber}";
         }
 
+
+        private void OnStackFrameSelected(StackFrameT stackFrame) {
+            if (StackFrameSelected != null) StackFrameSelected(stackFrame);
+        }
 
         private void stackFramesView_SelectionChanged(object sender, EventArgs e) {
             var selectedRows = _stackFramesView.SelectedRows;
@@ -81,6 +86,9 @@ namespace VBDebugger.Subviews {
 
             if (selectedRows.Count == 0) return;
             selectedFrame = (FrameModel)selectedRows[0].DataBoundItem;
+
+            // Raise event
+            OnStackFrameSelected(selectedFrame.StackFrame);
 
             // Show current instruction in this stack frame
             _currentInstructionView.Text = ToString(selectedFrame.StackFrame.CurrentInstruction);

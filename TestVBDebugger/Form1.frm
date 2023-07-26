@@ -8,7 +8,7 @@ Begin VB.Form Form1
    LinkTopic       =   "Form1"
    ScaleHeight     =   6600
    ScaleWidth      =   11685
-   StartUpPosition =   3
+   StartUpPosition =   3  'Windows Default
    Begin VB.CommandButton Command1 
       Caption         =   "Command1"
       Height          =   615
@@ -44,7 +44,7 @@ End Sub
 
 Sub Test8(a As String, b As String)
 On Error GoTo debug_handler
-    DebugEnterProcedure "Form1.frm", "Test8", 22,"a", a, "b", b
+    DebugEnterProcedure "Form1.frm", "Test8", 22, "a", a, "b", b
 
 
 
@@ -76,7 +76,7 @@ End Sub
 
 Sub Test1(var As String, ParamArray locals() As Variant)
 On Error GoTo debug_handler
-    DebugEnterProcedure "Form1.frm", "Test1", 54,"var", var
+    DebugEnterProcedure "Form1.frm", "Test1", 54, "var", var
 
     Dim a(0) As Integer
     Dim str As String
@@ -109,7 +109,7 @@ On Error GoTo debug_handler
 
     Dim a As Integer
     
-    a = a / 0
+    ' a = a / 0
 
     DebugLeaveProcedure "Form1.frm", "Test2", 89
     Exit Sub

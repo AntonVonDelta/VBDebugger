@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using VBDebugger.Subviews;
 using System.Threading;
 using System.IO;
+using NetModels;
 
 namespace VBDebugger {
     public partial class Form1 : Form {
@@ -56,21 +57,22 @@ namespace VBDebugger {
         private Task _runningWithCondition;
         private string _solutionFolderPath;
         private List<string> _solutionFilesFilePaths;
+        private string _loadedSourceCodeFilepath;
 
         public Form1() {
             InitializeComponent();
 
             _stackView = new StackView(dgvStackFrames, dgvLocals, txtCurrentInstruction, txtStackMessages);
+            _stackView.StackFrameSelected += stackView_StackFrameSelected;
+        }
+
+        private async void Form1_Load(object sender, EventArgs e) {
+            await NextFlow();
         }
 
 
         private void AddLog(string message) {
             txtOuput.Text = $"{txtOuput.Text}{message}\r\n";
-        }
-
-
-        private async void Form1_Load(object sender, EventArgs e) {
-            await NextFlow();
         }
 
         private void LoadCurrentStackDump() {
@@ -81,7 +83,48 @@ namespace VBDebugger {
         private void UnloadCurrentStackDump() {
             _stackView.Clear();
         }
+        private void LoadSourceCodeFromReference(SourceCodeReferenceT reference) {
+            foreach (TreeNode node in treeViewFiles.Nodes) {
+                var sourceFilepath = (string)node.Tag;
+                var filename = Path.GetFileName(sourceFilepath);
 
+                if (filename == reference.Filename) {
+                    treeViewFiles.SelectedNode = node;
+
+                    LoadSourceCodeFromNode(node);
+                    SelectLineInCodeFromReference(reference);
+
+                    break;
+                }
+            }
+        }
+
+        private void LoadSourceCodeFromNode(TreeNode node) {
+            var nodeFilepath = (string)node.Tag;
+
+            if (_loadedSourceCodeFilepath == nodeFilepath) return;
+
+            _loadedSourceCodeFilepath = nodeFilepath;
+
+            using (var stream = new StreamReader(nodeFilepath)) {
+                rtbSourceCode.Text = stream.ReadToEnd();
+            }
+        }
+
+        private void SelectLineInCodeFromReference(SourceCodeReferenceT reference) {
+            for (int i = 0; i < rtbSourceCode.Lines.Length; i++) {
+                var line = rtbSourceCode.Lines[i];
+
+                if (Regex.IsMatch(line, $@"^\s*(?:DebugEnterProcedure|DebugLog|DebugLeaveProcedure).+{reference.LineNumber}")) {
+                    rtbSourceCode.HighlightLine(i, Color.LightBlue);
+                    break;
+                }
+            }
+        }
+
+        private void stackView_StackFrameSelected(NetModels.StackFrameT stackFrame) {
+            LoadSourceCodeFromReference(stackFrame.CurrentInstruction);
+        }
 
         private async void btnAttachDebugger_Click(object sender, EventArgs e) {
             if (string.IsNullOrEmpty(_solutionFolderPath)) {
@@ -177,11 +220,7 @@ namespace VBDebugger {
         }
 
         private void treeViewFiles_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e) {
-            var nodeFilepath = (string)e.Node.Tag;
-
-            using (var stream = new StreamReader(nodeFilepath)) {
-                rtbSourceCode.Text = stream.ReadToEnd();
-            }
+            LoadSourceCodeFromNode(e.Node);
         }
     }
 }
