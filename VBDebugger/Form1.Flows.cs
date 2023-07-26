@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -29,11 +30,14 @@ namespace VBDebugger {
 
             switch (_state) {
                 case State.ChangingSettings:
+                    btnSolutionPath.Enabled = true;
+                    treeViewFiles.Nodes.Clear();
                     txtRemote.Enabled = true;
                     btnAttachDebugger.Enabled = true;
                     break;
 
                 case State.SavingSettings:
+                    btnSolutionPath.Enabled = false;
                     txtRemote.Enabled = false;
                     btnAttachDebugger.Enabled = false;
                     break;
@@ -169,15 +173,37 @@ namespace VBDebugger {
         private async Task FlowChangingSettings() {
             UpdateState(State.ChangingSettings);
 
+            _solutionFolderPath = Properties.Settings.Default.SolutionFolderPath;
             txtRemote.Text = Properties.Settings.Default.RemoteAddress;
-
+            
             return;
         }
 
         private async Task FlowSavingSettings() {
             UpdateState(State.SavingSettings);
 
+            Properties.Settings.Default.SolutionFolderPath = _solutionFolderPath;
             Properties.Settings.Default.RemoteAddress = txtRemote.Text;
+            Properties.Settings.Default.Save();
+
+            // Load solution files
+            _solutionFilesFilePaths = new List<string>();
+            foreach (var file in Directory.GetFiles(_solutionFolderPath)) {
+                var extension = Path.GetExtension(file);
+
+                if (extension != ".frm") continue;
+
+                _solutionFilesFilePaths.Add(file);
+            }
+
+            // Load tree view with source code files
+            foreach (var file in _solutionFilesFilePaths) {
+                var filenameWithoutExtension = Path.GetFileNameWithoutExtension(file);
+                var node = new TreeNode(filenameWithoutExtension);
+                
+                node.Tag = file;
+                treeViewFiles.Nodes.Add(node);
+            }
 
             await NextFlow();
         }

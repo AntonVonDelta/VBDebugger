@@ -34,5 +34,17 @@ namespace VBDebugger.Properties {
                 this["RemoteAddress"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SolutionFolderPath {
+            get {
+                return ((string)(this["SolutionFolderPath"]));
+            }
+            set {
+                this["SolutionFolderPath"] = value;
+            }
+        }
     }
 }

@@ -32,13 +32,13 @@ namespace VBDebugger
             this.mainSplitContainer = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnSolutionPath = new System.Windows.Forms.Button();
             this.chkBreakOnException = new System.Windows.Forms.CheckBox();
             this.btnContinue = new System.Windows.Forms.Button();
             this.btnStepOver = new System.Windows.Forms.Button();
             this.btnBreak = new System.Windows.Forms.Button();
             this.txtRemote = new System.Windows.Forms.TextBox();
             this.btnAttachDebugger = new System.Windows.Forms.Button();
-            this.rtbSourceCode = new System.Windows.Forms.RichTextBox();
             this.tabViewBottom = new System.Windows.Forms.TabControl();
             this.tabOutput = new System.Windows.Forms.TabPage();
             this.txtOuput = new System.Windows.Forms.TextBox();
@@ -49,8 +49,10 @@ namespace VBDebugger
             this.txtCurrentInstruction = new System.Windows.Forms.TextBox();
             this.dgvStackFrames = new System.Windows.Forms.DataGridView();
             this.dgvLocals = new System.Windows.Forms.DataGridView();
-            this.btnSolutionPath = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.rtbSourceCode = new System.Windows.Forms.RichTextBox();
+            this.treeViewFiles = new System.Windows.Forms.TreeView();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
@@ -64,6 +66,7 @@ namespace VBDebugger
             this.tblLayoutStackFrames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLocals)).BeginInit();
+            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainSplitContainer
@@ -89,7 +92,7 @@ namespace VBDebugger
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.rtbSourceCode, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -113,6 +116,16 @@ namespace VBDebugger
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1097, 64);
             this.panel1.TabIndex = 0;
+            // 
+            // btnSolutionPath
+            // 
+            this.btnSolutionPath.Location = new System.Drawing.Point(9, 8);
+            this.btnSolutionPath.Name = "btnSolutionPath";
+            this.btnSolutionPath.Size = new System.Drawing.Size(130, 21);
+            this.btnSolutionPath.TabIndex = 9;
+            this.btnSolutionPath.Text = "Path to source code";
+            this.btnSolutionPath.UseVisualStyleBackColor = true;
+            this.btnSolutionPath.Click += new System.EventHandler(this.btnSolutionPath_Click);
             // 
             // chkBreakOnException
             // 
@@ -156,29 +169,20 @@ namespace VBDebugger
             // 
             // txtRemote
             // 
-            this.txtRemote.Location = new System.Drawing.Point(9, 9);
+            this.txtRemote.Location = new System.Drawing.Point(9, 37);
             this.txtRemote.Name = "txtRemote";
             this.txtRemote.Size = new System.Drawing.Size(278, 20);
             this.txtRemote.TabIndex = 4;
             // 
             // btnAttachDebugger
             // 
-            this.btnAttachDebugger.Location = new System.Drawing.Point(293, 8);
+            this.btnAttachDebugger.Location = new System.Drawing.Point(293, 36);
             this.btnAttachDebugger.Name = "btnAttachDebugger";
             this.btnAttachDebugger.Size = new System.Drawing.Size(130, 21);
             this.btnAttachDebugger.TabIndex = 3;
             this.btnAttachDebugger.Text = "Attach to process";
             this.btnAttachDebugger.UseVisualStyleBackColor = true;
             this.btnAttachDebugger.Click += new System.EventHandler(this.btnAttachDebugger_Click);
-            // 
-            // rtbSourceCode
-            // 
-            this.rtbSourceCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbSourceCode.Location = new System.Drawing.Point(3, 73);
-            this.rtbSourceCode.Name = "rtbSourceCode";
-            this.rtbSourceCode.Size = new System.Drawing.Size(1097, 352);
-            this.rtbSourceCode.TabIndex = 1;
-            this.rtbSourceCode.Text = "";
             // 
             // tabViewBottom
             // 
@@ -298,15 +302,38 @@ namespace VBDebugger
             this.dgvLocals.Size = new System.Drawing.Size(444, 294);
             this.dgvLocals.TabIndex = 3;
             // 
-            // btnSolutionPath
+            // tableLayoutPanel2
             // 
-            this.btnSolutionPath.Location = new System.Drawing.Point(293, 33);
-            this.btnSolutionPath.Name = "btnSolutionPath";
-            this.btnSolutionPath.Size = new System.Drawing.Size(130, 21);
-            this.btnSolutionPath.TabIndex = 9;
-            this.btnSolutionPath.Text = "Path to source code";
-            this.btnSolutionPath.UseVisualStyleBackColor = true;
-            this.btnSolutionPath.Click += new System.EventHandler(this.btnSolutionPath_Click);
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
+            this.tableLayoutPanel2.Controls.Add(this.rtbSourceCode, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.treeViewFiles, 1, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 73);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1097, 322);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // rtbSourceCode
+            // 
+            this.rtbSourceCode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbSourceCode.Location = new System.Drawing.Point(3, 3);
+            this.rtbSourceCode.Name = "rtbSourceCode";
+            this.rtbSourceCode.Size = new System.Drawing.Size(791, 316);
+            this.rtbSourceCode.TabIndex = 0;
+            this.rtbSourceCode.Text = "";
+            // 
+            // treeViewFiles
+            // 
+            this.treeViewFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewFiles.Location = new System.Drawing.Point(800, 3);
+            this.treeViewFiles.Name = "treeViewFiles";
+            this.treeViewFiles.Size = new System.Drawing.Size(294, 316);
+            this.treeViewFiles.TabIndex = 1;
+            this.treeViewFiles.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewFiles_NodeMouseClick);
             // 
             // Form1
             // 
@@ -334,6 +361,7 @@ namespace VBDebugger
             this.tblLayoutStackFrames.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLocals)).EndInit();
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -348,7 +376,6 @@ namespace VBDebugger
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox txtRemote;
         private System.Windows.Forms.Button btnAttachDebugger;
-        private System.Windows.Forms.RichTextBox rtbSourceCode;
         private System.Windows.Forms.TextBox txtOuput;
         private System.Windows.Forms.Button btnStepOver;
         private System.Windows.Forms.Button btnBreak;
@@ -362,6 +389,9 @@ namespace VBDebugger
         private System.Windows.Forms.TextBox txtStackMessages;
         private System.Windows.Forms.Button btnSolutionPath;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.RichTextBox rtbSourceCode;
+        private System.Windows.Forms.TreeView treeViewFiles;
     }
 }
 

@@ -5,5 +5,8 @@
     <Setting Name="RemoteAddress" Type="System.String" Scope="User">
       <Value Profile="(Default)">127.0.0.1:5050</Value>
     </Setting>
+    <Setting Name="SolutionFolderPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

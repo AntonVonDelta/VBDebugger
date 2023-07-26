@@ -12,11 +12,13 @@ using System.Net;
 using System.Text.RegularExpressions;
 using VBDebugger.Subviews;
 using System.Threading;
+using System.IO;
 
 namespace VBDebugger {
     public partial class Form1 : Form {
         enum State {
             None,
+
             ChangingSettings,
             IntroAttachToRemote,
             SavingSettings,
@@ -53,6 +55,7 @@ namespace VBDebugger {
         private CancellationTokenSource _runningCts;
         private Task _runningWithCondition;
         private string _solutionFolderPath;
+        private List<string> _solutionFilesFilePaths;
 
         public Form1() {
             InitializeComponent();
@@ -81,6 +84,11 @@ namespace VBDebugger {
 
 
         private async void btnAttachDebugger_Click(object sender, EventArgs e) {
+            if (string.IsNullOrEmpty(_solutionFolderPath)) {
+                MessageBox.Show("You must select the solution path where source code resides");
+                return;
+            }
+
             UpdateState(State.IntroAttachToRemote);
             await NextFlow();
         }
@@ -108,7 +116,6 @@ namespace VBDebugger {
                 }
             } catch (Exception ex) {
                 AddLog(ex.Message);
-
                 UpdateState(State.RedirectPauseExecutionFailed);
             }
 
@@ -166,6 +173,14 @@ namespace VBDebugger {
         private void btnSolutionPath_Click(object sender, EventArgs e) {
             if (folderBrowserDialog1.ShowDialog() == DialogResult.OK) {
                 _solutionFolderPath = folderBrowserDialog1.SelectedPath;
+            }
+        }
+
+        private void treeViewFiles_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e) {
+            var nodeFilepath = (string)e.Node.Tag;
+
+            using (var stream = new StreamReader(nodeFilepath)) {
+                rtbSourceCode.Text = stream.ReadToEnd();
             }
         }
     }
