@@ -6,12 +6,21 @@ Features:
  - Step over code
  - Break on exception
 
-<img src="Snapshot1.png">
+<img src="Snapshot1.png" width="700">
 
-## Setting debugging runtime
-Compile the solution. This will generate the debugger/editor program **VBDebugger.exe** and the debugging runtime **VBRuntime.dll** which will be referenced as a library inside VB6 code.
+## Compilling
+If the Scintilla control throws errors, copy `Scintilla.dll` and `Lexilla.dll` from `VBDebugger\packages\Scintilla.NET.5.3.2.7\build\x86` to `%localappdata%\Microsoft\VisualStudio\16.0_6ae64920\build\x86`.
 
-## Setting VB6
+Compile the solution. 
+Finally this will generate:
+ - the debugger/editor program **VBDebugger.exe**
+ - the native debugging runtime **VBRuntime.dll** (which will be referenced as a library inside VB6 code)
+ - the auto code transformer **VBCodeTransformer.exe** (used for auto templating)
+
+## Setting debugging runtime for VB6
+The native runtime generated at the previous step must be interfaced with VB6.
+Edit the `Debugger.bas` module file and set the path of the dll, if needed, to `VBRuntime.dll`.
+
 For remote debugging to work properly the default template must be used for the debugged functions:
  - The functions must be surrounded in try catch exception handler (this does not affect behaviour because the error is rethrown so the calling function does not see a difference)
  - All functions must call DebugEnterProcedure as first instruction
