@@ -6,6 +6,8 @@ Features:
  - Step over code
  - Break on exception
 
+<img src="Snapshot1.png">
+
 ## Setting debugging runtime
 Compile the solution. This will generate the debugger/editor program **VBDebugger.exe** and the debugging runtime **VBRuntime.dll** which will be referenced as a library inside VB6 code.
 
