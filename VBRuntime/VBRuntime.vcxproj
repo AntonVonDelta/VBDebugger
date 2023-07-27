@@ -161,7 +161,6 @@
     <ClInclude Include="ExecutionController.h" />
     <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="NetModels.h" />
-    <ClInclude Include="Util.h" />
     <ClInclude Include="Winsockets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

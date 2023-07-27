@@ -1,7 +1,9 @@
 ﻿using NetModels;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace VBDebugger.Subviews {
     public class StackView {
@@ -48,25 +50,34 @@ namespace VBDebugger.Subviews {
 
         public void LoadStackFrames(StackDumpT stackDump) {
             var selectedFrames = _stackFramesView.SelectedRows;
+            IEnumerable<FrameModel> stackFramesModels;
+
+            stackFramesModels = stackDump.Frames.Select(el => {
+                var frameName = $"{el.Reference.Filename} - {el.Reference.ScopeName}";
+
+                return new FrameModel() {
+                    Frame = frameName,
+                    StackFrame = el
+                };
+            });
 
             _stackMessagesView.Text = string.Join("\r\n", stackDump.Messages);
 
             _stackFramesViewSource.Clear();
-            foreach (var frame in stackDump.Frames) {
-                var frameName = $"{frame.Reference.Filename} - {frame.Reference.ScopeName}";
-                var newFrame = new FrameModel() {
-                    Frame = frameName,
-                    StackFrame = frame
-                };
-
-                _stackFramesViewSource.Add(newFrame);
-            }
+            AtomicUpdateStackFramesView(stackFramesModels.ToList());
 
             // Select most recent stack
             if (_stackFramesView.Rows.Count != 0) {
                 _stackFramesView.ClearSelection();
                 _stackFramesView.Rows[_stackFramesView.Rows.Count - 1].Selected = true;
             }
+        }
+
+        private void AtomicUpdateStackFramesView(List<FrameModel> data) {
+            _stackFramesView.SelectionChanged -= stackFramesView_SelectionChanged;
+            foreach (var item in data)
+                _stackFramesViewSource.Add(item);
+            _stackFramesView.SelectionChanged += stackFramesView_SelectionChanged;
         }
 
         private string ToString(SourceCodeReferenceT reference) {

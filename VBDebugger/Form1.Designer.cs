@@ -39,6 +39,8 @@ namespace VBDebugger
             this.btnBreak = new System.Windows.Forms.Button();
             this.txtRemote = new System.Windows.Forms.TextBox();
             this.btnAttachDebugger = new System.Windows.Forms.Button();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.treeViewFiles = new System.Windows.Forms.TreeView();
             this.tabViewBottom = new System.Windows.Forms.TabControl();
             this.tabOutput = new System.Windows.Forms.TabPage();
             this.txtOuput = new System.Windows.Forms.TextBox();
@@ -50,15 +52,14 @@ namespace VBDebugger
             this.dgvStackFrames = new System.Windows.Forms.DataGridView();
             this.dgvLocals = new System.Windows.Forms.DataGridView();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.rtbSourceCode = new System.Windows.Forms.RichTextBox();
-            this.treeViewFiles = new System.Windows.Forms.TreeView();
+            this.editorSourceCode = new ScintillaNET.Scintilla();
             ((System.ComponentModel.ISupportInitialize)(this.mainSplitContainer)).BeginInit();
             this.mainSplitContainer.Panel1.SuspendLayout();
             this.mainSplitContainer.Panel2.SuspendLayout();
             this.mainSplitContainer.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
             this.tabViewBottom.SuspendLayout();
             this.tabOutput.SuspendLayout();
             this.tabStackMessages.SuspendLayout();
@@ -66,7 +67,6 @@ namespace VBDebugger
             this.tblLayoutStackFrames.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLocals)).BeginInit();
-            this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainSplitContainer
@@ -183,6 +183,30 @@ namespace VBDebugger
             this.btnAttachDebugger.Text = "Attach to process";
             this.btnAttachDebugger.UseVisualStyleBackColor = true;
             this.btnAttachDebugger.Click += new System.EventHandler(this.btnAttachDebugger_Click);
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
+            this.tableLayoutPanel2.Controls.Add(this.treeViewFiles, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.editorSourceCode, 0, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 73);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1097, 322);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
+            // treeViewFiles
+            // 
+            this.treeViewFiles.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewFiles.Location = new System.Drawing.Point(800, 3);
+            this.treeViewFiles.Name = "treeViewFiles";
+            this.treeViewFiles.Size = new System.Drawing.Size(294, 316);
+            this.treeViewFiles.TabIndex = 1;
+            this.treeViewFiles.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewFiles_NodeMouseClick);
             // 
             // tabViewBottom
             // 
@@ -302,38 +326,24 @@ namespace VBDebugger
             this.dgvLocals.Size = new System.Drawing.Size(444, 294);
             this.dgvLocals.TabIndex = 3;
             // 
-            // tableLayoutPanel2
+            // editorSourceCode
             // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 300F));
-            this.tableLayoutPanel2.Controls.Add(this.rtbSourceCode, 0, 0);
-            this.tableLayoutPanel2.Controls.Add(this.treeViewFiles, 1, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 73);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1097, 322);
-            this.tableLayoutPanel2.TabIndex = 1;
-            // 
-            // rtbSourceCode
-            // 
-            this.rtbSourceCode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.rtbSourceCode.Location = new System.Drawing.Point(3, 3);
-            this.rtbSourceCode.Name = "rtbSourceCode";
-            this.rtbSourceCode.Size = new System.Drawing.Size(791, 316);
-            this.rtbSourceCode.TabIndex = 0;
-            this.rtbSourceCode.Text = "";
-            // 
-            // treeViewFiles
-            // 
-            this.treeViewFiles.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeViewFiles.Location = new System.Drawing.Point(800, 3);
-            this.treeViewFiles.Name = "treeViewFiles";
-            this.treeViewFiles.Size = new System.Drawing.Size(294, 316);
-            this.treeViewFiles.TabIndex = 1;
-            this.treeViewFiles.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeViewFiles_NodeMouseClick);
+            this.editorSourceCode.AutoCMaxHeight = 9;
+            this.editorSourceCode.BiDirectionality = ScintillaNET.BiDirectionalDisplayType.Disabled;
+            this.editorSourceCode.CaretLineBackColor = System.Drawing.Color.Gainsboro;
+            this.editorSourceCode.CaretLineFrame = 2;
+            this.editorSourceCode.CaretLineVisible = true;
+            this.editorSourceCode.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.editorSourceCode.LexerName = null;
+            this.editorSourceCode.Location = new System.Drawing.Point(3, 3);
+            this.editorSourceCode.Margins.Left = 2;
+            this.editorSourceCode.Name = "editorSourceCode";
+            this.editorSourceCode.ScrollWidth = 49;
+            this.editorSourceCode.Size = new System.Drawing.Size(791, 316);
+            this.editorSourceCode.TabIndents = true;
+            this.editorSourceCode.TabIndex = 2;
+            this.editorSourceCode.UseRightToLeftReadingLayout = false;
+            this.editorSourceCode.WrapMode = ScintillaNET.WrapMode.None;
             // 
             // Form1
             // 
@@ -351,6 +361,7 @@ namespace VBDebugger
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.tableLayoutPanel2.ResumeLayout(false);
             this.tabViewBottom.ResumeLayout(false);
             this.tabOutput.ResumeLayout(false);
             this.tabOutput.PerformLayout();
@@ -361,7 +372,6 @@ namespace VBDebugger
             this.tblLayoutStackFrames.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvStackFrames)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgvLocals)).EndInit();
-            this.tableLayoutPanel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -390,8 +400,8 @@ namespace VBDebugger
         private System.Windows.Forms.Button btnSolutionPath;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.RichTextBox rtbSourceCode;
         private System.Windows.Forms.TreeView treeViewFiles;
+        private ScintillaNET.Scintilla editorSourceCode;
     }
 }
 

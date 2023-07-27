@@ -61,6 +61,7 @@ namespace VBDebugger {
 
         public Form1() {
             InitializeComponent();
+            SetScintillaEditor();
 
             _stackView = new StackView(dgvStackFrames, dgvLocals, txtCurrentInstruction, txtStackMessages);
             _stackView.StackFrameSelected += stackView_StackFrameSelected;
@@ -70,6 +71,22 @@ namespace VBDebugger {
             await NextFlow();
         }
 
+        private void SetScintillaEditor() {
+
+
+            editorSourceCode.Margins[0].Width = 28;
+            editorSourceCode.Margins[1].Width = 20;
+
+            editorSourceCode.Markers[0].SetBackColor(Color.LightSkyBlue);
+            editorSourceCode.Markers[0].Symbol = ScintillaNET.MarkerSymbol.Background;
+
+            editorSourceCode.Markers[1].SetBackColor(Color.LightSkyBlue);
+            editorSourceCode.Markers[1].Symbol = ScintillaNET.MarkerSymbol.Arrow;
+
+            // Make goto line of code more pleasant to watch
+            // (keep code before and after line visible)
+            editorSourceCode.SetVisiblePolicy(Util.ScintillaConstants.VISIBLE_SLOP, 7);
+        }
 
         private void AddLog(string message) {
             txtOuput.Text = $"{txtOuput.Text}{message}\r\n";
@@ -102,21 +119,29 @@ namespace VBDebugger {
         private void LoadSourceCodeFromNode(TreeNode node) {
             var nodeFilepath = (string)node.Tag;
 
-            if (_loadedSourceCodeFilepath == nodeFilepath) return;
+            // Clean markers for new source file
+            editorSourceCode.MarkerDeleteAll(0);
+            editorSourceCode.MarkerDeleteAll(1);
 
+            if (_loadedSourceCodeFilepath == nodeFilepath) return;
             _loadedSourceCodeFilepath = nodeFilepath;
 
             using (var stream = new StreamReader(nodeFilepath)) {
-                rtbSourceCode.Text = stream.ReadToEnd();
+                editorSourceCode.Text = stream.ReadToEnd();
             }
         }
 
         private void SelectLineInCodeFromReference(SourceCodeReferenceT reference) {
-            for (int i = 0; i < rtbSourceCode.Lines.Length; i++) {
-                var line = rtbSourceCode.Lines[i];
+            editorSourceCode.MarkerDeleteAll(0);
 
-                if (Regex.IsMatch(line, $@"^\s*(?:DebugEnterProcedure|DebugLog|DebugLeaveProcedure).+{reference.LineNumber}")) {
-                    rtbSourceCode.HighlightLine(i, Color.LightBlue);
+            for (int i = 0; i < editorSourceCode.Lines.Count; i++) {
+                var line = editorSourceCode.Lines[i];
+
+                if (Regex.IsMatch(line.Text, $@"^\s*(?:DebugEnterProcedure|DebugLog|DebugLeaveProcedure).+{reference.LineNumber}")) {
+                    line.MarkerAdd(0);
+                    line.MarkerAdd(1);
+
+                    editorSourceCode.EnsureLineVisible(line.Index);
                     break;
                 }
             }
