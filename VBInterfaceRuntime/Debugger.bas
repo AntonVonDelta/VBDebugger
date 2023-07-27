@@ -1,11 +1,11 @@
 Attribute VB_Name = "Module2"
-Option Explicit
+Option Explicit On
 
-Private Declare Sub Init Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" ()
+Private Declare Sub Init Lib "VBRuntime.dll" ()
 
-Private Declare Sub EnterProcedure Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
-Private Declare Sub Log Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
-Private Declare Sub LeaveProcedure Lib "C:\Users\VM\Documents\Projects\VBDebugger\Debug\VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
+Private Declare Sub EnterProcedure Lib "VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
+Private Declare Sub Log Lib "VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
+Private Declare Sub LeaveProcedure Lib "VBRuntime.dll" (ByVal filename As String, ByVal scopeName As String, ByVal lineNumber As Long, ByVal arguments As String)
 
 
 '' Each local is composed of two pairs: first string representing the name of the local, a string which stores the value

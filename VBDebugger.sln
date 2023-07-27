@@ -17,6 +17,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcxpro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VBCodeTransformer", "VBCodeTransformer\VBCodeTransformer.csproj", "{F5B9635B-D1B5-4D8B-AC52-3558EB62A4F4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VBInterfaceRuntime", "VBInterfaceRuntime", "{CBC77AB5-3FBB-48F9-AC4D-3813B9E28958}"
+	ProjectSection(SolutionItems) = preProject
+		VBInterfaceRuntime\Debugger.bas = VBInterfaceRuntime\Debugger.bas
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
