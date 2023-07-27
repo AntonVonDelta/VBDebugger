@@ -23,8 +23,8 @@ Edit the `Debugger.bas` module file and set the path of the dll, if needed, to `
 
 For remote debugging to work properly the default template must be used for the debugged functions:
  - The functions must be surrounded in try catch exception handler (this does not affect behaviour because the error is rethrown so the calling function does not see a difference)
- - All functions must call DebugEnterProcedure as first instruction
- - They also must call DebugLeaveProcedure before every `Exit Sub`, `Exit Function`, `End Sub`, `End Function` and inside the function's recently installed error handler.
+ - All functions must call `DebugEnterProcedure` as first instruction
+ - They also must call `DebugLeaveProcedure` before every `Exit Sub`, `Exit Function`, `End Sub`, `End Function` and inside the function's recently installed error handler.
  - `DebugLog` should be called inside every error handler that already exists in the function as to capture the exceptions 
 
 **Template:**
