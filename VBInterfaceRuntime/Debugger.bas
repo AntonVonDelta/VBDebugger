@@ -1,5 +1,5 @@
 Attribute VB_Name = "Module2"
-Option Explicit On
+Option Explicit
 
 Private Declare Sub Init Lib "VBRuntime.dll" ()
 
