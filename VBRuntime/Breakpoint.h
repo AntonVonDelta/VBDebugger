@@ -25,7 +25,7 @@ private:
 	std::condition_variable source_signal = {};
 	std::mutex mtx_debugger_signal = {};
 	std::condition_variable debugger_signal = {};
-	ExecutionState execution_state;
+	ExecutionState execution_state = ExecutionState::Running;
 	bool execute_current_instruction = true;
 
 public:

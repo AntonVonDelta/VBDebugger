@@ -143,11 +143,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CancellationToken.cpp" />
     <ClCompile Include="Debugger.cpp" />
     <ClCompile Include="DebuggerServer.cpp" />
     <ClCompile Include="ExecutionController.cpp" />
     <ClCompile Include="MemoryBlock.cpp" />
     <ClCompile Include="MessageResponse.h" />
+    <ClCompile Include="PingPongSynchronization.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="NetModels.cpp" />
   </ItemGroup>
@@ -156,11 +158,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Breakpoint.h" />
+    <ClInclude Include="CancellationToken.h" />
     <ClInclude Include="Debugger.h" />
     <ClInclude Include="DebuggerServer.h" />
     <ClInclude Include="ExecutionController.h" />
     <ClInclude Include="MemoryBlock.h" />
     <ClInclude Include="NetModels.h" />
+    <ClInclude Include="PingPongSynchronization.h" />
     <ClInclude Include="Winsockets.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

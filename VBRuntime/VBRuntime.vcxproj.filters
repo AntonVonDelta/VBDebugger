@@ -36,6 +36,12 @@
     <ClCompile Include="MessageResponse.h">
       <Filter>Header Files</Filter>
     </ClCompile>
+    <ClCompile Include="PingPongSynchronization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CancellationToken.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Exports.def">
@@ -62,6 +68,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Breakpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PingPongSynchronization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CancellationToken.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
