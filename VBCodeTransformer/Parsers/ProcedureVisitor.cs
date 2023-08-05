@@ -64,5 +64,14 @@ namespace VBCodeTransformer.Parsers {
 
             return base.VisitICS_B_ProcedureCall(context);
         }
+
+        public override object VisitLineLabel([NotNull] VisualBasic6Parser.LineLabelContext context) {
+            var startColumn = context.ambiguousIdentifier().Start.Column;
+            var lineLabelCheckpoint = CodeTemplates.GetLineLabelCheckpoint(_filename, _scopeName, startColumn);
+
+            _rewriter.InsertAfter(context.Stop, lineLabelCheckpoint);
+
+            return base.VisitLineLabel(context);
+        }
     }
 }

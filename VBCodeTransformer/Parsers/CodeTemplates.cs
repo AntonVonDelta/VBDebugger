@@ -51,5 +51,14 @@ namespace VBCodeTransformer.Parsers {
 
             return result;
         }
+
+        public static string GetLineLabelCheckpoint(string filename, string scopeName, int columnsShift) {
+            var padding = new string(' ', columnsShift);
+
+            return 
+                $"\r\n"+
+                $"{padding}    DebugLog \"{filename}\", \"{scopeName}\", {LineMacro}"+
+                $"\r\n";
+        }
     }
 }
