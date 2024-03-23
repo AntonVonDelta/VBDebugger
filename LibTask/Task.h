@@ -11,19 +11,55 @@
 #include <map>
 #include <unordered_set>
 
-class Task {
-private:
-	std::mutex mtxSync;
-	std::atomic<bool> value;
-	std::unordered_set<std::shared_ptr<std::condition_variable>> registeredNotificationSignals;
+namespace TPL {
+	class TaskRegistration {
+	private:
+		std::shared_ptr<InternalTask> source;
+		int id;
 
-	void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
-	void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
+	public:
+		TaskRegistration(std::shared_ptr<InternalTask> source, int id) {
+			this->source = source;
+			this->id = id;
+		}
 
-	void SetResult();
+		~TaskRegistration() {
+			source->InternalUnregisterCallback(id);
+		}
+	};
 
-public:
+	struct InternalTaskData {
+		std::atomic<bool> value;
+		std::map<int, std::function<void(void)>> registeredCallbacks;
+		int lastRegistrationId = 0;
 
-	bool IsFinished();
-};
+		std::mutex mtxSync;
+		std::unordered_set<std::shared_ptr<std::condition_variable>> registeredNotificationSignals;
+	};
 
+	class InternalTask {
+	private:
+		friend class TaskRegistration;
+
+		std::shared_ptr<InternalTaskData> data;
+
+		int InternalRegisterCallback(std::function<void(void)> callback);
+		void InternalUnregisterCallback(int registrationId);
+		std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
+
+	protected:
+
+	public:
+		void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
+		void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
+
+		virtual ~InternalTask();
+	};
+
+
+	class Task :public InternalTask {
+	public:
+		virtual void Result() = 0;
+		virtual bool IsFinished() = 0;
+	};
+}
