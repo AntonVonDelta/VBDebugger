@@ -5,13 +5,13 @@ MemoryBlock::MemoryBlock() {
 }
 
 MemoryBlock::MemoryBlock(int size) {
-	auto raw_data = new char[size];
+	auto raw_data = new uint8_t[size];
 
 	count = size;
-	data = std::shared_ptr<char[]>(raw_data);
+	data = std::shared_ptr<uint8_t[]>(raw_data);
 }
 
-char* MemoryBlock::get() const {
+uint8_t* MemoryBlock::get() const {
 	return data.get();
 }
 

@@ -16,30 +16,26 @@ std::optional<MemoryBlock> NetModels::readPacket(SOCKET socket) {
 	// like make_unique does
 	packet_data = MemoryBlock(packet_size);
 
-	read_bytes = recv(socket, packet_data.get(), packet_size, MSG_WAITALL);
-	if (read_bytes == 0) return {};
+	read_bytes = recv(socket, (char*)packet_data.get(), packet_size, MSG_WAITALL);
+	if (read_bytes == 0 || read_bytes == SOCKET_ERROR) return {};
 
 	return packet_data;
 }
 
 template<typename T>
 std::optional<std::unique_ptr<T>> NetModels::readPacketModel(SOCKET socket) {
-	flatbuffers::Verifier::Options verifier_options;
-	bool verify_result;
-
 	typedef T::TableType ApiObject;
+	bool verify_result;
+	flatbuffers::Verifier::Options verifier_options;
 	auto data = readPacket(socket);
 
 	if (!data) return {};
-
 	verifier_options.assert = true;
 
-	flatbuffers::Verifier verifier((uint8_t*)data->get(), data->size(), verifier_options);
+	flatbuffers::Verifier verifier(data->get(), data->size(), verifier_options);
+	if (!verifier.VerifyBuffer<ApiObject>()) return {};
+
 	const auto* root = flatbuffers::GetRoot<ApiObject>(data->get());
-	verify_result = root->Verify(verifier);
-
-	if (!verify_result) return {};
-
 	return std::unique_ptr<T>(root->UnPack(nullptr));
 }
 
