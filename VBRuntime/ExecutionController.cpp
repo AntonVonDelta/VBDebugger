@@ -2,6 +2,7 @@
 
 void ExecutionController::pause() {
 	breakpoint.pause();
+
 }
 void ExecutionController::resume() {
 	breakpoint.resume();
