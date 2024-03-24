@@ -14,10 +14,15 @@
 class InternalAnyTask :public TPL::Task {
 private:
 	std::vector<std::shared_ptr<TPL::Task>> tasks;
-	std::mutex mtxSetSignal;
 	std::shared_ptr<std::condition_variable> setSignal;
 
-	void InternalSignalCompleted();
+	bool IsAnyFinished() {
+		for (const auto& task : tasks) {
+			if (task->IsFinished())
+				return true;
+		}
+		return false;
+	}
 
 public:
 
@@ -35,13 +40,18 @@ public:
 	}
 
 	void Result() override {
-		std::unique_lock<std::mutex> lock(mtxSetSignal);
+		std::unique_lock<std::mutex> lock(data->mtxSync);
 
-		setSignal->wait(lock, [this]() {return false; });
+		setSignal->wait(lock,
+			[this]() {
+				return IsAnyFinished();
+			});
 	}
 
-	bool IsFinished() override {
 
+
+	bool IsFinished() override {
+		return IsAnyFinished();
 	}
 
 	~InternalAnyTask() {
@@ -53,5 +63,5 @@ public:
 };
 
 std::unique_ptr<TPL::Task> WhenAny(std::vector<std::shared_ptr<TPL::Task>> tasks) {
-	//return std::unique_ptr<Task>((Task*)result);
+	return std::make_unique<InternalAnyTask>(tasks);
 }

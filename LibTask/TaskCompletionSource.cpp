@@ -16,7 +16,8 @@ TaskCompletionSource::TaskCompletionSource() {
 }
 
 void TaskCompletionSource::SetResult() {
-	value = true;
+	Task->data;
+	//->value = true;
 
 	auto internalTask = (InternalTask*)(Task.get());
 
@@ -28,9 +29,9 @@ TaskCompletionSource::InternalTask::InternalTask(TaskCompletionSource* tcs) {
 }
 
 void TaskCompletionSource::InternalTask::InternalSignalCompleted() {
-	std::scoped_lock lock(mtxSync);
+	std::scoped_lock lock(data->mtxSync);
 
-	for (const auto& conditional : registeredNotificationSignals) {
+	for (const auto& conditional : data->registeredNotificationSignals) {
 		conditional->notify_all();
 	}
 }

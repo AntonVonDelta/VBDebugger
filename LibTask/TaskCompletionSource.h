@@ -13,16 +13,14 @@
 
 class TaskCompletionSource {
 private:
-	std::atomic<bool> value;
-
-	class InternalTask :Task {
+	class InternalTask :public TPL::Task {
 	private:
 		friend class TaskCompletionSource;
 		TaskCompletionSource* tcs;
 
-		
+
 		InternalTask(TaskCompletionSource* tcs);
-		
+
 		void InternalSignalCompleted();
 
 	public:
@@ -34,8 +32,8 @@ public:
 	TaskCompletionSource();
 
 public:
-	std::shared_ptr<Task> Task;
-	
+	std::shared_ptr<TPL::Task> Task;
+
 	void SetResult();
 };
 
