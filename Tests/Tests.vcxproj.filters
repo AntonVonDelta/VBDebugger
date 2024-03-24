@@ -29,5 +29,8 @@
     <ClInclude Include="Breakpoint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LibTaskTests.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

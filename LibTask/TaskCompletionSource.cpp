@@ -52,6 +52,7 @@ public:
 
 
 TaskCompletionSource::TaskCompletionSource() {
+	Task = std::make_shared<SourceTask>(this);
 }
 
 void TaskCompletionSource::SetResult() {
@@ -66,6 +67,7 @@ void TaskCompletionSource::SetResult() {
 			throw std::exception("TaskCompletionSource already set");
 
 		castedData.value = true;
+		castedData.value.notify_all();
 	}
 
 	castedTask.InternalSignalCompleted();

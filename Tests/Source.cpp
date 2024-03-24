@@ -1,10 +1,12 @@
-#include "MessageBroker.h"
-#include "Breakpoint.h"
 #include <Windows.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include <string>
+
+#include "MessageBroker.h"
+#include "Breakpoint.h"
+#include "LibTaskTests.h"
 
 using namespace std;
 
@@ -78,37 +80,44 @@ void run3(int passed) {
 }
 
 
+
 int main() {
-	Init();
+	libtask_run1();
 
-	auto t1 = thread(&run2);
+	cout << "\n\n";
 
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	libtask_run2();
 
-	//while (true) {
-	//	int choice;
+	//Init();
 
-	//	cout << "Choice: ";
-	//	cin >> choice;
+	//auto t1 = thread(&run2);
 
-	//	switch (choice) {
-	//		case 0:
-	//			breakpoint.pause();
-	//			break;
+	//std::this_thread::sleep_for(std::chrono::seconds(5));
 
-	//		case 1:
-	//			breakpoint.resume();
-	//			break;
+	////while (true) {
+	////	int choice;
 
-	//		case 2:
-	//			breakpoint.stepOver();
-	//			break;
+	////	cout << "Choice: ";
+	////	cin >> choice;
 
-	//		case 3:
-	//			breakpoint.stepOver(false);
-	//			break;
-	//	}
-	//}
+	////	switch (choice) {
+	////		case 0:
+	////			breakpoint.pause();
+	////			break;
 
-	t1.join();
+	////		case 1:
+	////			breakpoint.resume();
+	////			break;
+
+	////		case 2:
+	////			breakpoint.stepOver();
+	////			break;
+
+	////		case 3:
+	////			breakpoint.stepOver(false);
+	////			break;
+	////	}
+	////}
+
+	//t1.join();
 }

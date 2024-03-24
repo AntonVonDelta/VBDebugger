@@ -88,7 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,10 +144,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Breakpoint.h" />
+    <ClInclude Include="LibTaskTests.h" />
     <ClInclude Include="MessageBroker.h" />
     <ClInclude Include="MessageResponse.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\LibTask\LibTask.vcxproj">
+      <Project>{d3a457b2-116d-4744-8a66-5d9c2f8ac896}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\VBRuntime\VBRuntime.vcxproj">
       <Project>{af61ff2d-dea2-4cad-86e7-f222b251bfe9}</Project>
     </ProjectReference>

@@ -11,7 +11,7 @@
 #include <map>
 #include "Task.h"
 
-class TaskCompletionSource {
+class __declspec(dllexport) TaskCompletionSource {
 public:
 	TaskCompletionSource();
 

@@ -44,7 +44,7 @@ namespace TPL {
 	/// <summary>
 	/// The public interface
 	/// </summary>
-	class Task {
+	class __declspec(dllexport) Task {
 	public:
 		virtual void Result() = 0;
 		virtual bool IsFinished() = 0;
