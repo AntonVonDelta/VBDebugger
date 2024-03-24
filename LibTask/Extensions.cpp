@@ -25,7 +25,6 @@ private:
 	}
 
 public:
-
 	InternalAnyTask(std::vector<std::shared_ptr<TPL::Task>> tasks) {
 		// The given parameters are stored locally in order to keep them referenced
 		// in memory for the entire lifetime of this object
@@ -48,8 +47,6 @@ public:
 			});
 	}
 
-
-
 	bool IsFinished() override {
 		return IsAnyFinished();
 	}
@@ -67,6 +64,54 @@ std::unique_ptr<TPL::Task> TPL::WhenAny(std::vector<std::shared_ptr<TPL::Task>> 
 }
 
 
+
+class InternalAllTask :public TPL::CommonTask {
+private:
+	std::vector<std::shared_ptr<TPL::Task>> tasks;
+	std::shared_ptr<std::condition_variable> setSignal;
+
+	bool IsAllFinished() {
+		for (const auto& task : tasks) {
+			if (!task->IsFinished())
+				return false;
+		}
+		return true;
+	}
+public:
+	InternalAllTask(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+		// The given parameters are stored locally in order to keep them referenced
+		// in memory for the entire lifetime of this object
+		this->tasks = tasks;
+
+		setSignal = std::make_shared<std::condition_variable>();
+
+		for (const auto& task : tasks) {
+			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			castedTask.AddNotificationSignal(setSignal);
+		}
+	}
+
+	void Result() override {
+		std::unique_lock<std::mutex> lock(data->mtxSync);
+
+		setSignal->wait(lock,
+			[this]() {
+				return IsAllFinished();
+			});
+	}
+
+	bool IsFinished() override {
+		return IsAllFinished();
+	}
+
+	~InternalAllTask() {
+		for (const auto& task : tasks) {
+			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			castedTask.RemoveNotificationSignal(setSignal);
+		}
+	}
+};
+
 std::unique_ptr<TPL::Task> TPL::WhenAll(std::vector<std::shared_ptr<TPL::Task>> tasks) {
-	return std::make_unique<InternalAnyTask>(tasks);
+	return std::make_unique<InternalAllTask>(tasks);
 }

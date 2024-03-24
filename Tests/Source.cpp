@@ -91,6 +91,9 @@ int main() {
 	libtask_run3();
 	cout << "\n\n";
 
+	libtask_run4();
+	cout << "\n\n";
+
 	//Init();
 
 	//auto t1 = thread(&run2);
