@@ -9,9 +9,11 @@
 #include <functional>
 #include <exception>
 #include <map>
-#include "Task.h"
 
-class __declspec(dllexport) TaskCompletionSource {
+#include "Task.h"
+#include "Utils.h"
+
+class DLL_API TaskCompletionSource {
 public:
 	TaskCompletionSource();
 

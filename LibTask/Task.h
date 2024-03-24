@@ -11,77 +11,18 @@
 #include <map>
 #include <unordered_set>
 
+#include "Utils.h"
+
 namespace TPL {
-	class InternalTaskData {
-	private:
-		friend class TaskRegistration;
-		friend class CommonTask;
-
-		int lastRegistrationId = 0;
-
-		// Move members from private to public as they become needed
-
-	public:
-		std::mutex mtxSync;
-
-		// Used by TaskCompletionSource
-		std::map<int, std::function<void(void)>> registeredCallbacks;
-		std::unordered_set<std::shared_ptr<std::condition_variable>> registeredNotificationSignals;
-	};
-
-
-	class TaskRegistration {
-	private:
-		std::shared_ptr<InternalTaskData> source;
-		int id;
-
-	public:
-		TaskRegistration(std::shared_ptr<InternalTaskData> source, int id);
-		~TaskRegistration();
-	};
-
-
 	/// <summary>
 	/// The public interface
 	/// </summary>
-	class __declspec(dllexport) Task {
+	class DLL_API Task {
 	public:
 		virtual void Result() = 0;
 		virtual bool IsFinished() = 0;
 
 		// Must be defined in order for Tasks to be compared
 		virtual bool operator==(const Task& other) = 0;
-	};
-
-	/// <summary>
-	/// Minimum functionality class for tasks.
-	/// The library depends on the premise that all tasks actualy inherit this
-	/// </summary>
-	class CommonTask :public Task {
-	private:
-		int Register(std::function<void(void)> callback);
-
-	public:
-
-		/// <summary>
-		/// Stored the data in a separate structure
-		/// because this allows us to copy the parent class while keeping uncopiable data the same.
-		/// (mutexes, conditional variables, etc.)
-		/// Also this allows us to call code from RAII classes like Registration
-		/// that on destruction try to access the parent class data. 
-		/// Previously doing this could not guarantee that no use after free would hapen
-		/// </summary>
-		std::shared_ptr<InternalTaskData> data;
-
-		CommonTask();
-		CommonTask(std::shared_ptr<InternalTaskData> data);
-
-		virtual std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
-		virtual void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
-		virtual void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
-
-		virtual bool operator==(const Task& other) override;
-
-		virtual ~CommonTask();
 	};
 }

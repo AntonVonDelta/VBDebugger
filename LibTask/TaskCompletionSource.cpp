@@ -9,7 +9,7 @@
 #include <map>
 
 #include "TaskCompletionSource.h"
-#include "Task.h"
+#include "CommonTask.h"
 
 class SimpleTaskData :public TPL::InternalTaskData {
 public:

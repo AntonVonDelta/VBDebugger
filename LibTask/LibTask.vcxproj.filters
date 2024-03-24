@@ -21,6 +21,12 @@
     <ClInclude Include="TaskCompletionSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CommonTask.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Task.cpp">
@@ -33,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Extensions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonTask.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

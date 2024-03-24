@@ -9,7 +9,7 @@
 #include <map>
 
 #include "Extensions.h"
-#include "Task.h"
+#include "CommonTask.h"
 
 class InternalAnyTask :public TPL::CommonTask {
 private:
@@ -34,8 +34,8 @@ public:
 		setSignal = std::make_shared<std::condition_variable>();
 
 		for (const auto& task : tasks) {
-			TPL::CommonTask* castedTask = static_cast<TPL::CommonTask*>(task.get());
-			castedTask->AddNotificationSignal(setSignal);
+			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			castedTask.AddNotificationSignal(setSignal);
 		}
 	}
 
@@ -56,12 +56,17 @@ public:
 
 	~InternalAnyTask() {
 		for (const auto& task : tasks) {
-			TPL::CommonTask* castedTask = static_cast<TPL::CommonTask*>(task.get());
-			castedTask->RemoveNotificationSignal(setSignal);
+			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			castedTask.RemoveNotificationSignal(setSignal);
 		}
 	}
 };
 
-std::unique_ptr<TPL::Task> WhenAny(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+std::unique_ptr<TPL::Task> TPL::WhenAny(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+	return std::make_unique<InternalAnyTask>(tasks);
+}
+
+
+std::unique_ptr<TPL::Task> TPL::WhenAll(std::vector<std::shared_ptr<TPL::Task>> tasks) {
 	return std::make_unique<InternalAnyTask>(tasks);
 }

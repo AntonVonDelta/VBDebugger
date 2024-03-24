@@ -83,10 +83,13 @@ void run3(int passed) {
 
 int main() {
 	libtask_run1();
-
 	cout << "\n\n";
 
 	libtask_run2();
+	cout << "\n\n";
+
+	libtask_run3();
+	cout << "\n\n";
 
 	//Init();
 
