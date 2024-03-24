@@ -13,17 +13,16 @@
 
 class TaskCompletionSource {
 private:
-	class InternalTask :public TPL::Task {
+	class SourceTask :public TPL::InternalTask {
 	private:
 		friend class TaskCompletionSource;
 		TaskCompletionSource* tcs;
 
-
-		InternalTask(TaskCompletionSource* tcs);
-
 		void InternalSignalCompleted();
 
 	public:
+		SourceTask(TaskCompletionSource* tcs);
+
 		void Result() override;
 		bool IsFinished() override;
 	};

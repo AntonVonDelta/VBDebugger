@@ -12,34 +12,44 @@
 #include "Task.h"
 
 TaskCompletionSource::TaskCompletionSource() {
-	Task = std::make_shared<InternalTask>(this);
+	Task = std::make_shared<SourceTask>(this);
 }
 
 void TaskCompletionSource::SetResult() {
-	Task->data;
-	//->value = true;
+	auto castedTask = (SourceTask*)Task.get();
 
-	auto internalTask = (InternalTask*)(Task.get());
+	{
+		std::scoped_lock lock(castedTask->data->mtxSync);
 
-	internalTask->InternalSignalCompleted();
+		if (castedTask->data->value == true)
+			throw std::exception("TaskCompletionSource already set");
+
+		castedTask->data->value = true;
+	}
+
+	castedTask->InternalSignalCompleted();
 }
 
-TaskCompletionSource::InternalTask::InternalTask(TaskCompletionSource* tcs) {
+TaskCompletionSource::SourceTask::SourceTask(TaskCompletionSource* tcs) {
 	this->tcs = tcs;
 }
 
-void TaskCompletionSource::InternalTask::InternalSignalCompleted() {
-	std::scoped_lock lock(data->mtxSync);
-
+void TaskCompletionSource::SourceTask::InternalSignalCompleted() {
 	for (const auto& conditional : data->registeredNotificationSignals) {
 		conditional->notify_all();
 	}
+
+	for (const auto& callbackPair : data->registeredCallbacks) {
+		try {
+			callbackPair.second();
+		} catch (std::exception) {}
+	}
 }
 
-void TaskCompletionSource::InternalTask::Result() {
-	tcs->value.wait(false);
+void TaskCompletionSource::SourceTask::Result() {
+	data->value.wait(false);
 }
 
-bool TaskCompletionSource::InternalTask::IsFinished() {
-	return tcs->value;
+bool TaskCompletionSource::SourceTask::IsFinished() {
+	return data->value;
 }

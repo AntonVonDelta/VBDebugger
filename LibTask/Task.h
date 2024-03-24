@@ -17,11 +17,9 @@ namespace TPL {
 		friend class TaskRegistration;
 		friend class InternalTask;
 
-		// Move members from private to public as they become needed
-
-		std::map<int, std::function<void(void)>> registeredCallbacks;
 		int lastRegistrationId = 0;
 
+		// Move members from private to public as they become needed
 
 		int Register(std::function<void(void)> callback);
 		void Unregister(int registrationId);
@@ -31,6 +29,7 @@ namespace TPL {
 
 		// Used by TaskCompletionSource
 		std::atomic<bool> value;
+		std::map<int, std::function<void(void)>> registeredCallbacks;
 		std::unordered_set<std::shared_ptr<std::condition_variable>> registeredNotificationSignals;
 	};
 
@@ -52,8 +51,22 @@ namespace TPL {
 	};
 
 
-	class InternalTask {
-	protected:
+	/// <summary>
+	/// The public interface
+	/// </summary>
+	class Task {
+	public:
+		virtual void Result() = 0;
+		virtual bool IsFinished() = 0;
+	};
+
+	/// <summary>
+	/// Minimum functionality class for tasks.
+	/// The library depends on the premise that all tasks actualy inherit this
+	/// </summary>
+	class InternalTask :public Task {
+	public:
+
 		/// <summary>
 		/// Stored the data in a separate structure
 		/// because this allows us to copy the parent class while keeping uncopiable data the same.
@@ -64,19 +77,10 @@ namespace TPL {
 		/// </summary>
 		std::shared_ptr<InternalTaskData> data;
 
-	public:
 		std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
 		void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
 		void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
 
 		virtual ~InternalTask();
-	};
-
-
-
-	class Task :public InternalTask {
-	public:
-		virtual void Result() = 0;
-		virtual bool IsFinished() = 0;
 	};
 }
