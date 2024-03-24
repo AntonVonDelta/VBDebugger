@@ -12,21 +12,6 @@
 #include "Task.h"
 
 class TaskCompletionSource {
-private:
-	class SourceTask :public TPL::InternalTask {
-	private:
-		friend class TaskCompletionSource;
-		TaskCompletionSource* tcs;
-
-		void InternalSignalCompleted();
-
-	public:
-		SourceTask(TaskCompletionSource* tcs);
-
-		void Result() override;
-		bool IsFinished() override;
-	};
-
 public:
 	TaskCompletionSource();
 

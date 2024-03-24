@@ -1,5 +1,3 @@
-#include "Task.h"
-
 #include <mutex>
 #include <utility>
 #include <atomic>
@@ -11,19 +9,43 @@
 #include <map>
 #include <unordered_set>
 
-int TPL::InternalTaskData::Register(std::function<void(void)> callback) {
+#include "Task.h"
+
+
+TPL::TaskRegistration::TaskRegistration(std::shared_ptr<InternalTaskData> source, int id) {
+	this->source = source;
+	this->id = id;
+}
+
+TPL::TaskRegistration::~TaskRegistration() {
+	std::scoped_lock lock(source->mtxSync);
+
+	source->registeredCallbacks.erase(id);
+}
+
+
+
+TPL::CommonTask::CommonTask() {
+	data = std::make_shared<InternalTaskData>();
+}
+
+TPL::CommonTask::CommonTask(std::shared_ptr<InternalTaskData> data) {
+	this->data = data;
+}
+
+int TPL::CommonTask::Register(std::function<void(void)> callback) {
 	auto shouldCall = false;
 	int currentRegistrationId = 0;
 
 	{
-		std::scoped_lock lock(mtxSync);
+		std::scoped_lock lock(data->mtxSync);
 
-		lastRegistrationId++;
-		currentRegistrationId = lastRegistrationId;
+		data->lastRegistrationId++;
+		currentRegistrationId = data->lastRegistrationId;
 
-		registeredCallbacks[currentRegistrationId] = callback;
+		data->registeredCallbacks[currentRegistrationId] = callback;
 
-		if (value)
+		if (IsFinished())
 			shouldCall = true;
 	}
 
@@ -35,27 +57,31 @@ int TPL::InternalTaskData::Register(std::function<void(void)> callback) {
 
 	return currentRegistrationId;
 }
-void TPL::InternalTaskData::Unregister(int registrationId) {
-	std::scoped_lock lock(mtxSync);
 
-	registeredCallbacks.erase(registrationId);
-}
-
-std::unique_ptr<TPL::TaskRegistration> TPL::InternalTask::RegisterCallback(std::function<void(void)> callback) {
-	int registrationId = data->Register(callback);
+std::unique_ptr<TPL::TaskRegistration> TPL::CommonTask::RegisterCallback(std::function<void(void)> callback) {
+	int registrationId = Register(callback);
 
 	return std::make_unique<TaskRegistration>(data, registrationId);
 }
-void TPL::InternalTask::AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
+
+void TPL::CommonTask::AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
 	std::scoped_lock lock(data->mtxSync);
 
 	data->registeredNotificationSignals.insert(conditional);
 }
-void TPL::InternalTask::RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
+
+void TPL::CommonTask::RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
 	std::scoped_lock lock(data->mtxSync);
 
 	data->registeredNotificationSignals.erase(conditional);
 }
-TPL::InternalTask::~InternalTask() {}
+
+bool TPL::CommonTask::operator==(const Task& other) {
+	const CommonTask* castedOther = dynamic_cast<const CommonTask*>(&other);
+
+	return data == castedOther->data;
+}
+
+TPL::CommonTask::~CommonTask() {}
 
 

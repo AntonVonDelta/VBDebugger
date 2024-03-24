@@ -11,7 +11,7 @@
 #include "Extensions.h"
 #include "Task.h"
 
-class InternalAnyTask :public TPL::InternalTask {
+class InternalAnyTask :public TPL::CommonTask {
 private:
 	std::vector<std::shared_ptr<TPL::Task>> tasks;
 	std::shared_ptr<std::condition_variable> setSignal;
@@ -34,7 +34,7 @@ public:
 		setSignal = std::make_shared<std::condition_variable>();
 
 		for (const auto& task : tasks) {
-			TPL::InternalTask* castedTask = static_cast<TPL::InternalTask*>(task.get());
+			TPL::CommonTask* castedTask = static_cast<TPL::CommonTask*>(task.get());
 			castedTask->AddNotificationSignal(setSignal);
 		}
 	}
@@ -56,7 +56,7 @@ public:
 
 	~InternalAnyTask() {
 		for (const auto& task : tasks) {
-			TPL::InternalTask* castedTask = static_cast<TPL::InternalTask*>(task.get());
+			TPL::CommonTask* castedTask = static_cast<TPL::CommonTask*>(task.get());
 			castedTask->RemoveNotificationSignal(setSignal);
 		}
 	}

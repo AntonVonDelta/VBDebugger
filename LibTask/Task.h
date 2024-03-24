@@ -15,20 +15,16 @@ namespace TPL {
 	class InternalTaskData {
 	private:
 		friend class TaskRegistration;
-		friend class InternalTask;
+		friend class CommonTask;
 
 		int lastRegistrationId = 0;
 
 		// Move members from private to public as they become needed
 
-		int Register(std::function<void(void)> callback);
-		void Unregister(int registrationId);
-
 	public:
 		std::mutex mtxSync;
 
 		// Used by TaskCompletionSource
-		std::atomic<bool> value;
 		std::map<int, std::function<void(void)>> registeredCallbacks;
 		std::unordered_set<std::shared_ptr<std::condition_variable>> registeredNotificationSignals;
 	};
@@ -40,14 +36,8 @@ namespace TPL {
 		int id;
 
 	public:
-		TaskRegistration(std::shared_ptr<InternalTaskData> source, int id) {
-			this->source = source;
-			this->id = id;
-		}
-
-		~TaskRegistration() {
-			source->Unregister(id);
-		}
+		TaskRegistration(std::shared_ptr<InternalTaskData> source, int id);
+		~TaskRegistration();
 	};
 
 
@@ -58,13 +48,19 @@ namespace TPL {
 	public:
 		virtual void Result() = 0;
 		virtual bool IsFinished() = 0;
+
+		// Must be defined in order for Tasks to be compared
+		virtual bool operator==(const Task& other) = 0;
 	};
 
 	/// <summary>
 	/// Minimum functionality class for tasks.
 	/// The library depends on the premise that all tasks actualy inherit this
 	/// </summary>
-	class InternalTask :public Task {
+	class CommonTask :public Task {
+	private:
+		int Register(std::function<void(void)> callback);
+
 	public:
 
 		/// <summary>
@@ -77,10 +73,15 @@ namespace TPL {
 		/// </summary>
 		std::shared_ptr<InternalTaskData> data;
 
-		std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
-		void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
-		void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
+		CommonTask();
+		CommonTask(std::shared_ptr<InternalTaskData> data);
 
-		virtual ~InternalTask();
+		virtual std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
+		virtual void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
+		virtual void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
+
+		virtual bool operator==(const Task& other) override;
+
+		virtual ~CommonTask();
 	};
 }
