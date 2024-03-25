@@ -145,12 +145,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="CommonTask.h" />
+    <ClInclude Include="CommonTask.hxx" />
     <ClInclude Include="Task.h" />
     <ClInclude Include="TaskCompletionSource.h" />
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CommonTask.cpp" />
     <ClCompile Include="Extensions.cpp" />
     <ClCompile Include="Extensions.h" />
     <ClCompile Include="Task.cpp" />

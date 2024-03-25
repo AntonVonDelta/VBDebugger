@@ -66,8 +66,8 @@ namespace TPL {
 		/// </summary>
 		std::shared_ptr<InternalTaskData> data;
 
-		CommonTask();
-		CommonTask(std::shared_ptr<InternalTaskData> data);
+		CommonTask<T>();
+		CommonTask<T>(std::shared_ptr<InternalTaskData> data);
 
 		virtual std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
 		virtual void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
@@ -77,3 +77,4 @@ namespace TPL {
 	};
 }
 
+#include "CommonTask.hxx"

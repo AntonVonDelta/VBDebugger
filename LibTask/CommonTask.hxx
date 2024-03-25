@@ -1,3 +1,5 @@
+#pragma once
+
 #include <mutex>
 #include <utility>
 #include <atomic>
@@ -47,7 +49,7 @@ int TPL::CommonTask<T>::Register(std::function<void(void)> callback) {
 
 		data->registeredCallbacks[currentRegistrationId] = callback;
 
-		if (Task<T>::IsFinished())
+		if (BaseTask::IsFinished())
 			shouldCall = true;
 	}
 

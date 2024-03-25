@@ -26,8 +26,5 @@ namespace TPL {
 	class DLL_API Task :public BaseTask {
 	public:
 		virtual void Result() = 0;
-
-		// Must be defined in order for Tasks to be compared
-		virtual bool operator==(const Task& other) = 0;
 	};
 }
