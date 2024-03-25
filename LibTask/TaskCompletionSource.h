@@ -13,13 +13,14 @@
 #include "Task.h"
 #include "Utils.h"
 
+template<typename T>
 class DLL_API TaskCompletionSource {
 public:
 	TaskCompletionSource();
 
 public:
-	std::shared_ptr<TPL::Task> Task;
+	std::shared_ptr<TPL::Task<T>> Task;
 
-	void SetResult();
+	void SetResult(T value);
 };
 

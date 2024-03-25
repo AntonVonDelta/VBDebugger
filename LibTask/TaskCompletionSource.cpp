@@ -16,17 +16,18 @@ public:
 	std::atomic<bool> value;
 };
 
-class SourceTask :public TPL::CommonTask {
+template<typename T>
+class SourceTask :public TPL::CommonTask<T> {
 private:
-	friend class TaskCompletionSource;
-	TaskCompletionSource* tcs;
+	friend class TaskCompletionSource<T>;
+	TaskCompletionSource<T>* tcs;
 
 	void InternalSignalCompleted() {
-		for (const auto& conditional : data->registeredNotificationSignals) {
+		for (const auto& conditional : (TPL::CommonTask<T>::data)->registeredNotificationSignals) {
 			conditional->notify_all();
 		}
 
-		for (const auto& callbackPair : data->registeredCallbacks) {
+		for (const auto& callbackPair : (TPL::CommonTask<T>::data)->registeredCallbacks) {
 			try {
 				callbackPair.second();
 			} catch (std::exception) {}
@@ -34,29 +35,30 @@ private:
 	}
 
 public:
-	SourceTask(TaskCompletionSource* tcs) :CommonTask(std::make_shared<SimpleTaskData>()) {
+	SourceTask(TaskCompletionSource<T>* tcs) :CommonTask<T>(std::make_shared<SimpleTaskData>()) {
 		this->tcs = tcs;
 	}
 
 	void Result() override {
-		auto& castedData = static_cast<SimpleTaskData&>(*data);
+		auto& castedData = static_cast<SimpleTaskData&>(*CommonTask<T>::data);
 
 		castedData.value.wait(false);
 	}
 	bool IsFinished() override {
-		auto& castedData = static_cast<SimpleTaskData&>(*data);
+		auto& castedData = static_cast<SimpleTaskData&>(*CommonTask<T>::data);
 
 		return castedData.value;
 	}
 };
 
-
-TaskCompletionSource::TaskCompletionSource() {
-	Task = std::make_shared<SourceTask>(this);
+template<typename T>
+TaskCompletionSource<T>::TaskCompletionSource<T>() {
+	Task = std::make_shared<SourceTask<T>>(this);
 }
 
-void TaskCompletionSource::SetResult() {
-	auto& castedTask = static_cast<SourceTask&>(*Task);
+template<typename T>
+void TaskCompletionSource<T>::SetResult(T value) {
+	auto& castedTask = static_cast<SourceTask<T>&>(*Task);
 
 	{
 		std::scoped_lock lock(castedTask.data->mtxSync);

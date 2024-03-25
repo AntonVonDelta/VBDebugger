@@ -24,16 +24,18 @@ TPL::TaskRegistration::~TaskRegistration() {
 }
 
 
-
-TPL::CommonTask::CommonTask() {
+template<typename T>
+TPL::CommonTask<T>::CommonTask() {
 	data = std::make_shared<InternalTaskData>();
 }
 
-TPL::CommonTask::CommonTask(std::shared_ptr<InternalTaskData> data) {
+template<typename T>
+TPL::CommonTask<T>::CommonTask(std::shared_ptr<InternalTaskData> data) {
 	this->data = data;
 }
 
-int TPL::CommonTask::Register(std::function<void(void)> callback) {
+template<typename T>
+int TPL::CommonTask<T>::Register(std::function<void(void)> callback) {
 	auto shouldCall = false;
 	int currentRegistrationId = 0;
 
@@ -45,7 +47,7 @@ int TPL::CommonTask::Register(std::function<void(void)> callback) {
 
 		data->registeredCallbacks[currentRegistrationId] = callback;
 
-		if (IsFinished())
+		if (Task<T>::IsFinished())
 			shouldCall = true;
 	}
 
@@ -58,28 +60,26 @@ int TPL::CommonTask::Register(std::function<void(void)> callback) {
 	return currentRegistrationId;
 }
 
-std::unique_ptr<TPL::TaskRegistration> TPL::CommonTask::RegisterCallback(std::function<void(void)> callback) {
+template<typename T>
+std::unique_ptr<TPL::TaskRegistration> TPL::CommonTask<T>::RegisterCallback(std::function<void(void)> callback) {
 	int registrationId = Register(callback);
 
 	return std::make_unique<TaskRegistration>(data, registrationId);
 }
 
-void TPL::CommonTask::AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
+template<typename T>
+void TPL::CommonTask<T>::AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
 	std::scoped_lock lock(data->mtxSync);
 
 	data->registeredNotificationSignals.insert(conditional);
 }
 
-void TPL::CommonTask::RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
+template<typename T>
+void TPL::CommonTask<T>::RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional) {
 	std::scoped_lock lock(data->mtxSync);
 
 	data->registeredNotificationSignals.erase(conditional);
 }
 
-bool TPL::CommonTask::operator==(const Task& other) {
-	const CommonTask* castedOther = dynamic_cast<const CommonTask*>(&other);
-
-	return data == castedOther->data;
-}
-
-TPL::CommonTask::~CommonTask() {}
+template<typename T>
+TPL::CommonTask<T>::~CommonTask() {}

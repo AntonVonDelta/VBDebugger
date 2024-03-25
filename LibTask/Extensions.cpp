@@ -11,9 +11,9 @@
 #include "Extensions.h"
 #include "CommonTask.h"
 
-class InternalAnyTask :public TPL::CommonTask {
+class InternalAnyTask :public TPL::CommonTask<void> {
 private:
-	std::vector<std::shared_ptr<TPL::Task>> tasks;
+	std::vector<std::shared_ptr<TPL::BaseTask>> tasks;
 	std::shared_ptr<std::condition_variable> setSignal;
 
 	bool IsAnyFinished() {
@@ -25,7 +25,7 @@ private:
 	}
 
 public:
-	InternalAnyTask(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+	InternalAnyTask(std::vector<std::shared_ptr<TPL::BaseTask>> tasks) {
 		// The given parameters are stored locally in order to keep them referenced
 		// in memory for the entire lifetime of this object
 		this->tasks = tasks;
@@ -33,7 +33,7 @@ public:
 		setSignal = std::make_shared<std::condition_variable>();
 
 		for (const auto& task : tasks) {
-			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			auto& castedTask = static_cast<TPL::CommonTask<void>&>(*task);
 			castedTask.AddNotificationSignal(setSignal);
 		}
 	}
@@ -53,21 +53,21 @@ public:
 
 	~InternalAnyTask() {
 		for (const auto& task : tasks) {
-			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			auto& castedTask = static_cast<TPL::CommonTask<void>&>(*task);
 			castedTask.RemoveNotificationSignal(setSignal);
 		}
 	}
 };
 
-std::unique_ptr<TPL::Task> TPL::WhenAny(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+std::unique_ptr<TPL::Task<void>> TPL::WhenAny(std::vector<std::shared_ptr<TPL::BaseTask>> tasks) {
 	return std::make_unique<InternalAnyTask>(tasks);
 }
 
 
 
-class InternalAllTask :public TPL::CommonTask {
+class InternalAllTask :public TPL::CommonTask<void> {
 private:
-	std::vector<std::shared_ptr<TPL::Task>> tasks;
+	std::vector<std::shared_ptr<TPL::BaseTask>> tasks;
 	std::shared_ptr<std::condition_variable> setSignal;
 
 	bool IsAllFinished() {
@@ -78,7 +78,7 @@ private:
 		return true;
 	}
 public:
-	InternalAllTask(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+	InternalAllTask(std::vector<std::shared_ptr<TPL::BaseTask>> tasks) {
 		// The given parameters are stored locally in order to keep them referenced
 		// in memory for the entire lifetime of this object
 		this->tasks = tasks;
@@ -86,7 +86,7 @@ public:
 		setSignal = std::make_shared<std::condition_variable>();
 
 		for (const auto& task : tasks) {
-			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			auto& castedTask = static_cast<TPL::CommonTask<void>&>(*task);
 			castedTask.AddNotificationSignal(setSignal);
 		}
 	}
@@ -106,12 +106,12 @@ public:
 
 	~InternalAllTask() {
 		for (const auto& task : tasks) {
-			auto& castedTask = static_cast<TPL::CommonTask&>(*task);
+			auto& castedTask = static_cast<TPL::CommonTask<void>&>(*task);
 			castedTask.RemoveNotificationSignal(setSignal);
 		}
 	}
 };
 
-std::unique_ptr<TPL::Task> TPL::WhenAll(std::vector<std::shared_ptr<TPL::Task>> tasks) {
+std::unique_ptr<TPL::Task<void>> TPL::WhenAll(std::vector<std::shared_ptr<TPL::BaseTask>> tasks) {
 	return std::make_unique<InternalAllTask>(tasks);
 }

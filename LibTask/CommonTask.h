@@ -17,6 +17,8 @@ namespace TPL {
 	class InternalTaskData {
 	private:
 		friend class TaskRegistration;
+
+		template<typename T>
 		friend class CommonTask;
 
 		int lastRegistrationId = 0;
@@ -47,7 +49,8 @@ namespace TPL {
 	/// Minimum functionality class for tasks.
 	/// The library depends on the premise that all tasks actualy inherit this
 	/// </summary>
-	class CommonTask :public TPL::Task {
+	template<typename T>
+	class CommonTask :public TPL::Task<T> {
 	private:
 		int Register(std::function<void(void)> callback);
 
@@ -69,8 +72,6 @@ namespace TPL {
 		virtual std::unique_ptr<TaskRegistration> RegisterCallback(std::function<void(void)> callback);
 		virtual void AddNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
 		virtual void RemoveNotificationSignal(std::shared_ptr<std::condition_variable> conditional);
-
-		virtual bool operator==(const Task& other) override;
 
 		virtual ~CommonTask();
 	};
