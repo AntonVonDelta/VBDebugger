@@ -25,6 +25,12 @@ namespace TPL {
 	template<typename T>
 	class DLL_API Task :public BaseTask {
 	public:
+		virtual T Result() = 0;
+	};
+
+	template<>
+	class DLL_API Task<void> :public BaseTask {
+	public:
 		virtual void Result() = 0;
 	};
 }

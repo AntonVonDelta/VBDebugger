@@ -14,7 +14,7 @@
 #include "Utils.h"
 
 template<typename T>
-class DLL_API TaskCompletionSource {
+class TaskCompletionSource {
 public:
 	TaskCompletionSource();
 
@@ -23,4 +23,17 @@ public:
 
 	void SetResult(T value);
 };
+
+template<>
+class TaskCompletionSource<void> {
+public:
+	TaskCompletionSource();
+
+public:
+	std::shared_ptr<TPL::Task<void>> Task;
+
+	void SetResult();
+};
+
+#include "TaskCompletionSource.hxx"
 

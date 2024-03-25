@@ -10,7 +10,7 @@
 #include "../LibTask/Extensions.h"
 
 void libtask_run1() {
-	TaskCompletionSource tcs;
+	TaskCompletionSource<void> tcs;
 
 	std::cout << "TCS SetResult()\n";
 	tcs.SetResult();
@@ -22,7 +22,7 @@ void libtask_run1() {
 
 
 void libtask_run2() {
-	TaskCompletionSource tcs;
+	TaskCompletionSource<void> tcs;
 
 	auto& task = tcs.Task;
 
@@ -40,8 +40,8 @@ void libtask_run2() {
 }
 
 void libtask_run3() {
-	TaskCompletionSource tcs1;
-	TaskCompletionSource tcs2;
+	TaskCompletionSource<void> tcs1;
+	TaskCompletionSource<void> tcs2;
 
 	auto task1 = tcs1.Task;
 	auto task2 = tcs2.Task;
@@ -68,8 +68,8 @@ void libtask_run3() {
 }
 
 void libtask_run4() {
-	TaskCompletionSource tcs1;
-	TaskCompletionSource tcs2;
+	TaskCompletionSource<void> tcs1;
+	TaskCompletionSource<void> tcs2;
 
 	auto task1 = tcs1.Task;
 	auto task2 = tcs2.Task;
