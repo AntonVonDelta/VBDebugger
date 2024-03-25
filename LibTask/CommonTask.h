@@ -40,8 +40,15 @@ namespace TPL {
 		int id;
 
 	public:
-		TaskRegistration(std::shared_ptr<InternalTaskData> source, int id);
-		~TaskRegistration();
+		TaskRegistration(std::shared_ptr<InternalTaskData> source, int id) {
+			this->source = source;
+			this->id = id;
+		}
+		~TaskRegistration() {
+			std::scoped_lock lock(source->mtxSync);
+
+			source->registeredCallbacks.erase(id);
+		}
 	};
 
 
@@ -51,6 +58,7 @@ namespace TPL {
 	/// </summary>
 	template<typename T>
 	class CommonTask :public TPL::Task<T> {
+
 	private:
 		int Register(std::function<void(void)> callback);
 
@@ -78,3 +86,4 @@ namespace TPL {
 }
 
 #include "CommonTask.hxx"
+

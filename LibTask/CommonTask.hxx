@@ -11,30 +11,8 @@
 #include <map>
 #include <unordered_set>
 
-#include "CommonTask.h"
 #include "Task.h"
-
-TPL::TaskRegistration::TaskRegistration(std::shared_ptr<InternalTaskData> source, int id) {
-	this->source = source;
-	this->id = id;
-}
-
-TPL::TaskRegistration::~TaskRegistration() {
-	std::scoped_lock lock(source->mtxSync);
-
-	source->registeredCallbacks.erase(id);
-}
-
-
-template<typename T>
-TPL::CommonTask<T>::CommonTask() {
-	data = std::make_shared<InternalTaskData>();
-}
-
-template<typename T>
-TPL::CommonTask<T>::CommonTask(std::shared_ptr<InternalTaskData> data) {
-	this->data = data;
-}
+#include "CommonTask.h"
 
 template<typename T>
 int TPL::CommonTask<T>::Register(std::function<void(void)> callback) {
@@ -49,7 +27,7 @@ int TPL::CommonTask<T>::Register(std::function<void(void)> callback) {
 
 		data->registeredCallbacks[currentRegistrationId] = callback;
 
-		if (BaseTask::IsFinished())
+		if (this->IsFinished())
 			shouldCall = true;
 	}
 
@@ -60,6 +38,16 @@ int TPL::CommonTask<T>::Register(std::function<void(void)> callback) {
 	}
 
 	return currentRegistrationId;
+}
+
+template<typename T>
+TPL::CommonTask<T>::CommonTask() {
+	data = std::make_shared<InternalTaskData>();
+}
+
+template<typename T>
+TPL::CommonTask<T>::CommonTask(std::shared_ptr<InternalTaskData> data) {
+	this->data = data;
 }
 
 template<typename T>
